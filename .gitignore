@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /target/classes/
 .settings/
 doc/
@@ -12,3 +13,11 @@ bin/
 *.class
 
 target/MonsterHunt.jar
+=======
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+>>>>>>> c5494f46989d5670ba2022ddd45cb8836e914f0b
