@@ -26,6 +26,9 @@ commands:
     huntzone:
         description: Select hunt zone.
         permission: monsterhunt.admincmd.huntzone
+    huntreload:
+        description: Reload config(s).
+        permission: monsterhunt.admincmd.huntreload
 permissions:
     monsterhunt.*:
         children:
@@ -38,6 +41,7 @@ permissions:
             monsterhunt.admincmd.huntstart: true
             monsterhunt.admincmd.huntstop: true
             monsterhunt.admincmd.huntzone: true
+            monsterhunt.admincmd.huntreload: true
     monsterhunt.usercmd.*:
         children:
             monsterhunt.usercmd.hunt: true
@@ -49,6 +53,8 @@ permissions:
     monsterhunt.admincmd.huntstop:
         default: op
     monsterhunt.admincmd.huntzone:
+        default: op
+    monsterhunt.admincmd.huntreload:
         default: op
     monsterhunt.usercmd.hunt:
         default: true

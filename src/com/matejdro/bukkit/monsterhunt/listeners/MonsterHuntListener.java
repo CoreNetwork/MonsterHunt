@@ -2,6 +2,8 @@ package com.matejdro.bukkit.monsterhunt.listeners;
 
 import java.util.Map.Entry;
 
+import javax.tools.Diagnostic;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -15,6 +17,8 @@ import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Giant;
+import org.bukkit.entity.IronGolem;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.MushroomCow;
@@ -25,12 +29,15 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Squid;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.Witch;
+import org.bukkit.entity.Wither;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
@@ -41,6 +48,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 
 import com.matejdro.bukkit.monsterhunt.HuntWorldManager;
 import com.matejdro.bukkit.monsterhunt.HuntZone;
@@ -124,8 +133,15 @@ public class MonsterHuntListener implements Listener {
 
         int points = 0;
         if (monster instanceof Skeleton) {
-            points = world.settings.getMonsterValue("Skeleton", cause);
-            name = "Skeleton";
+            Skeleton skeleton = (Skeleton) monster;
+            SkeletonType skeletonType = skeleton.getSkeletonType();
+            if (skeletonType.equals(SkeletonType.NORMAL)) {
+                points = world.settings.getMonsterValue("Skeleton", cause);
+                name = "Skeleton";
+            } else {
+                points = world.settings.getMonsterValue("WitherSkeleton", cause);
+                name = "Wither Skeleton";
+            }
         } else if (monster instanceof Spider) {
             points = world.settings.getMonsterValue("Spider", cause);
             name = "Spider";
@@ -208,6 +224,15 @@ public class MonsterHuntListener implements Listener {
         } else if (monster instanceof Villager) {
             points = world.settings.getMonsterValue("Villager", cause);
             name = "Villager";
+        } else if (monster instanceof IronGolem) {
+            points = world.settings.getMonsterValue("IronGolem", cause);
+            name = "Iron Golem";
+        } else if (monster instanceof Witch) {
+            points = world.settings.getMonsterValue("Witch", cause);
+            name = "Witch";
+        }else if (monster instanceof Wither) {
+            points = world.settings.getMonsterValue("Wither", cause);
+            name = "Wither";
         } else {
             return;
         }
@@ -215,6 +240,10 @@ public class MonsterHuntListener implements Listener {
             return;
         }
 
+        points += pointsForEquipment(monster, world);
+        
+        
+        
         if (!world.Score.containsKey(player.getName()) && !world.settings.getBoolean(Setting.EnableSignup)) {
             world.Score.put(player.getName(), 0);
         }
@@ -243,7 +272,11 @@ public class MonsterHuntListener implements Listener {
                     message = message.replace("<Player>", player.getName());
                     message = message.replace("<Points>", String.valueOf(newscore));
                     message = message.replace("<World>", world.name);
-                    Util.Broadcast(message);
+                    
+                    if(world.settings.getBoolean(Setting.AnnounceLeadEveryone))
+                    	Util.Broadcast(message);
+                    else
+                    	Util.BroadcastToParticipants(message);
                 }
             }
 
@@ -260,7 +293,136 @@ public class MonsterHuntListener implements Listener {
         }
     }
 
-    @EventHandler()
+    private int pointsForEquipment(LivingEntity monster, MonsterHuntWorld world) {
+		double equipmentPoints = 0.0;
+		
+
+		EntityEquipment eq = monster.getEquipment();
+		
+		if(eq.getArmorContents().length == 0 && eq.getItemInHand() == null)
+			return 0;
+		
+		ItemStack helmet = eq.getHelmet();
+		ItemStack chestplate = eq.getChestplate();
+		ItemStack leggings = eq.getLeggings();
+		ItemStack boots = eq.getBoots();
+		ItemStack weapon = eq.getItemInHand();
+		
+		double leatherPoints = world.settings.getEquipmentValue("Leather");
+		double goldPoints = world.settings.getEquipmentValue("Gold");
+		double ironPoints = world.settings.getEquipmentValue("Iron");
+		double chainPoints = world.settings.getEquipmentValue("Chain");
+		double diamondPoints = world.settings.getEquipmentValue("Diamond");
+		double shovelPoints = world.settings.getEquipmentValue("Shovel");
+		double swordPoints = world.settings.getEquipmentValue("Sword");
+		double enchantedArmorPoints = world.settings.getEquipmentValue("EnchantedArmor");
+		double enchantedSwordPoints = world.settings.getEquipmentValue("EnchantedSword");
+		double enchantedShovelPoints = world.settings.getEquipmentValue("EnchantedShovel");
+		double enchantedBowPoints = world.settings.getEquipmentValue("EnchantedBow");
+		
+		//Helmet
+		if(helmet != null)
+		{
+			Material helmetType = helmet.getType();
+			if(helmetType.equals(Material.LEATHER_HELMET))
+				equipmentPoints += leatherPoints;
+			else if(helmetType.equals(Material.IRON_HELMET))
+				equipmentPoints += ironPoints;
+			else if(helmetType.equals(Material.CHAINMAIL_HELMET))
+				equipmentPoints += chainPoints;
+			else if(helmetType.equals(Material.DIAMOND_HELMET))
+				equipmentPoints += diamondPoints;
+			else if(helmetType.equals(Material.GOLD_HELMET))
+				equipmentPoints += goldPoints;
+			
+			if(helmet.getEnchantments().size() != 0)
+				equipmentPoints += enchantedArmorPoints;
+		}
+		
+		//Chestplate
+		if(chestplate != null)
+		{
+			Material chestplateType = chestplate.getType();
+			if(chestplateType.equals(Material.LEATHER_CHESTPLATE))
+				equipmentPoints += leatherPoints;
+			else if(chestplateType.equals(Material.IRON_CHESTPLATE))
+				equipmentPoints += ironPoints;
+			else if(chestplateType.equals(Material.CHAINMAIL_CHESTPLATE))
+				equipmentPoints += chainPoints;
+			else if(chestplateType.equals(Material.DIAMOND_CHESTPLATE))
+				equipmentPoints += diamondPoints;
+			else if(chestplateType.equals(Material.GOLD_CHESTPLATE))
+				equipmentPoints += goldPoints;
+			
+			if(chestplate.getEnchantments().size() != 0)
+				equipmentPoints += enchantedArmorPoints;
+		}
+				
+		//Leggings
+		if(leggings != null)
+		{
+			Material leggingsType = leggings.getType();
+			if(leggingsType.equals(Material.LEATHER_LEGGINGS))
+				equipmentPoints += leatherPoints;
+			else if(leggingsType.equals(Material.IRON_LEGGINGS))
+				equipmentPoints += ironPoints;
+			else if(leggingsType.equals(Material.CHAINMAIL_LEGGINGS))
+				equipmentPoints += chainPoints;
+			else if(leggingsType.equals(Material.DIAMOND_LEGGINGS))
+				equipmentPoints += diamondPoints;
+			else if(leggingsType.equals(Material.GOLD_LEGGINGS))
+				equipmentPoints += goldPoints;
+			
+			if(leggings.getEnchantments().size() != 0)
+				equipmentPoints += enchantedArmorPoints;
+		}
+		
+		//Boots
+		if(boots != null)
+		{
+			Material bootsType = boots.getType();
+			if(bootsType.equals(Material.LEATHER_BOOTS))
+				equipmentPoints += leatherPoints;
+			else if(bootsType.equals(Material.IRON_BOOTS))
+				equipmentPoints += ironPoints;
+			else if(bootsType.equals(Material.CHAINMAIL_BOOTS))
+				equipmentPoints += chainPoints;
+			else if(bootsType.equals(Material.DIAMOND_BOOTS))
+				equipmentPoints += diamondPoints;
+			else if(bootsType.equals(Material.GOLD_BOOTS))
+				equipmentPoints += goldPoints;
+			
+			if(boots.getEnchantments().size() != 0)
+				equipmentPoints += enchantedArmorPoints;
+		}
+		
+		//Weapon
+		if(weapon != null)
+		{
+			Material weaponType = weapon.getType();
+			if(weaponType.equals(Material.IRON_SPADE) || weaponType.equals(Material.WOOD_SPADE) || weaponType.equals(Material.GOLD_SPADE) ||weaponType.equals(Material.DIAMOND_SPADE) || weaponType.equals(Material.STONE_SPADE))
+			{
+				equipmentPoints += shovelPoints;
+				if(weapon.getEnchantments().size() != 0)
+					equipmentPoints += enchantedShovelPoints;
+			}
+			else if(weaponType.equals(Material.IRON_SWORD) || weaponType.equals(Material.WOOD_SWORD) || weaponType.equals(Material.GOLD_SWORD) ||weaponType.equals(Material.DIAMOND_SWORD) || weaponType.equals(Material.STONE_SWORD))
+			{
+				equipmentPoints += swordPoints;
+				if(weapon.getEnchantments().size() != 0)
+					equipmentPoints += enchantedSwordPoints;
+			}
+			else if(weaponType.equals(Material.BOW))
+			{
+				if(weapon.getEnchantments().size() != 0)
+					equipmentPoints += enchantedBowPoints;
+			}
+			
+		}
+		return (int) Math.floor(equipmentPoints);
+	}
+
+	@EventHandler()
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         if (event.getEntity() instanceof Creature) {
             MonsterHuntWorld world = HuntWorldManager.getWorld(event.getLocation().getWorld().getName());

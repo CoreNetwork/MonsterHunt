@@ -37,9 +37,9 @@
     <dependency>
       <groupId>net.milkbowl</groupId>
       <artifactId>vault</artifactId>
-      <version>1.2.25-SNAPSHOT</version>
+      <version>1.2.26-SNAPSHOT</version>
 	  <scope>system</scope>
-      <systemPath>${basedir}/lib/Vault.jar</systemPath>
+      <systemPath>${basedir}/lib/Vault-1.2.26-SNAPSHOT.jar</systemPath>
     </dependency>
   </dependencies>
 
@@ -47,13 +47,13 @@
     <directory>target</directory>
     <outputDirectory>target/classes</outputDirectory>
     <finalName>MonsterHunt</finalName>
-    <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+    <sourceDirectory>${basedir}/src</sourceDirectory>
     <defaultGoal>clean install</defaultGoal>
     <resources>
       <resource>
         <targetPath>.</targetPath>
         <filtering>true</filtering>
-        <directory>${basedir}/src/main/resources</directory>
+        <directory>${basedir}/resources</directory>
         <includes>
           <include>plugin.yml</include>
         </includes>

@@ -1,6 +1,4 @@
 *.class
 .settings
-target/classes
-target/generated-sources
-target/maven-archiver
-target/surefire
+target/
+

@@ -8,6 +8,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.matejdro.bukkit.monsterhunt.commands.HuntCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntScoreCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStartCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStatusCommand;
@@ -50,7 +51,7 @@ public class MonsterHunt extends JavaPlugin {
         this.getCommand("huntstop").setExecutor(new HuntStopCommand());
         this.getCommand("huntzone").setExecutor(new HuntZoneCommand());
         this.getCommand("hunttele").setExecutor(new HuntTeleCommand());
-
+        this.getCommand("huntreload").setExecutor(new HuntReloadCommand());
         //InputOutput.initMetrics();
 
         HuntWorldManager.timer();
