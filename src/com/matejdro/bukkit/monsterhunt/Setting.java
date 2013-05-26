@@ -12,12 +12,15 @@ public enum Setting {
     SkipDays("SkipDays", 0),
     SignUpPeriodTime("SignUpPeriodTime", 5),
     AllowSignUpAfterStart("AllowSignUpAfterStart", false),
+    PurgeAllHostileMobsOnStart("PurgeAllHostileMobsOnStart", true),
     EnabledWorlds("EnabledWorlds", MonsterHunt.instance.getServer().getWorlds().get(0).getName()),
     OnlyCountMobsSpawnedOutside("OnlyCountMobsSpawnedOutside", false),
     OnlyCountMobsSpawnedOutsideHeightLimit("OnlyCountMobsSpawnedOutsideHeightLimit", 0),
     OnlyCountMobsSpawnedOutsideBlackList("OnlyCountMobsSpawnedOutsideBlackList", true),
     SkipToIfFailsToStart("SkipToIfFailsToStart", -1),
     AnnounceLead("AnnounceLead", true),
+    AnnounceLeadEveryone("AnnounceLeadEveryone", true),
+    AnnounceInterval("AnnounceInterval", 0),
     SelectionTool("SelectionTool", 268),
     HuntZoneMode("HuntZoneMode", false),
     AnnounceSignUp("AnnounceSignUp", true),
@@ -72,7 +75,7 @@ public enum Setting {
     MessageHuntTeleNoHunt("Messages.MessageHuntTeleNoHunt", "You cannot teleport to hunt zone when there is no hunt!"),
     MessageHuntTeleNotSignedUp("Messages.MessageHuntTeleNotSignedUp", "You cannot teleport to hunt zone if you are not signed up to the hunt!"),
     SignUpAnnouncement("Messages.SignUpAnnouncement", "<Player> has signed up for the hunt in world <World>!");
-
+    
     private String name;
     private Object def;
     private boolean WriteDefault;

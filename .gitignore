@@ -1,23 +1,7 @@
-<<<<<<< HEAD
-/target/classes/
-.settings/
-doc/
-bin/
-.classpath
-.project
 *.class
-.DS_Store
-
-*.class
-
-*.class
-
-target/MonsterHunt.jar
-=======
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
->>>>>>> c5494f46989d5670ba2022ddd45cb8836e914f0b
+.settings
+target/classes
+target/generated-sources
+target/maven-archiver
+target/surefire
+target/*.jar

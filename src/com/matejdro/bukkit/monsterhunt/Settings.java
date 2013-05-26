@@ -11,17 +11,24 @@ public class Settings {
     public static YamlConfiguration globals;
 
     private YamlConfiguration config;
+    
 
-    public Settings(YamlConfiguration cfg, File file) {
-        config = cfg;
-        try {
-            config.load(file);
-        } catch (FileNotFoundException e) {
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidConfigurationException e) {
-            e.printStackTrace();
+    public Settings(File file) {
+        if(file.exists())
+        {
+        	config = new YamlConfiguration();
+        	try {
+				config.load(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InvalidConfigurationException e) {
+				Log.warning("Configuration file " + file.getName() + " is invalid. Swaping with global values.");
+				config = globals;
+			}
+        }
+        else
+        {
+        	config = globals;
         }
     }
 
@@ -78,7 +85,19 @@ public class Settings {
             }
         }
     }
-
+    
+    public double getEquipmentValue(String eqName) {
+    	String setting = "Equipment." + eqName;
+    	if(config.get(setting) != null){
+    		return config.getDouble(setting);
+    	} else if (globals.get(setting) != null){
+    		return globals.getDouble(setting);
+    	}
+    	else {
+    		return 0;
+    	}
+	}
+    
     public String getKillMessage(String cause) {
         String setting = "Messages.KillMessage" + cause;
         Util.Debug(setting);
@@ -97,4 +116,6 @@ public class Settings {
             }
         }
     }
+
+	
 }
