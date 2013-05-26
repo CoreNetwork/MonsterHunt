@@ -31,7 +31,8 @@ public class MonsterHuntWorld {
     public boolean nextnight;
     public boolean purgeDone; //true if killHostileMobs already occured when in state = 1
     public Settings settings;
-
+    public long lastAnnounceTime;
+    
     public HashMap<String, Integer> Score = new HashMap<String, Integer>();
     public HashMap<String, Integer> lastScore = new HashMap<String, Integer>();
     public ArrayList<Integer> properlyspawned = new ArrayList<Integer>();

@@ -20,6 +20,7 @@ public enum Setting {
     SkipToIfFailsToStart("SkipToIfFailsToStart", -1),
     AnnounceLead("AnnounceLead", true),
     AnnounceLeadEveryone("AnnounceLeadEveryone", true),
+    AnnounceInterval("AnnounceInterval", 0),
     SelectionTool("SelectionTool", 268),
     HuntZoneMode("HuntZoneMode", false),
     AnnounceSignUp("AnnounceSignUp", true),

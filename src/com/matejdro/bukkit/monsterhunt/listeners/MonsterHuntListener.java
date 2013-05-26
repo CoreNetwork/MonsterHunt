@@ -2,11 +2,10 @@ package com.matejdro.bukkit.monsterhunt.listeners;
 
 import java.util.Map.Entry;
 
-import javax.tools.Diagnostic;
-
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Blaze;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.Chicken;
@@ -15,10 +14,10 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Giant;
 import org.bukkit.entity.IronGolem;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.MushroomCow;
@@ -44,16 +43,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import com.matejdro.bukkit.monsterhunt.HuntWorldManager;
 import com.matejdro.bukkit.monsterhunt.HuntZone;
 import com.matejdro.bukkit.monsterhunt.HuntZoneCreation;
+import com.matejdro.bukkit.monsterhunt.MonsterHunt;
 import com.matejdro.bukkit.monsterhunt.MonsterHuntWorld;
 import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Settings;
@@ -64,11 +67,43 @@ public class MonsterHuntListener implements Listener {
     //HashMap<Integer, Integer> lastHitCauses = new HashMap<Integer, Integer>();
 
     @EventHandler()
+    public void onEntityCombustByEntity(EntityCombustByEntityEvent event)
+    {
+    	Entity combusterEntity = event.getCombuster();
+    	MonsterHuntWorld world = HuntWorldManager.getWorld(combusterEntity.getWorld().getName());
+    	
+    	if(world.state == 2)
+    	{
+	    	Player damager = null;
+	    	Entity combustee = event.getEntity();
+	    	if(combusterEntity instanceof Arrow)
+	    	{
+	    		Arrow arrowEntity = (Arrow)combusterEntity;
+	    	    if(arrowEntity.getShooter() instanceof Player)
+	    	    {
+	    	        damager = (Player) arrowEntity.getShooter();
+	    	    	combustee.removeMetadata("ignitedByArrow", MonsterHunt.instance);
+	    	    	combustee.removeMetadata("ignitedBySword", MonsterHunt.instance);
+	    	        combustee.setMetadata("ignitedByArrow", new FixedMetadataValue(MonsterHunt.instance, damager));
+	    	    }
+	    	}
+	    	else if(combusterEntity instanceof Player)
+	    	{
+	    		damager = (Player) combusterEntity;
+    	    	combustee.removeMetadata("ignitedByArrow", MonsterHunt.instance);
+    	    	combustee.removeMetadata("ignitedBySword", MonsterHunt.instance);
+    	        combustee.setMetadata("ignitedBySword", new FixedMetadataValue(MonsterHunt.instance, damager));
+	    	}
+	    	
+	    	
+    	}
+    }
+
+    @EventHandler()
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             MonsterHuntWorld world = HuntWorldManager.getWorld(player.getWorld().getName());
-
             if (world == null || world.getWorld() == null) {
                 return;
             }
@@ -85,51 +120,70 @@ public class MonsterHuntListener implements Listener {
         if (!HuntZone.isInsideZone(event.getEntity().getLocation())) {
             return;
         }
-        if (event.getEntity() == null || !(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
+        if (event.getEntity() == null || !(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent  ||  event.getEntity().getLastDamageCause().getCause().equals(DamageCause.FIRE_TICK))) {
             return;
         }
         MonsterHuntWorld world = HuntWorldManager.getWorld(event.getEntity().getWorld().getName());
         if (world == null || world.getWorld() == null || world.state < 2) {
             return;
         }
-        Util.Debug("test");
         kill((LivingEntity) event.getEntity(), world);
     }
 
     private void kill(LivingEntity monster, MonsterHuntWorld world) {
-        EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) monster.getLastDamageCause();
         String name;
         Player player = null;
-
         String cause = "General";
-        if (event.getCause() == DamageCause.PROJECTILE && event.getDamager() instanceof Projectile) {
-            if (event.getDamager() instanceof Snowball) {
-                cause = "Snowball";
-            } else {
-                cause = "Arrow";
-            }
-            LivingEntity shooter = ((Projectile) event.getDamager()).getShooter();
-            if (shooter instanceof Player) {
-                player = (Player) shooter;
-            }
-        } else if (event.getDamager() instanceof Wolf && ((Wolf) event.getDamager()).isTamed()) {
-            cause = "Wolf";
-            player = (Player) ((Wolf) event.getDamager()).getOwner();
-        }
-
-        if (player == null) {
-            if (!(event.getDamager() instanceof Player))
-                return;
-            player = (Player) event.getDamager();
-
-            if (cause.equals("General")) {
-                if (player.getItemInHand() == null) {
-                    cause = String.valueOf(0);
+        
+        if(monster.getLastDamageCause() instanceof EntityDamageByEntityEvent)
+        {
+        	EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) monster.getLastDamageCause();
+            if (event.getCause() == DamageCause.PROJECTILE && event.getDamager() instanceof Projectile) {
+                if (event.getDamager() instanceof Snowball) {
+                    cause = "Snowball";
                 } else {
-                    cause = String.valueOf(player.getItemInHand().getTypeId());
+                    cause = "Arrow";
+                }
+                LivingEntity shooter = ((Projectile) event.getDamager()).getShooter();
+                if (shooter instanceof Player) {
+                    player = (Player) shooter;
+                }
+            }
+            else if (event.getDamager() instanceof Wolf && ((Wolf) event.getDamager()).isTamed()) {
+                cause = "Wolf";
+                player = (Player) ((Wolf) event.getDamager()).getOwner();
+            }
+
+            if (player == null) {
+                if (!(event.getDamager() instanceof Player))
+                    return;
+                player = (Player) event.getDamager();
+
+                if (cause.equals("General")) {
+                    if (player.getItemInHand() == null) {
+                        cause = String.valueOf(0);
+                    } else {
+                        cause = String.valueOf(player.getItemInHand().getTypeId());
+                    }
                 }
             }
         }
+        else if(monster.getLastDamageCause().getCause().equals(DamageCause.FIRE_TICK))
+        {
+        	if(monster.getMetadata("ignitedByArrow").size() != 0)
+        	{
+        		player = (Player) monster.getMetadata("ignitedByArrow").get(0).value();
+        		cause = "Arrow";
+        	}
+        	else if(monster.getMetadata("ignitedBySword").size() != 0)
+        	{
+        		player = (Player) monster.getMetadata("ignitedBySword").get(0).value();
+        		cause = "General";
+        	}
+        }
+
+
+        
 
         int points = 0;
         if (monster instanceof Skeleton) {
@@ -273,10 +327,15 @@ public class MonsterHuntListener implements Listener {
                     message = message.replace("<Points>", String.valueOf(newscore));
                     message = message.replace("<World>", world.name);
                     
-                    if(world.settings.getBoolean(Setting.AnnounceLeadEveryone))
-                    	Util.Broadcast(message);
-                    else
-                    	Util.BroadcastToParticipants(message);
+                    long timeInWorld = monster.getWorld().getTime();
+                    if(timeInWorld >= world.settings.getInt(Setting.AnnounceInterval) + world.lastAnnounceTime)
+                    {
+                    	world.lastAnnounceTime = timeInWorld;
+	                    if(world.settings.getBoolean(Setting.AnnounceLeadEveryone))
+	                    	Util.Broadcast(message);
+	                    else
+	                    	Util.BroadcastToParticipants(message);
+                    }
                 }
             }
 
