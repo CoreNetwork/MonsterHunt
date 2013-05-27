@@ -1,12 +1,26 @@
 package com.matejdro.bukkit.monsterhunt;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
+
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Blaze;
+import org.bukkit.entity.CaveSpider;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Ghast;
+import org.bukkit.entity.MagmaCube;
+import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Spider;
+import org.bukkit.entity.Zombie;
 
 public class MonsterHuntWorld {
     public String name;
@@ -15,8 +29,10 @@ public class MonsterHuntWorld {
     public boolean waitday;
     public int curday;
     public boolean nextnight;
+    public boolean purgeDone; //true if killHostileMobs already occured when in state = 1
     public Settings settings;
-
+    public long lastAnnounceTime;
+    
     public HashMap<String, Integer> Score = new HashMap<String, Integer>();
     public HashMap<String, Integer> lastScore = new HashMap<String, Integer>();
     public ArrayList<Integer> properlyspawned = new ArrayList<Integer>();
@@ -29,6 +45,7 @@ public class MonsterHuntWorld {
         manual = false;
         curday = 0;
         name = w;
+        purgeDone = false;
     }
 
     public World getWorld() {
@@ -53,6 +70,8 @@ public class MonsterHuntWorld {
         Util.Broadcast(message);
         state = 2;
         waitday = true;
+        
+        
     }
 
     public void stop() {
@@ -74,6 +93,7 @@ public class MonsterHuntWorld {
             player.teleport(e.getValue());
         }
         state = 0;
+        purgeDone = false;
         for (String i : Score.keySet()) {
             Integer hs = InputOutput.getHighScore(i);
             if (hs == null)
@@ -110,5 +130,18 @@ public class MonsterHuntWorld {
             curday--;
         }
         return false;
+    }
+    
+    public void removeHostileMobs()
+    {
+    	purgeDone = true;
+    	if(settings.getBoolean(Setting.PurgeAllHostileMobsOnStart))
+        {
+    		Class[] classes = {Creeper.class, Skeleton.class,Zombie.class, Spider.class, Enderman.class, Ghast.class, Slime.class
+    							, Blaze.class, CaveSpider.class, MagmaCube.class, PigZombie.class};
+        	Collection<Entity> mobs = MonsterHunt.instance.getServer().getWorld(name).getEntitiesByClasses(classes);
+        	for(Entity e : mobs)
+        		e.remove();
+        }	
     }
 }

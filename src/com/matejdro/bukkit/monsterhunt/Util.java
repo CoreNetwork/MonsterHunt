@@ -64,6 +64,16 @@ public class Util {
         }
     }
 
+    public static void BroadcastToParticipants(String message) {
+    	for(MonsterHuntWorld mhw : HuntWorldManager.getWorlds()) {
+    		if(mhw.state > 0) {
+    			for(String playerName : mhw.Score.keySet())	{
+    				Message(message, MonsterHunt.instance.getServer().getPlayerExact(playerName));
+    			}
+    		}
+    	}
+    }
+    
     public static void Debug(String message) {
         if (Settings.globals.getBoolean(Setting.Debug.getString(), false)) {
             Log.info("[Debug]" + message);

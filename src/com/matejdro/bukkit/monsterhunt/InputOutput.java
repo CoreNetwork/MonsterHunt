@@ -9,7 +9,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -159,13 +165,13 @@ public class InputOutput {
         }
         Settings.globals = new YamlConfiguration();
 
+        //loading default settings, adding if anything is missing
         LoadDefaults();
 
+        //loading world specific settings 
         for (String n : Settings.globals.getString("EnabledWorlds").split(",")) {
             MonsterHuntWorld mw = new MonsterHuntWorld(n);
-            YamlConfiguration config = new YamlConfiguration();
-            Settings settings = new Settings(config, new File("plugins" + File.separator + "MonsterHunt" + File.separator, n + ".yml"));
-            mw.settings = settings;
+            mw.settings = LoadWorldSettings(n);
             HuntWorldManager.worlds.put(n, mw);
         }
 
@@ -179,25 +185,32 @@ public class InputOutput {
 
         //Create zone world
         MonsterHuntWorld mw = new MonsterHuntWorld(world.getName());
-        YamlConfiguration config = new YamlConfiguration();
-        Settings settings = new Settings(config, new File("plugins" + File.separator + "MonsterHunt" + File.separator + "zone.yml"));
-        mw.settings = settings;
+        mw.settings = LoadWorldSettings("zone");
 
         HuntWorldManager.HuntZoneWorld = mw;
     }
-
+    
+    //Loads setting from file for given worldName.
+    //In effect, if there is not a specified file for this world, returns global settings
+    private static Settings LoadWorldSettings(String worldName)
+    {
+    	return new Settings(new File("plugins" + File.separator + "MonsterHunt" + File.separator, worldName + ".yml"));
+    }
+    
     public static void LoadDefaults() {
         try {
             Settings.globals.load(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.txt"));
         } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
+            Log.info("Global config file missing. Creating one from scratch.");
         } catch (IOException e1) {
             e1.printStackTrace();
         } catch (InvalidConfigurationException e1) {
             e1.printStackTrace();
         }
 
-        for (String i : new String[] { "Zombie", "Skeleton", "Creeper", "Spider", "Ghast", "Slime", "ZombiePigman", "Giant", "TamedWolf", "WildWolf", "ElectrifiedCreeper", "Player", "Enderman", "Silverfish", "CaveSpider", "EnderDragon", "MagmaCube", "Blaze" }) {
+        for (String i : new String[] { "Zombie", "Skeleton", "Creeper", "Spider", "Ghast", "Slime", "ZombiePigman", "Giant", 
+        		"TamedWolf", "WildWolf", "ElectrifiedCreeper", "Player", "Enderman", "Silverfish", "CaveSpider", "EnderDragon",
+        		"MagmaCube", "Blaze", "IronGolem", "Wither", "WitherSkeleton", "Witch" }) {
             if (Settings.globals.get("Value." + i) != null)
                 continue;
 
@@ -216,6 +229,19 @@ public class InputOutput {
         }
 
         if (!new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.txt").exists()) {
+        	
+        	Settings.globals.set("Equipment.Leather", 0.5);
+        	Settings.globals.set("Equipment.Gold", 1);
+        	Settings.globals.set("Equipment.Iron", 1);
+        	Settings.globals.set("Equipment.Chain", 1);
+        	Settings.globals.set("Equipment.Diamond", 2);
+        	Settings.globals.set("Equipment.Shovel", 0.5);
+        	Settings.globals.set("Equipment.Sword", 1);
+        	Settings.globals.set("Equipment.EnchantedArmor", 0.5);
+        	Settings.globals.set("Equipment.EnchantedSword", 0.5);
+        	Settings.globals.set("Equipment.EnchantedShovel", 0.5);
+        	Settings.globals.set("Equipment.EnchantedBow", 1);
+        	
             Settings.globals.set("MinimumPointsPlace1", 1);
             Settings.globals.set("MinimumPointsPlace2", 1);
             Settings.globals.set("MinimumPointsPlace3", 1);
@@ -249,6 +275,44 @@ public class InputOutput {
         }
     }
 
+    public static void ReloadSettings()
+    {
+    	LoadDefaults();
+    	Collection<MonsterHuntWorld> loadedWorlds = HuntWorldManager.getWorlds();
+    	String[] arr = Settings.globals.getString("EnabledWorlds").split(",");
+    	List<String> newEnabledWorlds = new ArrayList<String>(); 
+    	Collections.addAll(newEnabledWorlds, arr); 
+    	List<MonsterHuntWorld> toRemoval = new ArrayList<MonsterHuntWorld>();
+    	//If the world was enabled before, and is enabled now, reload settings normally
+    	//if it was enabled, but is not anymore, stop hunt and schedule it for removal
+    	for(MonsterHuntWorld mw : loadedWorlds)
+    	{
+    		if(newEnabledWorlds.contains(mw.name))
+    		{
+        		mw.settings = LoadWorldSettings(mw.name);
+        		newEnabledWorlds.remove(mw.name);
+    		}
+    		else
+    		{
+    			mw.stop();
+    			toRemoval.add(mw);
+    		}
+    	}
+    	//Remove disabled worlds
+    	for(MonsterHuntWorld mw : toRemoval)
+    	{
+    		HuntWorldManager.worlds.remove(mw.name);
+    	}
+    	//Add newly enabled worlds
+    	for(String name : newEnabledWorlds)
+    	{
+    		
+    		MonsterHuntWorld mw = new MonsterHuntWorld(name);
+            mw.settings = LoadWorldSettings(name);
+            HuntWorldManager.worlds.put(name, mw);
+    	}
+    }
+    
     public static void PrepareDB() {
         Connection conn = null;
         Statement st = null;
