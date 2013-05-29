@@ -70,21 +70,26 @@ public class MonsterHuntListener implements Listener {
     public void onEntityCombustByEntity(EntityCombustByEntityEvent event)
     {
     	Entity combusterEntity = event.getCombuster();
-    	MonsterHuntWorld world = HuntWorldManager.getWorld(combusterEntity.getWorld().getName());
+    	Entity combustee = event.getEntity();
+    	if(combusterEntity == null || combustee == null)
+    		return;
+    	MonsterHuntWorld world = HuntWorldManager.getWorld(combustee.getWorld().getName());
     	
-    	if(world.state == 2)
+    	if(world != null && world.state == 2)
     	{
 	    	Player damager = null;
-	    	Entity combustee = event.getEntity();
 	    	if(combusterEntity instanceof Arrow)
 	    	{
 	    		Arrow arrowEntity = (Arrow)combusterEntity;
 	    	    if(arrowEntity.getShooter() instanceof Player)
 	    	    {
-	    	        damager = (Player) arrowEntity.getShooter();
-	    	    	combustee.removeMetadata("ignitedByArrow", MonsterHunt.instance);
-	    	    	combustee.removeMetadata("ignitedBySword", MonsterHunt.instance);
-	    	        combustee.setMetadata("ignitedByArrow", new FixedMetadataValue(MonsterHunt.instance, damager));
+	    	    	if(arrowEntity.getShooter() instanceof Player)
+	    	    	{
+		    	        damager = (Player) arrowEntity.getShooter();
+		    	    	combustee.removeMetadata("ignitedByArrow", MonsterHunt.instance);
+		    	    	combustee.removeMetadata("ignitedBySword", MonsterHunt.instance);
+		    	        combustee.setMetadata("ignitedByArrow", new FixedMetadataValue(MonsterHunt.instance, damager));
+	    	    	}
 	    	    }
 	    	}
 	    	else if(combusterEntity instanceof Player)
@@ -94,7 +99,6 @@ public class MonsterHuntListener implements Listener {
     	    	combustee.removeMetadata("ignitedBySword", MonsterHunt.instance);
     	        combustee.setMetadata("ignitedBySword", new FixedMetadataValue(MonsterHunt.instance, damager));
 	    	}
-	    	
 	    	
     	}
     }
@@ -180,10 +184,15 @@ public class MonsterHuntListener implements Listener {
         		player = (Player) monster.getMetadata("ignitedBySword").get(0).value();
         		cause = "General";
         	}
+        	else
+        	{
+        		return;
+        	}
+        	
         }
 
-
-        
+        if(player == null)
+    		return;
 
         int points = 0;
         if (monster instanceof Skeleton) {
@@ -297,7 +306,6 @@ public class MonsterHuntListener implements Listener {
         points += pointsForEquipment(monster, world);
         
         
-        
         if (!world.Score.containsKey(player.getName()) && !world.settings.getBoolean(Setting.EnableSignup)) {
             world.Score.put(player.getName(), 0);
         }
@@ -320,7 +328,7 @@ public class MonsterHuntListener implements Listener {
                 Util.Debug(leadpoints.toString());
                 Util.Debug(String.valueOf(newscore));
                 Util.Debug(String.valueOf(!leadpoints.getKey().equals(player.getName())));
-
+   
                 if (leadpoints != null && newscore > leadpoints.getValue() && !leadpoints.getKey().equals(player.getName())) {
                     String message = world.settings.getString(Setting.MessageLead);
                     message = message.replace("<Player>", player.getName());
