@@ -29,7 +29,6 @@ public class MonsterHuntWorld {
     public boolean waitday;
     public int curday;
     public boolean nextnight;
-    public boolean purgeDone; //true if killHostileMobs already occured when in state = 1
     public Settings settings;
     public long lastAnnounceTime;
     
@@ -45,7 +44,6 @@ public class MonsterHuntWorld {
         manual = false;
         curday = 0;
         name = w;
-        purgeDone = false;
     }
 
     public World getWorld() {
@@ -70,7 +68,7 @@ public class MonsterHuntWorld {
         Util.Broadcast(message);
         state = 2;
         waitday = true;
-        
+        removeHostileMobs();
         
     }
 
@@ -93,7 +91,6 @@ public class MonsterHuntWorld {
             player.teleport(e.getValue());
         }
         state = 0;
-        purgeDone = false;
         for (String i : Score.keySet()) {
             Integer hs = InputOutput.getHighScore(i);
             if (hs == null)
@@ -134,7 +131,6 @@ public class MonsterHuntWorld {
     
     public void removeHostileMobs()
     {
-    	purgeDone = true;
     	if(settings.getBoolean(Setting.PurgeAllHostileMobsOnStart))
         {
     		Class[] classes = {Creeper.class, Skeleton.class,Zombie.class, Spider.class, Enderman.class, Ghast.class, Slime.class

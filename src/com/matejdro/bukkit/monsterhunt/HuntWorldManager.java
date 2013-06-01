@@ -61,10 +61,6 @@ public class HuntWorldManager {
                                 world.start();
                         }
                     } 
-                    else if (world.state == 1 && !world.purgeDone && time > world.getSignUpPeriodTime() && time < world.settings.getInt(Setting.StartTime) && world.Score.size() >= world.settings.getInt(Setting.MinimumPlayers))
-                    {
-                    	world.removeHostileMobs();
-                    }
                     else if (world.state == 2 && (time > world.settings.getInt(Setting.EndTime) || time < world.settings.getInt(Setting.StartTime)) && !world.manual) {
                         Util.Debug("[DEBUG - NEVEREND]Stop Time");
                         world.stop();
