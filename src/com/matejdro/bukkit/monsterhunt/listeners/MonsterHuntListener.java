@@ -46,6 +46,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -138,6 +139,13 @@ public class MonsterHuntListener implements Listener {
         String name;
         Player player = null;
         String cause = "General";
+        
+        if(world.settings.getBoolean(Setting.DontCountNamedMobs) && monster.getCustomName() != null) {
+        	return;
+        }
+        if (!(world.properlyspawned.contains(monster.getEntityId()))) {
+            return;
+        }
         
         if(monster.getLastDamageCause() instanceof EntityDamageByEntityEvent)
         {
@@ -305,17 +313,10 @@ public class MonsterHuntListener implements Listener {
 
         points += pointsForEquipment(monster, world);
         
-        
         if (!world.Score.containsKey(player.getName()) && !world.settings.getBoolean(Setting.EnableSignup)) {
             world.Score.put(player.getName(), 0);
         }
         if (world.Score.containsKey(player.getName())) {
-            if (!(world.settings.getBoolean(Setting.OnlyCountMobsSpawnedOutsideBlackList) ^ world.properlyspawned.contains(monster.getEntityId())) && world.settings.getBoolean(Setting.OnlyCountMobsSpawnedOutside)) {
-                String message = world.settings.getString(Setting.KillMobSpawnedInsideMessage);
-                Util.Message(message, player);
-                world.blacklist.add(monster.getEntityId());
-                return;
-            }
             int newscore = world.Score.get(player.getName()) + points;
 
             if (world.settings.getBoolean(Setting.AnnounceLead)) {
@@ -348,7 +349,6 @@ public class MonsterHuntListener implements Listener {
             }
 
             world.Score.put(player.getName(), newscore);
-            world.blacklist.add(monster.getEntityId());
 
             world.properlyspawned.remove((Object) monster.getEntityId());
 
@@ -490,57 +490,19 @@ public class MonsterHuntListener implements Listener {
 	}
 
 	@EventHandler()
-    public void onCreatureSpawn(CreatureSpawnEvent event) {
-        if (event.getEntity() instanceof Creature) {
-            MonsterHuntWorld world = HuntWorldManager.getWorld(event.getLocation().getWorld().getName());
-            if (world == null || world.getWorld() == null) {
-                return;
-            }
-            if (world.state == 0) {
-                return;
-            }
-            if (!world.settings.getBoolean(Setting.OnlyCountMobsSpawnedOutside)) {
-                return;
-            }
-            Block block = event.getLocation().getBlock();
-            int number = 0;
-            while (block.getY() < 125) {
-                number++;
-                block = block.getRelative(BlockFace.UP);
-                boolean empty = false;
-
-                if (block.getType() == Material.AIR || block.getType() == Material.LEAVES) {
-                    empty = true;
-                } else if (block.getType() == Material.LOG) {
-                    if (block.getRelative(BlockFace.NORTH).getType() == Material.AIR || block.getRelative(BlockFace.NORTH).getType() == Material.LEAVES) {
-                        empty = true;
-                    } else if (block.getRelative(BlockFace.EAST).getType() == Material.AIR || block.getRelative(BlockFace.EAST).getType() == Material.LEAVES) {
-                        empty = true;
-                    } else if (block.getRelative(BlockFace.WEST).getType() == Material.AIR || block.getRelative(BlockFace.WEST).getType() == Material.LEAVES) {
-                        empty = true;
-                    } else if (block.getRelative(BlockFace.SOUTH).getType() == Material.AIR || block.getRelative(BlockFace.SOUTH).getType() == Material.LEAVES) {
-                        empty = true;
-                    } else if (block.getRelative(BlockFace.UP).getType() == Material.AIR || block.getRelative(BlockFace.UP).getType() == Material.LEAVES) {
-                        empty = true;
-                    } else if (block.getRelative(BlockFace.DOWN).getType() == Material.AIR || block.getRelative(BlockFace.DOWN).getType() == Material.LEAVES) {
-                        empty = true;
-                    }
-                }
-
-                if (!empty) {
-                    if (world.settings.getBoolean(Setting.OnlyCountMobsSpawnedOutsideBlackList)) {
-                        world.properlyspawned.add(event.getEntity().getEntityId());
-                    }
-                    return;
-                }
-                if (world.settings.getInt(Setting.OnlyCountMobsSpawnedOutsideHeightLimit) > 0 && world.settings.getInt(Setting.OnlyCountMobsSpawnedOutside) < number) {
-                    break;
-                }
-            }
-            if (!world.settings.getBoolean(Setting.OnlyCountMobsSpawnedOutsideBlackList)) {
-                world.properlyspawned.add(event.getEntity().getEntityId());
-            }
+    public void onCreatureSpawn(CreatureSpawnEvent event) 
+	{
+        MonsterHuntWorld world = HuntWorldManager.getWorld(event.getLocation().getWorld().getName());
+        if (world == null || world.getWorld() == null) {
+            return;
         }
+        if (world.state == 0) {
+            return;
+        }
+        if (world.settings.getBoolean(Setting.DontCountMobsFromSpawners) && event.getSpawnReason().equals(SpawnReason.SPAWNER)) {
+        	return;
+        }
+        world.properlyspawned.add(event.getEntity().getEntityId());
     }
 
     @EventHandler()

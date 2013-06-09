@@ -35,7 +35,6 @@ public class MonsterHuntWorld {
     public HashMap<String, Integer> Score = new HashMap<String, Integer>();
     public HashMap<String, Integer> lastScore = new HashMap<String, Integer>();
     public ArrayList<Integer> properlyspawned = new ArrayList<Integer>();
-    public ArrayList<Integer> blacklist = new ArrayList<Integer>();
     public HashMap<Player, Location> tplocations = new HashMap<Player, Location>();
 
     public MonsterHuntWorld(String w) {

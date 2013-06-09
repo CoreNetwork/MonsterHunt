@@ -68,7 +68,11 @@ public class Util {
     	for(MonsterHuntWorld mhw : HuntWorldManager.getWorlds()) {
     		if(mhw.state > 0) {
     			for(String playerName : mhw.Score.keySet())	{
-    				Message(message, MonsterHunt.instance.getServer().getPlayerExact(playerName));
+    				Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
+    				if(player != null)
+    				{
+    					Message(message, MonsterHunt.instance.getServer().getPlayerExact(playerName));
+    				}
     			}
     		}
     	}
