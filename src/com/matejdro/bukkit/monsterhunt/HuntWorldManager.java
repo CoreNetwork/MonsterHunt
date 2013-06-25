@@ -7,7 +7,7 @@ import java.util.HashMap;
 public class HuntWorldManager {
     public static MonsterHuntWorld HuntZoneWorld;
     public static HashMap<String, MonsterHuntWorld> worlds = new HashMap<String, MonsterHuntWorld>();
-
+    
     public static MonsterHuntWorld getWorld(String name) {
         if (Settings.globals.getBoolean(Setting.HuntZoneMode.getString(), false)) {
             return HuntZoneWorld;
@@ -53,7 +53,7 @@ public class HuntWorldManager {
                                 world.waitday = true;
                                 world.skipNight();
                             } else {
-                                world.start();
+	                             world.start();
                             }
                         } else if (!world.waitday && world.settings.getInt(Setting.SignUpPeriodTime) == 0) {
                             world.waitday = true;

@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Blaze;
 import org.bukkit.entity.CaveSpider;
@@ -21,7 +23,9 @@ import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Zombie;
-
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 public class MonsterHuntWorld {
     public String name;
     public boolean manual;
@@ -37,6 +41,10 @@ public class MonsterHuntWorld {
     public ArrayList<Integer> properlyspawned = new ArrayList<Integer>();
     public HashMap<Player, Location> tplocations = new HashMap<Player, Location>();
 
+    private static final String OBJECTIVE_NAME = "HuntScore";
+	private static final String OBJECTIVE_DISPLAY_NAME = "The Hunt";
+    private Scoreboard scoreboard;
+    private Objective objective ;
     public MonsterHuntWorld(String w) {
         state = 0;
         waitday = false;
@@ -60,7 +68,7 @@ public class MonsterHuntWorld {
         }
         return time;
     }
-
+    
     public void start() {
         String message = settings.getString(Setting.StartMessage);
         message = message.replace("<World>", name);
@@ -69,6 +77,53 @@ public class MonsterHuntWorld {
         waitday = true;
         removeHostileMobs();
         
+        generateScoreboard();
+        refreshScoreboards(); 
+    }
+    
+    private void generateScoreboard() 
+    {
+    	scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        objective = scoreboard.registerNewObjective(OBJECTIVE_NAME, "");
+        objective.setDisplayName(OBJECTIVE_DISPLAY_NAME);
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+	}
+	public void refreshScoreboards()
+	{
+		refreshScoreboardPoitns();
+		setScoreboardToAllPlayers(scoreboard);
+	}
+
+    private void clearScoreboards()
+    {
+    	setScoreboardToAllPlayers(Bukkit.getScoreboardManager().getNewScoreboard());
+    }
+	
+    private void refreshScoreboardPoitns()
+    {
+    	for(String playerName : Score.keySet())	
+		{
+			OfflinePlayer offlinePlayer = MonsterHunt.instance.getServer().getOfflinePlayer(playerName);
+			if(offlinePlayer != null)
+			{
+				if (Score.get(playerName) != 0)
+				{
+					objective.getScore(offlinePlayer).setScore(Score.get(playerName));
+				}
+			}
+ 		}
+    }
+    
+    private void setScoreboardToAllPlayers(Scoreboard scoreboard)
+    {
+    	for(String playerName : Score.keySet())	
+		{
+			Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
+			if(player != null)
+			{
+				player.setScoreboard(scoreboard);
+			}
+ 		}
     }
 
     public void stop() {
@@ -106,6 +161,7 @@ public class MonsterHuntWorld {
             }
         }
         lastScore.putAll(Score);
+        clearScoreboards();
         Score.clear();
         properlyspawned.clear();
     }
@@ -132,7 +188,8 @@ public class MonsterHuntWorld {
     {
     	if(settings.getBoolean(Setting.PurgeAllHostileMobsOnStart))
         {
-    		Class[] classes = {Creeper.class, Skeleton.class,Zombie.class, Spider.class, Enderman.class, Ghast.class, Slime.class
+    		@SuppressWarnings("rawtypes")
+			Class[] classes = {Creeper.class, Skeleton.class,Zombie.class, Spider.class, Enderman.class, Ghast.class, Slime.class
     							, Blaze.class, CaveSpider.class, MagmaCube.class, PigZombie.class};
         	Collection<Entity> mobs = MonsterHunt.instance.getServer().getWorld(name).getEntitiesByClasses(classes);
         	for(Entity e : mobs)
