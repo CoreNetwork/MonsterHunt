@@ -183,7 +183,7 @@ How many nights to skip after hunt happened – even if `StartChance` is `100` p
 
 ``` yaml
 SignUpPeriodTime: 1
-``` yaml
+```
 
 How many minutes to give players to sign up before the hunt.
 
