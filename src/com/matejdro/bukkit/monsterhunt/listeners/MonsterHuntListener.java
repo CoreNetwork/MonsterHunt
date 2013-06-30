@@ -333,7 +333,7 @@ public class MonsterHuntListener implements Listener {
                     message = message.replace("<World>", world.name);
                     
                     long timeInWorld = monster.getWorld().getTime();
-                    if(timeInWorld >= world.settings.getInt(Setting.AnnounceInterval) + world.lastAnnounceTime)
+                    if(timeInWorld >= world.settings.getInt(Setting.AnnounceLeadInterval) + world.lastAnnounceTime)
                     {
                     	world.lastAnnounceTime = timeInWorld;
 	                    if(world.settings.getBoolean(Setting.AnnounceLeadEveryone))
@@ -347,18 +347,25 @@ public class MonsterHuntListener implements Listener {
             world.Score.put(player.getName(), newscore);
 
             world.properlyspawned.remove((Object) monster.getEntityId());
-
-            String message = world.settings.getKillMessage(cause);
-            message = message.replace("<MobValue>", String.valueOf(points));
-            message = message.replace("<MobName>", name);
-            message = message.replace("<Points>", String.valueOf(newscore));
-            Util.Message(message, player);
-            world.refreshScoreboards();
+            
+            if (world.settings.getBoolean(Setting.ShowKillMessage)) 
+            {
+	            String message = world.settings.getKillMessage(cause);
+	            message = message.replace("<MobValue>", String.valueOf(points));
+	            message = message.replace("<MobName>", name);
+	            message = message.replace("<Points>", String.valueOf(newscore));
+	            Util.Message(message, player);
+            }
+            
+            if(world.settings.getBoolean(Setting.ScoreboardEnabled))
+            {
+            	world.refreshScoreboards();
+            }
         }
     }
 
     private int pointsForEquipment(LivingEntity monster, MonsterHuntWorld world) {
-		double equipmentPoints = 0.0;
+    	int equipmentPoints = 0;
 		
 
 		EntityEquipment eq = monster.getEquipment();
@@ -372,17 +379,17 @@ public class MonsterHuntListener implements Listener {
 		ItemStack boots = eq.getBoots();
 		ItemStack weapon = eq.getItemInHand();
 		
-		double leatherPoints = world.settings.getEquipmentValue("Leather");
-		double goldPoints = world.settings.getEquipmentValue("Gold");
-		double ironPoints = world.settings.getEquipmentValue("Iron");
-		double chainPoints = world.settings.getEquipmentValue("Chain");
-		double diamondPoints = world.settings.getEquipmentValue("Diamond");
-		double shovelPoints = world.settings.getEquipmentValue("Shovel");
-		double swordPoints = world.settings.getEquipmentValue("Sword");
-		double enchantedArmorPoints = world.settings.getEquipmentValue("EnchantedArmor");
-		double enchantedSwordPoints = world.settings.getEquipmentValue("EnchantedSword");
-		double enchantedShovelPoints = world.settings.getEquipmentValue("EnchantedShovel");
-		double enchantedBowPoints = world.settings.getEquipmentValue("EnchantedBow");
+		int leatherPoints = world.settings.getInt(Setting.EqLeather);
+		int goldPoints = world.settings.getInt(Setting.EqGold);
+		int ironPoints = world.settings.getInt(Setting.EqIron);
+		int chainPoints = world.settings.getInt(Setting.EqChain);
+		int diamondPoints = world.settings.getInt(Setting.EqDiamond);
+		int shovelPoints = world.settings.getInt(Setting.EqShovel);
+		int swordPoints = world.settings.getInt(Setting.EqSword);
+		int enchantedArmorPoints = world.settings.getInt(Setting.EqEnchArmor);
+		int enchantedSwordPoints = world.settings.getInt(Setting.EqEnchSword);
+		int enchantedShovelPoints = world.settings.getInt(Setting.EqEnchShovel);
+		int enchantedBowPoints = world.settings.getInt(Setting.EqEnchBow);
 		
 		//Helmet
 		if(helmet != null)
@@ -483,7 +490,7 @@ public class MonsterHuntListener implements Listener {
 			}
 			
 		}
-		return (int) Math.floor(equipmentPoints);
+		return equipmentPoints;
 	}
 
 	@EventHandler()

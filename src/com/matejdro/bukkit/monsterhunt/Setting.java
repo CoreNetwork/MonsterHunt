@@ -2,49 +2,61 @@ package com.matejdro.bukkit.monsterhunt;
 
 public enum Setting {
 
-    StartTime("StartTime", 13000),
-    EndTime("EndTime", 23600),
-    DeathPenalty("DeathPenalty", 30),
-    TellTime("TellTime", true),
-    EnableSignup("EnableSignup", true),
+	EqLeather("Points.Equipment.Leather", 1),
+	EqGold("Points.Equipment.Gold", 2),
+	EqIron("Points.Equipment.Iron", 2),
+	EqChain("Points.Equipment.Chain", 2),
+	EqDiamond("Points.Equipment.Diamond", 4),
+	EqShovel("Points.Equipment.Shovel", 1),
+	EqSword("Points.Equipment.Sword", 2),
+	EqEnchArmor("Points.Equipment.EnchantedArmor", 1),
+	EqEnchSword("Points.Equipment.EnchantedSword", 1),
+	EqEnchShovel("Points.Equipment.EnchantedShovel", 1),
+	EqEnchBow("Points.Equipment.EnchantedBow", 2),
+	
+	EnableReward("Rewards.EnableReward", true),
+    NumberOfWinners("Rewards.NumberOfWinners", 3),
+    EnableRewardEveryonePermission("Rewards.EnableRewardEveryonePermission", false),
+    RewardEveryone("Rewards.RewardEveryone", false),
+    MinimumPointsPlace("Rewards.MinimumPointsPlace", "", false),
+    RewardParametersPlace("Rewards.RewardParametersPlace", "", false),
+    MinimumPointsEveryone("Rewards.MinimumPointsEveryone", 1),
+    RewardParametersEveryone("Rewards.RewardParametersEveryone", "3 1-1"),
+	
+    EnabledWorlds("EnabledWorlds", MonsterHunt.instance.getServer().getWorlds().get(0).getName()),
     MinimumPlayers("MinimumPlayers", 2),
     StartChance("StartChance", 100),
     SkipDays("SkipDays", 0),
+    StartTime("StartTime", 13000),
+    EndTime("EndTime", 23600),
+    DeathPenalty("DeathPenalty", 30),
+
+    EnableSignup("EnableSignup", true),
     SignUpPeriodTime("SignUpPeriodTime", 5),
+    
     AllowSignUpAfterStart("AllowSignUpAfterStart", false),
+    SkipToIfFailsToStart("SkipToIfFailsToStart", -1),
+    
     PurgeAllHostileMobsOnStart("PurgeAllHostileMobsOnStart", true),
-    EnabledWorlds("EnabledWorlds", MonsterHunt.instance.getServer().getWorlds().get(0).getName()),
     DontCountNamedMobs("DontCountNamedMobs", true),
     DontCountMobsFromSpawners("DontCountMobsFromSpawners", true),
-    SkipToIfFailsToStart("SkipToIfFailsToStart", -1),
+    AnnounceSignUp("AnnounceSignUp", true),
     AnnounceLead("AnnounceLead", true),
     AnnounceLeadEveryone("AnnounceLeadEveryone", true),
-    AnnounceInterval("AnnounceInterval", 0),
-    SelectionTool("SelectionTool", 268),
+    AnnounceLeadInterval("AnnounceLeadInterval", 0),
+    ShowKillMessage("ShowKillMessage", true),
+    ScoreboardEnabled("ScoreboardEnabled", true),
+    
+    TellTime("TellTime", true),
+    
     HuntZoneMode("HuntZoneMode", false),
-    AnnounceSignUp("AnnounceSignUp", true),
-
-    EnableReward("Rewards.EnableReward", true),
-    EnableRewardEveryonePermission("Rewards.EnableRewardEveryonePermission", false),
-    RewardEveryone("Rewards.RewardEveryone", false),
-    NumberOfWinners("Rewards.NumberOfWinners", 3),
-    RewardParametersEveryone("Rewards.RewardParametersEveryone", "3 1-1"),
-    MinimumPointsEveryone("MinimumPointsEveryone", 1),
-    MinimumPointsPlace("MinimumPointsPlace", "", false),
-    RewardParametersPlace("Rewards.RewardParametersPlace", "", false),
-
-    UseMySQL("Database.UseMySQL", false),
-    MySQLConn("Database.MySQLConn", "jdbc:mysql://localhost:3306/minecraft"),
-    MySQLUsername("Database.MySQLUsername", "root"),
-    MySQLPassword("Database.MySQLPassword", "password"),
-
-    Debug("Debug", false),
-
+    SelectionTool("SelectionTool", 268),
+    HuntZoneWorld("HuntZone.World", MonsterHunt.instance.getServer().getWorlds().get(0).getName()),
     HuntZoneFirstCorner("HuntZone.FirstCorner", "0,0,0"),
     HuntZoneSecondCorner("HuntZone.SecondCorner", "0,0,0"),
     HuntZoneTeleportLocation("HuntZone.TeleportLocation", "0,0,0"),
-    HuntZoneWorld("HuntZone.World", MonsterHunt.instance.getServer().getWorlds().get(0).getName()),
-
+    
+ 
     StartMessage("Messages.StartMessage", "&2Monster Hunt have started in world <World>! Go kill those damn mobs!"),
     FinishMessageWinners("Messages.FinishMessageWinners", "Sun is rising, so monster Hunt is finished in world <World>! Winners of the today's match are: [NEWLINE] 1st place: <NamesPlace1> (<PointsPlace1> points) [NEWLINE] 2nd place: <NamesPlace2> (<PointsPlace2> points) [NEWLINE] 3rd place: <NamesPlace3> (<PointsPlace3> points)"),
     KillMessageGeneral("Messages.KillMessageGeneral", "You got <MobValue> points from killing that <MobName>. You have <Points> points so far. Keep it up!"),
@@ -62,7 +74,6 @@ public enum Setting {
     MessageTooLateSignUp("Messages.MessageTooLateSignUp", "Sorry, you are too late to sign up. More luck next time!"),
     MessageAlreadySignedUp("Messages.MessageAlreadySignedUp", "You are already signed up!"),
     MessageStartNotEnoughPlayers("Messages.MessageStartNotEnoughPlayers", "Monster Hunt was about to start, but unfortunately there were not enough players signed up. "),
-    KillMobSpawnedInsideMessage("Messages.KillMobSpawnedInsideMessage", "Your kill was not counted. Stop grinding in caves and go outside!"),
     MessageHuntStatusNotActive("Messages.MessageHuntStatusNotActive", "Hunt is currently not active anywhere"),
     MessageHuntStatusHuntActive("Messages.MessageHuntStatusHuntActive", "Hunt is active in <Worlds>"),
     MessageHuntStatusLastScore("Messages.MessageHuntStatusLastScore", "Your last score in this world was <Points> points"),
@@ -73,8 +84,15 @@ public enum Setting {
     MessageLead("Messages.MessageLead", "<Player> has just taken over lead with <Points> points!"),
     MessageHuntTeleNoHunt("Messages.MessageHuntTeleNoHunt", "You cannot teleport to hunt zone when there is no hunt!"),
     MessageHuntTeleNotSignedUp("Messages.MessageHuntTeleNotSignedUp", "You cannot teleport to hunt zone if you are not signed up to the hunt!"),
-    SignUpAnnouncement("Messages.SignUpAnnouncement", "<Player> has signed up for the hunt in world <World>!");
+    SignUpAnnouncement("Messages.SignUpAnnouncement", "<Player> has signed up for the hunt in world <World>!"),
     
+    UseMySQL("Database.UseMySQL", false),
+    MySQLConn("Database.MySQLConn", "jdbc:mysql://localhost:3306/minecraft"),
+    MySQLUsername("Database.MySQLUsername", "root"),
+    MySQLPassword("Database.MySQLPassword", "password"),
+
+    Debug("Debug", false);
+
     private String name;
     private Object def;
     private boolean WriteDefault;

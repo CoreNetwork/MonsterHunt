@@ -198,64 +198,53 @@ public class InputOutput {
     
     public static void LoadDefaults() {
         try {
-            Settings.globals.load(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.txt"));
+            Settings.globals.load(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.yml"));
         } catch (FileNotFoundException e1) {
             Log.info("Global config file missing. Creating one from scratch.");
         } catch (IOException e1) {
             e1.printStackTrace();
+            return;
         } catch (InvalidConfigurationException e1) {
             e1.printStackTrace();
+            return;
         }
 
+        String mobSettingString = "Points.Mobs.";
+        
         for (String i : new String[] { "Zombie", "Skeleton", "Creeper", "Spider", "Ghast", "Slime", "ZombiePigman", "Giant", 
         		"TamedWolf", "WildWolf", "ElectrifiedCreeper", "Player", "Enderman", "Silverfish", "CaveSpider", "EnderDragon",
         		"MagmaCube", "Blaze", "IronGolem", "Wither", "WitherSkeleton", "Witch" }) {
-            if (Settings.globals.get("Value." + i) != null)
-                continue;
-
-            Settings.globals.set("Value." + i + ".General", 10);
-            Settings.globals.set("Value." + i + ".Wolf", 7);
-            Settings.globals.set("Value." + i + ".Arrow", 4);
-            Settings.globals.set("Value." + i + ".Snowball", 20);
-            Settings.globals.set("Value." + i + ".283", 20);
+            if (Settings.globals.contains(mobSettingString + i) == false)
+            {
+            	  Settings.globals.set(mobSettingString + i + ".General", 10);
+                  Settings.globals.set(mobSettingString + i + ".Wolf", 7);
+                  Settings.globals.set(mobSettingString + i + ".Arrow", 4);
+                  Settings.globals.set(mobSettingString + i + ".Snowball", 20);
+                  Settings.globals.set(mobSettingString + i + ".283", 20);
+            }
         }
-
+        
         for (String i : new String[] { "MushroomCow", "Chicken", "Cow", "Pig", "Sheep", "SnowGolem", "Squid", "Villager" }) {
-            if (Settings.globals.get("Value." + i) != null)
-                continue;
-
-            Settings.globals.set("Value." + i + ".General", 0);
+            if (Settings.globals.contains(mobSettingString + i) == false)
+            {
+                Settings.globals.set(mobSettingString + i + ".General", 0);
+            }
         }
-
-        if (!new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.txt").exists()) {
-        	
-        	Settings.globals.set("Equipment.Leather", 0.5);
-        	Settings.globals.set("Equipment.Gold", 1);
-        	Settings.globals.set("Equipment.Iron", 1);
-        	Settings.globals.set("Equipment.Chain", 1);
-        	Settings.globals.set("Equipment.Diamond", 2);
-        	Settings.globals.set("Equipment.Shovel", 0.5);
-        	Settings.globals.set("Equipment.Sword", 1);
-        	Settings.globals.set("Equipment.EnchantedArmor", 0.5);
-        	Settings.globals.set("Equipment.EnchantedSword", 0.5);
-        	Settings.globals.set("Equipment.EnchantedShovel", 0.5);
-        	Settings.globals.set("Equipment.EnchantedBow", 1);
-        	
-            Settings.globals.set("MinimumPointsPlace1", 1);
-            Settings.globals.set("MinimumPointsPlace2", 1);
-            Settings.globals.set("MinimumPointsPlace3", 1);
-            Settings.globals.set("Rewards.RewardParametersPlace1", "3 3");
-            Settings.globals.set("Rewards.RewardParametersPlace2", "3 2");
-            Settings.globals.set("Rewards.RewardParametersPlace3", "3 1");
-        }
-
+      
         for (Setting s : Setting.values()) {
             if (s.writeDefault() && Settings.globals.get(s.getString()) == null)
                 Settings.globals.set(s.getString(), s.getDefault());
         }
-
+        
+        Settings.globals.set("Rewards.MinimumPointsPlace1", 1);
+        Settings.globals.set("Rewards.RewardParametersPlace1", "3 3");
+        Settings.globals.set("Rewards.MinimumPointsPlace2", 1);
+        Settings.globals.set("Rewards.RewardParametersPlace2", "3 2");
+        Settings.globals.set("Rewards.MinimumPointsPlace3", 1);
+        Settings.globals.set("Rewards.RewardParametersPlace3", "3 1");
+        
         try {
-            Settings.globals.save(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.txt"));
+            Settings.globals.save(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.yml"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -268,7 +257,7 @@ public class InputOutput {
         Settings.globals.set("HuntZone.World", HuntZone.teleport.getWorld().getName());
 
         try {
-            Settings.globals.save(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.txt"));
+            Settings.globals.save(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.yml"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -305,7 +294,6 @@ public class InputOutput {
     	//Add newly enabled worlds
     	for(String name : newEnabledWorlds)
     	{
-    		
     		MonsterHuntWorld mw = new MonsterHuntWorld(name);
             mw.settings = LoadWorldSettings(name);
             HuntWorldManager.worlds.put(name, mw);
@@ -327,14 +315,5 @@ public class InputOutput {
         } catch (SQLException e) {
             Log.severe("Error while creating tables! - " + e.getMessage());
         }
-    //}
-
-    //public static void initMetrics() {
-    //    try {
-    //        MetricsLite metrics = new MetricsLite(plugin);
-    //        metrics.start();
-    //    } catch (IOException e) {
-            // Failed to submit the stats :-(
-    //    }
     }
 }

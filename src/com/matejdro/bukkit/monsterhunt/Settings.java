@@ -38,7 +38,7 @@ public class Settings {
         }
         return property;
     }
-
+    
     public String getString(Setting setting) {
         String property = (String) config.get(setting.getString());
         if (property == null) {
@@ -68,13 +68,13 @@ public class Settings {
     }
 
     public int getMonsterValue(String mobname, String killer) {
-        String setting = "Value." + mobname + "." + killer;
+        String setting = "Points.Mobs." + mobname + "." + killer;
         if (config.get(setting) != null) {
             return config.getInt(setting, 1);
         } else if (globals.get(setting) != null) {
             return globals.getInt(setting, 1);
         } else {
-            setting = "Value." + mobname + ".General";
+            setting = "Points.Mobs." + mobname + ".General";
             if (config.get(setting) != null) {
                 return config.getInt(setting, 1);
             } else if (globals.get(setting) != null) {
@@ -84,18 +84,6 @@ public class Settings {
             }
         }
     }
-    
-    public double getEquipmentValue(String eqName) {
-    	String setting = "Equipment." + eqName;
-    	if(config.get(setting) != null){
-    		return config.getDouble(setting);
-    	} else if (globals.get(setting) != null){
-    		return globals.getDouble(setting);
-    	}
-    	else {
-    		return 0;
-    	}
-	}
     
     public String getKillMessage(String cause) {
         String setting = "Messages.KillMessage" + cause;
