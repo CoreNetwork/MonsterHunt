@@ -243,6 +243,10 @@ public class InputOutput {
         Settings.globals.set("Rewards.MinimumPointsPlace3", 1);
         Settings.globals.set("Rewards.RewardParametersPlace3", "3 1");
         
+        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace1", "1st place: <Names> (<Points> points) [NEWLINE]");
+        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace2", "2nd place: <Names> (<Points> points) [NEWLINE]");
+        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace3", "3rd place: <Names> (<Points> points)");
+        
         try {
             Settings.globals.save(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.yml"));
         } catch (IOException e) {

@@ -30,7 +30,7 @@ public class RewardManager {
             Util.Broadcast(message);
             return;
         }
-        int num = world.settings.getInt(Setting.NumberOfWinners);
+        int numberOfWinners = world.settings.getInt(Setting.NumberOfWinners);
 
         int score = Winners[0].get(Winners[0].keySet().toArray()[0]);
         if (score < world.settings.getPlaceInt(Setting.MinimumPointsPlace, 1)) {
@@ -49,7 +49,7 @@ public class RewardManager {
         Util.Debug("EnabledReward="+enableReward);
         //Normal reward
         if (enableReward) {
-            for (int place = 0; place < num; place++) {
+            for (int place = 0; place < numberOfWinners; place++) {
                 Util.Debug("Checking place "+place);
                 if (Winners[place].size() < 1)
                     continue;
@@ -101,26 +101,25 @@ public class RewardManager {
         Util.Debug("[MonterHunt][DEBUG - NEVEREND]Broadcasting Winners");
         String message;
 
-        message = world.settings.getString(Setting.FinishMessageWinners);
+        message = world.settings.getString(Setting.FinishMessageWinnersHeader);
         message = message.replace("<World>", world.name);
 
-        for (int place = 0; place < num; place++) {
+        for (int place = 0; place < numberOfWinners; place++) {
             String players = "";
-            if (Winners[place].size() < 1) {
-                players = "Nobody";
-                score = 0;
-            } else {
+            String placeMessage = world.settings.getPlaceString(Setting.WinnerMessagePlace, place + 1);
+            if (Winners[place].size() > 0 && placeMessage != null) {
                 score = Winners[place].get(Winners[place].keySet().toArray()[0]);
                 for (String i : Winners[place].keySet()) {
                     players += i + ", ";
                 }
                 players = players.substring(0, players.length() - 2);
+                
+                placeMessage = placeMessage.replace("<Names>", players);
+                placeMessage = placeMessage.replace("<Points>", String.valueOf(score));
+                message = message + placeMessage;
             }
-
-            message = message.replace("<NamesPlace" + String.valueOf(place + 1) + ">", players);
-            message = message.replace("<PointsPlace" + String.valueOf(place + 1) + ">", String.valueOf(score));
-
         }
+        message = message +  world.settings.getString(Setting.FinishMessageWinnersFooter);
         Util.Broadcast(message);
     }
 

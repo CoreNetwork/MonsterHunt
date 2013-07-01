@@ -58,7 +58,9 @@ public enum Setting {
     
  
     StartMessage("Messages.StartMessage", "&2Monster Hunt have started in world <World>! Go kill those damn mobs!"),
-    FinishMessageWinners("Messages.FinishMessageWinners", "Sun is rising, so monster Hunt is finished in world <World>! Winners of the today's match are: [NEWLINE] 1st place: <NamesPlace1> (<PointsPlace1> points) [NEWLINE] 2nd place: <NamesPlace2> (<PointsPlace2> points) [NEWLINE] 3rd place: <NamesPlace3> (<PointsPlace3> points)"),
+    FinishMessageWinnersHeader("Messages.FinishMessageWinners.Header", "Sun is rising, so monster Hunt is finished in world <World>! Winners of the today's match are: [NEWLINE] "),
+    WinnerMessagePlace("Messages.FinishMessageWinners.WinnerPlace","",false),
+    FinishMessageWinnersFooter("Messages.FinishMessageWinners.Footer", "Congratulations!"),
     KillMessageGeneral("Messages.KillMessageGeneral", "You got <MobValue> points from killing that <MobName>. You have <Points> points so far. Keep it up!"),
     KillMessageWolf("Messages.KillMessageWolf", "You got <MobValue> points because your wolf killed <MobName>. You have <Points> points so far. Keep it up!"),
     KillMessageArrow("Messages.KillMessageArrow", "You got only <MobValue> points because you used bow when killing <MobName>. You have <Points> points so far. Keep it up!"),
