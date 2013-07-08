@@ -116,16 +116,21 @@ public class MonsterHuntListener implements Listener {
                 score = score - (score * world.settings.getInt(Setting.DeathPenalty) / 100.00);
                 world.Score.put(player.getName(), (int) Math.round(score));
                 Util.Message(world.settings.getString(Setting.DeathMessage), player);
+                if(world.settings.getBoolean(Setting.ScoreboardEnabled))
+                {
+                	world.refreshScoreboards();
+                }
             }
-        }
-        if (!HuntZone.isInsideZone(event.getEntity().getLocation())) {
-            return;
-        }
-        if (event.getEntity() == null || !(event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent  ||  event.getEntity().getLastDamageCause().getCause().equals(DamageCause.FIRE_TICK))) {
-            return;
         }
         MonsterHuntWorld world = HuntWorldManager.getWorld(event.getEntity().getWorld().getName());
         if (world == null || world.getWorld() == null || world.state < 2) {
+            return;
+        }
+        
+        if (!HuntZone.isInsideZone(event.getEntity().getLocation())) {
+            return;
+        }
+        if (event.getEntity() == null || (event.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent == false && event.getEntity().getLastDamageCause().getCause().equals(DamageCause.FIRE_TICK) == false)) {
             return;
         }
         kill((LivingEntity) event.getEntity(), world);
@@ -356,7 +361,6 @@ public class MonsterHuntListener implements Listener {
 	            message = message.replace("<Points>", String.valueOf(newscore));
 	            Util.Message(message, player);
             }
-            
             if(world.settings.getBoolean(Setting.ScoreboardEnabled))
             {
             	world.refreshScoreboards();

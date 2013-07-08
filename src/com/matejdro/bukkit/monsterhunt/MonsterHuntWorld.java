@@ -101,11 +101,13 @@ public class MonsterHuntWorld {
 	
     private void refreshScoreboardPoitns()
     {
+    	
     	for(String playerName : Score.keySet())	
 		{
 			OfflinePlayer offlinePlayer = MonsterHunt.instance.getServer().getOfflinePlayer(playerName);
 			if(offlinePlayer != null)
 			{
+				scoreboard.resetScores(offlinePlayer);
 				if (Score.get(playerName) != 0)
 				{
 					objective.getScore(offlinePlayer).setScore(Score.get(playerName));

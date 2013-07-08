@@ -162,9 +162,9 @@ public class InputOutput {
                 Log.severe("Unable to create plugins/MontsterHunt/ directory");
             }
         }
+        
         Settings.globals = new YamlConfiguration();
 
-        //loading default settings, adding if anything is missing
         LoadDefaults();
 
         //loading world specific settings 
@@ -174,6 +174,7 @@ public class InputOutput {
             HuntWorldManager.worlds.put(n, mw);
         }
 
+        //loading the zone
         String[] temp = Settings.globals.getString("HuntZone.FirstCorner", "0,0,0").split(",");
         HuntZone.corner1 = new Location(null, Double.parseDouble(temp[0]), Double.parseDouble(temp[1]), Double.parseDouble(temp[2]));
         temp = Settings.globals.getString("HuntZone.SecondCorner", "0,0,0").split(",");
@@ -199,6 +200,7 @@ public class InputOutput {
     public static void LoadDefaults() {
         try {
             Settings.globals.load(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.yml"));
+            return;
         } catch (FileNotFoundException e1) {
             Log.info("Global config file missing. Creating one from scratch.");
         } catch (IOException e1) {
@@ -236,16 +238,19 @@ public class InputOutput {
                 Settings.globals.set(s.getString(), s.getDefault());
         }
         
-        Settings.globals.set("Rewards.MinimumPointsPlace1", 1);
-        Settings.globals.set("Rewards.RewardParametersPlace1", "3 3");
-        Settings.globals.set("Rewards.MinimumPointsPlace2", 1);
-        Settings.globals.set("Rewards.RewardParametersPlace2", "3 2");
-        Settings.globals.set("Rewards.MinimumPointsPlace3", 1);
-        Settings.globals.set("Rewards.RewardParametersPlace3", "3 1");
-        
-        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace1", "1st place: <Names> (<Points> points) [NEWLINE]");
-        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace2", "2nd place: <Names> (<Points> points) [NEWLINE]");
-        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace3", "3rd place: <Names> (<Points> points)");
+        if (!new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.yml").exists()) 
+        {
+	        Settings.globals.set("Rewards.MinimumPointsPlace1", 1);
+	        Settings.globals.set("Rewards.RewardParametersPlace1", "3 3");
+	        Settings.globals.set("Rewards.MinimumPointsPlace2", 1);
+	        Settings.globals.set("Rewards.RewardParametersPlace2", "3 2");
+	        Settings.globals.set("Rewards.MinimumPointsPlace3", 1);
+	        Settings.globals.set("Rewards.RewardParametersPlace3", "3 1");
+	        
+	        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace1", "1st place: <Names> (<Points> points) [NEWLINE]");
+	        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace2", "2nd place: <Names> (<Points> points) [NEWLINE]");
+	        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace3", "3rd place: <Names> (<Points> points)");
+	    }
         
         try {
             Settings.globals.save(new File("plugins" + File.separator + "MonsterHunt" + File.separator, "global.yml"));
@@ -269,39 +274,12 @@ public class InputOutput {
 
     public static void ReloadSettings()
     {
-    	LoadDefaults();
-    	Collection<MonsterHuntWorld> loadedWorlds = HuntWorldManager.getWorlds();
-    	String[] arr = Settings.globals.getString("EnabledWorlds").split(",");
-    	List<String> newEnabledWorlds = new ArrayList<String>(); 
-    	Collections.addAll(newEnabledWorlds, arr); 
-    	List<MonsterHuntWorld> toRemoval = new ArrayList<MonsterHuntWorld>();
-    	//If the world was enabled before, and is enabled now, reload settings normally
-    	//if it was enabled, but is not anymore, stop hunt and schedule it for removal
-    	for(MonsterHuntWorld mw : loadedWorlds)
+    	for(MonsterHuntWorld mw : HuntWorldManager.getWorlds())
     	{
-    		if(newEnabledWorlds.contains(mw.name))
-    		{
-        		mw.settings = LoadWorldSettings(mw.name);
-        		newEnabledWorlds.remove(mw.name);
-    		}
-    		else
-    		{
-    			mw.stop();
-    			toRemoval.add(mw);
-    		}
+			mw.stop();
     	}
-    	//Remove disabled worlds
-    	for(MonsterHuntWorld mw : toRemoval)
-    	{
-    		HuntWorldManager.worlds.remove(mw.name);
-    	}
-    	//Add newly enabled worlds
-    	for(String name : newEnabledWorlds)
-    	{
-    		MonsterHuntWorld mw = new MonsterHuntWorld(name);
-            mw.settings = LoadWorldSettings(name);
-            HuntWorldManager.worlds.put(name, mw);
-    	}
+    	HuntWorldManager.worlds.clear();
+    	LoadSettings();
     }
     
     public static void PrepareDB() {
