@@ -102,16 +102,15 @@ public class MonsterHuntListener implements Listener {
 
     @EventHandler()
     public void onEntityDeath(EntityDeathEvent event) {
+    	
+    	MonsterHuntWorld world = HuntWorldManager.getWorld(event.getEntity().getWorld().getName());
+        if (world == null || world.getWorld() == null || world.state < 2) {
+            return;
+        }
+    	
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            MonsterHuntWorld world = HuntWorldManager.getWorld(player.getWorld().getName());
-            if (world == null || world.getWorld() == null) {
-                return;
-            }
-            if (world.settings.getInt(Setting.DeathPenalty) == 0) {
-                return;
-            }
-            if (world.state > 1 && world.Score.containsKey(player.getName())) {
+            if (world.settings.getInt(Setting.DeathPenalty) != 0 && world.Score.containsKey(player.getName())) {
                 double score = world.Score.get(player.getName()) + 0.00;
                 score = score - (score * world.settings.getInt(Setting.DeathPenalty) / 100.00);
                 world.Score.put(player.getName(), (int) Math.round(score));
@@ -122,10 +121,7 @@ public class MonsterHuntListener implements Listener {
                 }
             }
         }
-        MonsterHuntWorld world = HuntWorldManager.getWorld(event.getEntity().getWorld().getName());
-        if (world == null || world.getWorld() == null || world.state < 2) {
-            return;
-        }
+        
         
         if (!HuntZone.isInsideZone(event.getEntity().getLocation())) {
             return;
@@ -382,7 +378,7 @@ public class MonsterHuntListener implements Listener {
 		ItemStack leggings = eq.getLeggings();
 		ItemStack boots = eq.getBoots();
 		ItemStack weapon = eq.getItemInHand();
-		
+
 		int leatherPoints = world.settings.getInt(Setting.EqLeather);
 		int goldPoints = world.settings.getInt(Setting.EqGold);
 		int ironPoints = world.settings.getInt(Setting.EqIron);
@@ -396,7 +392,7 @@ public class MonsterHuntListener implements Listener {
 		int enchantedBowPoints = world.settings.getInt(Setting.EqEnchBow);
 		
 		//Helmet
-		if(helmet != null)
+		if(helmet != null && eq.getHelmetDropChance() < 1)
 		{
 			Material helmetType = helmet.getType();
 			if(helmetType.equals(Material.LEATHER_HELMET))
@@ -415,7 +411,7 @@ public class MonsterHuntListener implements Listener {
 		}
 		
 		//Chestplate
-		if(chestplate != null)
+		if(chestplate != null && eq.getChestplateDropChance() < 1)
 		{
 			Material chestplateType = chestplate.getType();
 			if(chestplateType.equals(Material.LEATHER_CHESTPLATE))
@@ -434,7 +430,7 @@ public class MonsterHuntListener implements Listener {
 		}
 				
 		//Leggings
-		if(leggings != null)
+		if(leggings != null && eq.getLeggingsDropChance() < 1)
 		{
 			Material leggingsType = leggings.getType();
 			if(leggingsType.equals(Material.LEATHER_LEGGINGS))
@@ -453,7 +449,7 @@ public class MonsterHuntListener implements Listener {
 		}
 		
 		//Boots
-		if(boots != null)
+		if(boots != null && eq.getBootsDropChance() < 1)
 		{
 			Material bootsType = boots.getType();
 			if(bootsType.equals(Material.LEATHER_BOOTS))
@@ -472,7 +468,7 @@ public class MonsterHuntListener implements Listener {
 		}
 		
 		//Weapon
-		if(weapon != null)
+		if(weapon != null && eq.getItemInHandDropChance() < 1)
 		{
 			Material weaponType = weapon.getType();
 			if(weaponType.equals(Material.IRON_SPADE) || weaponType.equals(Material.WOOD_SPADE) || weaponType.equals(Material.GOLD_SPADE) ||weaponType.equals(Material.DIAMOND_SPADE) || weaponType.equals(Material.STONE_SPADE))

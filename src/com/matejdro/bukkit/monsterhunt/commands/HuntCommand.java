@@ -17,9 +17,34 @@ public class HuntCommand implements CommandExecutor {
             sender.sendMessage("Sorry, but you need to execute this command as player.");
             return true;
         }
-        MonsterHuntWorld world = HuntWorldManager.getWorld(((Player) sender).getWorld().getName());
+        
+    	String worldName = "";
+        MonsterHuntWorld world = null;
+        
+        if (args.length == 0)
+        {
+        	if (HuntWorldManager.getWorlds().size() == 1) 
+        	{
+                for (MonsterHuntWorld w : HuntWorldManager.getWorlds())
+                	worldName = w.name;
+        	}
+        	else
+        	{
+        		worldName = ((Player) sender).getWorld().getName();
+        	}
+        }
+        else if (args.length == 1)
+        {
+        	worldName = args[0];
+        }
+        
+        world = HuntWorldManager.getWorld(worldName);
+        
         if (world == null || world.getWorld() == null)
+        {
+    		Util.Message("There is no such world!", sender);
             return true;
+    	}
         if (world.Score.containsKey(((Player) sender).getName())) {
             Util.Message(world.settings.getString(Setting.MessageAlreadySignedUp), sender);
             return true;
