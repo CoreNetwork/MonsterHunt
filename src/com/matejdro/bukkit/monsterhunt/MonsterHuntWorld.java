@@ -16,6 +16,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Ghast;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.MagmaCube;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Player;
@@ -23,6 +24,7 @@ import org.bukkit.entity.Skeleton;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Zombie;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -195,7 +197,13 @@ public class MonsterHuntWorld {
     							, Blaze.class, CaveSpider.class, MagmaCube.class, PigZombie.class};
         	Collection<Entity> mobs = MonsterHunt.instance.getServer().getWorld(name).getEntitiesByClasses(classes);
         	for(Entity e : mobs)
-        		e.remove();
+        	{
+        		LivingEntity le = (LivingEntity)e;
+        		EntityEquipment eq = le.getEquipment();
+        		if(le.getCustomName() == null && eq.getBootsDropChance() < 1 && eq.getChestplateDropChance() < 1 && eq.getLeggingsDropChance() < 1 && eq.getHelmetDropChance() < 1 && eq.getItemInHandDropChance() < 1)
+        			e.remove();
+        		
+        	}
         }	
     }
 }
