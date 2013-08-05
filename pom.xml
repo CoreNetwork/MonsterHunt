@@ -4,9 +4,9 @@
   <groupId>org.kitteh</groupId>
   <artifactId>monsterhunt</artifactId>
   <packaging>jar</packaging>
-  <version>1.5.7-SNAPSHOT</version>
+  <version>1.6.0</version>
   <name>MonsterHunt</name>
-  <url>https://github.com/computerxpds/MonsterHunt</url>
+  <url>https://github.com/MCNSA/MonsterHunt</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,12 +32,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.5.2-R0.2-SNAPSHOT</version>
+      <version>1.6.2-R0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>Vault</artifactId>
-      <version>1.2.26-SNAPSHOT</version>
+      <version>1.2.27</version>
     </dependency>
   </dependencies>
 

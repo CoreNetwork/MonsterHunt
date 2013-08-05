@@ -35,7 +35,7 @@ public class HuntWorldManager {
                         return;
                     long time = world.getWorld().getTime();
 
-                    if (world.state == 0 && time < world.settings.getInt(Setting.EndTime) && time > world.getSignUpPeriodTime() && world.getSignUpPeriodTime() > 0 && !world.manual && !world.waitday) {
+                    if (world.state == 0 && time < world.settings.getInt(Setting.StartTime) && time > world.getSignUpPeriodTime() && world.getSignUpPeriodTime() > 0 && !world.manual && !world.waitday) {
                         if (world.canStart()) {
                             world.state = 1;
                             String message = world.settings.getString(Setting.MessageSignUpPeriod);
