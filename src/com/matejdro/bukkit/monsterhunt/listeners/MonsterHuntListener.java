@@ -1,5 +1,6 @@
 package com.matejdro.bukkit.monsterhunt.listeners;
 
+import java.util.Collection;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
@@ -49,6 +50,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
 
 import com.matejdro.bukkit.monsterhunt.HuntWorldManager;
 import com.matejdro.bukkit.monsterhunt.HuntZone;
@@ -310,6 +312,8 @@ public class MonsterHuntListener implements Listener {
 
         points += pointsForEquipment(monster, world);
         
+        points = applyEffectPenalty(points, player.getActivePotionEffects(), world);
+        
         if (!world.Score.containsKey(player.getName()) && !world.settings.getBoolean(Setting.EnableSignup)) {
             world.Score.put(player.getName(), 0);
         }
@@ -364,7 +368,32 @@ public class MonsterHuntListener implements Listener {
         }
     }
 
-    private int pointsForEquipment(LivingEntity monster, MonsterHuntWorld world) {
+    private int applyEffectPenalty(int points, Collection<PotionEffect> potionEffects, MonsterHuntWorld world) {
+		int newPoints = points;
+		
+		for (PotionEffect potionEffect : potionEffects) {
+			String name = potionEffect.getType().getName();
+			int level = potionEffect.getAmplifier() + 1;
+			String penalty = world.settings.getEffectPenalty(name, level);
+			if (penalty.charAt(penalty.length() - 1) == '%')
+			{
+				newPoints -= Math.round(points * Integer.parseInt(penalty.substring(0, penalty.length() -1)) / 100 );
+			}
+			else
+			{
+				newPoints -= Integer.parseInt(penalty);
+			}
+		}
+		
+		if (newPoints < 0)
+		{
+			newPoints = 0;
+		}
+		
+		return newPoints;
+	}
+
+	private int pointsForEquipment(LivingEntity monster, MonsterHuntWorld world) {
     	int equipmentPoints = 0;
 		
 

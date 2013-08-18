@@ -14,6 +14,18 @@ public enum Setting {
 	EqEnchShovel("Points.Equipment.EnchantedShovel", 1),
 	EqEnchBow("Points.Equipment.EnchantedBow", 2),
 	
+	PenaltyStrength1("Points.EffectPenalty.Strength1", "50%"),
+	PenaltyStrength2("Points.EffectPenalty.Strength2", "75%"),
+	PenaltySpeed1("Points.EffectPenalty.Speed1", 5),
+	PenaltySpeed2("Points.EffectPenalty.Speed2", 10),
+	PenaltyJump1("Points.EffectPenalty.Jump1", "10%"),
+	PenaltyJump2("Points.EffectPenalty.Jump2", "20%"),
+	PenaltyRegeneration("Points.EffectPenalty.Regeneration1", 4),
+	PenaltyResistance1("Points.EffectPenalty.Resistance1", 1),
+	PenaltyResistance2("Points.EffectPenalty.Resistance2", "20%"),
+	PenaltyFireResistance("Points.EffectPenalty.FireResistance1", "30%"),
+	
+	  
 	EnableReward("Rewards.EnableReward", true),
     NumberOfWinners("Rewards.NumberOfWinners", 3),
     EnableRewardEveryonePermission("Rewards.EnableRewardEveryonePermission", false),
