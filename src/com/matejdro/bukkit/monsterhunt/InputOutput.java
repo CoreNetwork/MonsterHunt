@@ -246,6 +246,20 @@ public class InputOutput {
 	        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace1", "1st place: <Names> (<Points> points) [NEWLINE]");
 	        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace2", "2nd place: <Names> (<Points> points) [NEWLINE]");
 	        Settings.globals.set("Messages.FinishMessageWinners.WinnerPlace3", "3rd place: <Names> (<Points> points)");
+	        
+	        
+	        Settings.globals.set("Points.EffectPenalty.increase_damage_1", "0%");
+	        Settings.globals.set("Points.EffectPenalty.increase_damage_1", "0%");
+	        Settings.globals.set("Points.EffectPenalty.increase_damage_2", "0%");
+	        Settings.globals.set("Points.EffectPenalty.speed_1", 0);
+	        Settings.globals.set("Points.EffectPenalty.speed_2", 0);
+	        Settings.globals.set("Points.EffectPenalty.jump_1", "0%");
+	        Settings.globals.set("Points.EffectPenalty.jump_2", "0%");
+	        Settings.globals.set("Points.EffectPenalty.regeneration_1", 0);
+	        Settings.globals.set("Points.EffectPenalty.damage_resistance_1", 0);
+	        Settings.globals.set("Points.EffectPenalty.damage_resistance_2", "0%");
+	        Settings.globals.set("Points.EffectPenalty.fire_resistance_1", "0%");
+	    	
 	    }
         
         try {

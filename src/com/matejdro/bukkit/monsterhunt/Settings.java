@@ -7,24 +7,11 @@ import java.util.Map;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.potion.PotionEffectType;
 
 public class Settings {
     public static YamlConfiguration globals;
 
     private YamlConfiguration config;
-
-    private Map<String,String> potionEffectsMap = new HashMap<String, String>()
-    		{
-    		    {
-    		        put("INCREASE_DAMAGE", "Strength");
-    		        put("SPEED", "Speed");
-    		        put("JUMP", "Jump");
-    		        put("REGENERATION", "Regeneration");
-    		        put("DAMAGE_RESISTANCE", "Resistance");
-    		        put("FIRE_RESISTANCE", "FireResistance");
-    		    }
-    		};
     
     public Settings(File file) {
         if(file.exists())
@@ -101,8 +88,7 @@ public class Settings {
     
     public String getEffectPenalty(String effect, int level)
     {
-    	String potionAlias = potionEffectsMap.get(effect);
-    	String setting = "Points.EffectPenalty." + potionAlias+level;
+    	String setting = "Points.EffectPenalty." + effect.toLowerCase()+"_"+level;
     	Util.Debug(setting);
     	if (config.get(setting) != null) {
     		return config.getString(setting);
