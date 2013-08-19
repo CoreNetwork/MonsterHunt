@@ -65,6 +65,8 @@ public enum Setting {
     KillMessageWolf("Messages.KillMessageWolf", "You got <MobValue> points because your wolf killed <MobName>. You have <Points> points so far. Keep it up!"),
     KillMessageArrow("Messages.KillMessageArrow", "You got only <MobValue> points because you used bow when killing <MobName>. You have <Points> points so far. Keep it up!"),
     KillMessageSnowball("Messages.KillMessageSnowball", "You got <MobValue> points for killing <MobName> with a snowball!. You have <Points> points so far. Keep it up!"),
+    KillMobUnderPotionNoPoints("Messages.KillMobUnderPotionNoPoints", "&cThis kill was without honor. Hunt without Beacon or potions!"),
+    KillMobUnderPotionSomePoints("Messages.KillMobUnderPotionSomePoints", "&cThis kill had little honor. Hunt without Beacon or potions!"),
     RewardMessage("Messages.RewardMessage", "Congratulations! You have received <Items>"),
     DeathMessage("Messages.DeathMessage", "You have died, so your Monster Hunt score is reduced by 30%. Be more careful next time!"),
     SignUpBeforeHuntMessage("Messages.SignupBeforeHuntMessage", "You have signed up for the next hunt in world <World>!"),

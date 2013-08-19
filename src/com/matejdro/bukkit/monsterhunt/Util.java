@@ -1,6 +1,8 @@
 package com.matejdro.bukkit.monsterhunt;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
@@ -9,6 +11,8 @@ import org.bukkit.entity.Player;
 
 public class Util {
 
+	private static Map<String, Long> lastSpamMessage = new HashMap<String, Long>();
+	private static final int SPAM_MESSAGE_INTERVAL = 5000;
     public static void Message(String message, CommandSender sender) {
         if (sender instanceof Player) {
             Message(message, (Player) sender);
@@ -24,6 +28,16 @@ public class Util {
         for(String line : lines) {
             player.sendMessage(line);
         }
+    }
+    
+    public static void SpamMessage(String message, Player player)
+    {
+    	Long lastMessageTime = lastSpamMessage.get(player.getName());
+    	if(lastMessageTime == null || System.currentTimeMillis() - lastMessageTime > SPAM_MESSAGE_INTERVAL)
+    	{
+    		Message(message, player);
+    		lastSpamMessage.put(player.getName(), System.currentTimeMillis());
+    	}
     }
     
     /**

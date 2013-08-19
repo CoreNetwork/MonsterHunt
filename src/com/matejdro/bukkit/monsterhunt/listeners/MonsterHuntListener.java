@@ -359,6 +359,18 @@ public class MonsterHuntListener implements Listener {
 	            message = message.replace("<MobName>", name);
 	            message = message.replace("<Points>", String.valueOf(newscore));
 	            Util.Message(message, player);
+	            
+	            if (effectPenaltyPoints != 0)
+	            {
+	            	if (points == 0)
+	            	{
+	            		Util.SpamMessage(world.settings.getString(Setting.KillMobUnderPotionNoPoints), player);
+	            	}
+	            	else
+	            	{
+	            		Util.SpamMessage(world.settings.getString(Setting.KillMobUnderPotionSomePoints), player);
+	            	}
+	            }
             }
             if(world.settings.getBoolean(Setting.ScoreboardEnabled))
             {
