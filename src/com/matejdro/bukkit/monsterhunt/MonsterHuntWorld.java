@@ -3,6 +3,7 @@ package com.matejdro.bukkit.monsterhunt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -39,10 +40,11 @@ public class MonsterHuntWorld {
     public long lastAnnounceTime;
     
     public HashMap<String, Integer> Score = new HashMap<String, Integer>();
+    public List<String> kickedPlayers = new ArrayList<String>();
     public HashMap<String, Integer> lastScore = new HashMap<String, Integer>();
     public ArrayList<Integer> properlyspawned = new ArrayList<Integer>();
     public HashMap<Player, Location> tplocations = new HashMap<Player, Location>();
-
+    
     private static final String OBJECTIVE_NAME = "HuntScore";
 	private static final String OBJECTIVE_DISPLAY_NAME = "The Hunt";
     private Scoreboard scoreboard;
@@ -71,6 +73,37 @@ public class MonsterHuntWorld {
         return time;
     }
     
+    public boolean isKicked(String name)
+    {
+    	return kickedPlayers.contains(name);
+    }
+    
+    public boolean isBanned(String name)
+    {
+    	return HuntWorldManager.bannedPlayers.contains(name);
+    }
+    
+    public void signUp(String name, int points)
+    {
+    	Score.put(name, points);
+    }
+    
+    public void signUp(String name)
+    {
+    	signUp(name, 0);
+    }
+    
+    public void kick(String name)
+    {
+    	Score.remove(name);
+    	kickedPlayers.add(name);
+    	refreshScoreboardPoints();
+    	clearScoreboard(name);
+    }
+    public void unkick(String name) 
+    {
+		kickedPlayers.remove(name);
+	}
     public void start() {
         String message = settings.getString(Setting.StartMessage);
         message = message.replace("<World>", name);
@@ -92,16 +125,20 @@ public class MonsterHuntWorld {
 	}
 	public void refreshScoreboards()
 	{
-		refreshScoreboardPoitns();
-		setScoreboardToAllPlayers(scoreboard);
+		refreshScoreboardPoints();
+		setScoreboards(scoreboard);
 	}
 
+	private void clearScoreboard(String playerName)
+	{
+		setScoreboard(playerName, Bukkit.getScoreboardManager().getNewScoreboard());
+	}
     private void clearScoreboards()
     {
-    	setScoreboardToAllPlayers(Bukkit.getScoreboardManager().getNewScoreboard());
+    	setScoreboards(Bukkit.getScoreboardManager().getNewScoreboard());
     }
 	
-    private void refreshScoreboardPoitns()
+    private void refreshScoreboardPoints()
     {
     	
     	for(String playerName : Score.keySet())	
@@ -118,7 +155,7 @@ public class MonsterHuntWorld {
  		}
     }
     
-    private void setScoreboardToAllPlayers(Scoreboard scoreboard)
+    private void setScoreboards(Scoreboard scoreboard)
     {
     	for(String playerName : Score.keySet())	
 		{
@@ -128,6 +165,15 @@ public class MonsterHuntWorld {
 				player.setScoreboard(scoreboard);
 			}
  		}
+    }
+    
+    private void setScoreboard(String playerName, Scoreboard scoreboard)
+    {
+    	Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
+		if(player != null)
+		{
+			player.setScoreboard(scoreboard);
+		}
     }
 
     public void stop() {
@@ -167,6 +213,7 @@ public class MonsterHuntWorld {
         lastScore.putAll(Score);
         clearScoreboards();
         Score.clear();
+        kickedPlayers.clear();
         properlyspawned.clear();
     }
 
@@ -206,4 +253,6 @@ public class MonsterHuntWorld {
         	}
         }	
     }
+
+	
 }

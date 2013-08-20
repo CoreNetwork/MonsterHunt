@@ -2,7 +2,7 @@ name: MonsterHunt
 main: com.matejdro.bukkit.monsterhunt.MonsterHunt
 version: '${project.version}'
 website: http://dev.bukkit.org/server-mods/monsterhunt/
-authors: [mbaxter, matejdro, angelofdev]
+authors: [eliadil, mbaxter, matejdro, angelofdev]
 softdepend: [Vault]
 commands:
     hunt:
@@ -29,6 +29,15 @@ commands:
     huntreload:
         description: Reload config(s).
         permission: monsterhunt.admincmd.huntreload
+    huntkick:
+        description: Kick player from active hunt.
+        permission: monsterhunt.admincmd.huntkick
+    huntban:
+        description: Ban player from the hunt.
+        permission: monsterhunt.admincmd.huntban
+    huntunban:
+        description: Unbans player from the hunt.
+        permission: monsterhunt.admincmd.huntunban
 permissions:
     monsterhunt.*:
         children:
@@ -42,6 +51,9 @@ permissions:
             monsterhunt.admincmd.huntstop: true
             monsterhunt.admincmd.huntzone: true
             monsterhunt.admincmd.huntreload: true
+            monsterhunt.admincmd.huntkick: true
+            monsterhunt.admincmd.huntban: true
+            monsterhunt.admincmd.huntunban: true
     monsterhunt.usercmd.*:
         children:
             monsterhunt.usercmd.hunt: true
@@ -55,6 +67,12 @@ permissions:
     monsterhunt.admincmd.huntzone:
         default: op
     monsterhunt.admincmd.huntreload:
+        default: op
+    monsterhunt.admincmd.huntkick:
+        default: op
+    monsterhunt.admincmd.huntban:
+        default: op
+    monsterhunt.admincmd.huntunban:
         default: op
     monsterhunt.usercmd.hunt:
         default: true

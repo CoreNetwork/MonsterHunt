@@ -50,8 +50,25 @@ public class HuntCommand implements CommandExecutor {
             return true;
         }
 
+        String playerName = ((Player) sender).getName();
         if (world.state < 2) {
-            if (world.settings.getBoolean(Setting.AnnounceSignUp)) {
+        	
+        	if (world.isBanned(playerName))
+        	{
+        		String message = world.settings.getString(Setting.BannedPlayerSignUp);
+        		Util.Message(message, sender);
+        		return true;
+        	}
+        	if (world.isKicked(playerName))
+        	{
+        		String message = world.settings.getString(Setting.KickedPlayerSignUp);
+        		Util.Message(message, sender);
+        		return true;
+        	}
+        	
+            world.signUp(playerName);
+        	
+        	if (world.settings.getBoolean(Setting.AnnounceSignUp)) {
                 String message = world.settings.getString(Setting.SignUpAnnouncement);
                 message = message.replace("<World>", world.name);
                 message = message.replace("<Player>", ((Player) sender).getName());
@@ -62,10 +79,24 @@ public class HuntCommand implements CommandExecutor {
                 Util.Message(message, sender);
             }
 
-            world.Score.put(((Player) sender).getName(), 0);
-
         } else if (world.state == 2 && (world.getSignUpPeriodTime() == 0 || world.settings.getBoolean(Setting.AllowSignUpAfterStart))) {
-            if (world.settings.getBoolean(Setting.AnnounceSignUp)) {
+        	
+        	if (world.isKicked(playerName))
+        	{
+        		String message = world.settings.getString(Setting.KickedPlayerSignUp);
+        		Util.Message(message, sender);
+        		return true;
+        	}
+        	if (world.isBanned(playerName))
+        	{
+        		String message = world.settings.getString(Setting.BannedPlayerSignUp);
+        		Util.Message(message, sender);
+        		return true;
+        	}
+        	
+        	 world.signUp(playerName);
+        	
+        	if (world.settings.getBoolean(Setting.AnnounceSignUp)) {
                 String message = world.settings.getString(Setting.SignUpAnnouncement);
                 message = message.replace("<World>", world.name);
                 message = message.replace("<Player>", ((Player) sender).getName());
@@ -74,9 +105,7 @@ public class HuntCommand implements CommandExecutor {
                 String message = world.settings.getString(Setting.SignUpAfterHuntMessage);
                 message = message.replace("<World>", world.name);
                 Util.Message(message, sender);
-            }
-
-            world.Score.put(((Player) sender).getName(), 0);
+            }            
         } else {
             Util.Message(world.settings.getString(Setting.MessageTooLateSignUp), sender);
         }

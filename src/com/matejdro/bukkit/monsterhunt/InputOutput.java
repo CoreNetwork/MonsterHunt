@@ -183,9 +183,62 @@ public class InputOutput {
         MonsterHuntWorld mw = new MonsterHuntWorld(world.getName());
         mw.settings = LoadWorldSettings("zone");
 
+        
         HuntWorldManager.HuntZoneWorld = mw;
     }
+    public static void LoadBans()
+    {
+    	Connection conn = getConnection();
+        PreparedStatement ps = null;
+        ResultSet set = null;
+        
+        try {
+            ps = conn.prepareStatement("SELECT name FROM monsterhunt_bans");
+            set = ps.executeQuery();
+
+            while (set.next()) {
+                String name = set.getString("name");
+                HuntWorldManager.bannedPlayers.add(name);
+            }
+            set.close();
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            Log.severe("Error while retreiving banned players! - " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     
+    public static void banPlayer(String playerName, String reason) 
+    {
+    	try {
+            Connection conn = InputOutput.getConnection();
+            PreparedStatement ps = conn.prepareStatement("REPLACE INTO monsterhunt_bans VALUES (?,?)");
+            ps.setString(1, playerName);
+            ps.setString(2, reason);
+            ps.executeUpdate();
+            conn.commit();
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            Log.severe("Error while inserting new ban into DB! - " + e.getMessage());
+            e.printStackTrace();
+        }
+	}
+    public static void unbanPlayer(String playerName) {
+    	try {
+            Connection conn = InputOutput.getConnection();
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM monsterhunt_bans WHERE NAME = ?");
+            ps.setString(1, playerName);
+            ps.executeUpdate();
+            conn.commit();
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            Log.severe("Error while ban from DB! - " + e.getMessage());
+            e.printStackTrace();
+        }
+	}
     //Loads setting from file for given worldName.
     //In effect, if there is not a specified file for this world, returns global settings
     private static Settings LoadWorldSettings(String worldName)
@@ -300,12 +353,18 @@ public class InputOutput {
             st = conn.createStatement();
             if (Settings.globals.getBoolean("Database.UseMySQL", false)) {
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS `monsterhunt_highscores` ( `name` varchar(250) NOT NULL DEFAULT '', `highscore` integer DEFAULT NULL, PRIMARY KEY (`name`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+                st.executeUpdate("CREATE TABLE IF NOT EXISTS `monsterhunt_bans` ( `name` varchar(250) NOT NULL DEFAULT '',`reason` varchar(250), PRIMARY KEY (`name`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
             } else {
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS \"monsterhunt_highscores\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL , \"highscore\" INTEGER)");
+                st.executeUpdate("CREATE TABLE IF NOT EXISTS \"monsterhunt_bans\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL, \"reason\" VARCHAR)");
             }
             conn.commit();
         } catch (SQLException e) {
             Log.severe("Error while creating tables! - " + e.getMessage());
         }
     }
+
+	
+
+	
 }

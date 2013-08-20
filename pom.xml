@@ -4,7 +4,7 @@
   <groupId>org.kitteh</groupId>
   <artifactId>monsterhunt</artifactId>
   <packaging>jar</packaging>
-  <version>1.6.0</version>
+  <version>1.7.0</version>
   <name>MonsterHunt</name>
   <url>https://github.com/MCNSA/MonsterHunt</url>
 

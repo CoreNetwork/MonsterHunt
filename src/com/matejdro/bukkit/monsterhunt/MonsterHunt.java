@@ -7,13 +7,16 @@ import javax.swing.Timer;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.matejdro.bukkit.monsterhunt.commands.HuntBanCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntKickCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntScoreCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStartCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStatusCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStopCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntTeleCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntUnbanCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntZoneCommand;
 import com.matejdro.bukkit.monsterhunt.listeners.MonsterHuntListener;
 
@@ -41,7 +44,8 @@ public class MonsterHunt extends JavaPlugin {
 
         InputOutput.LoadSettings();
         InputOutput.PrepareDB();
-
+        InputOutput.LoadBans();
+        
         getServer().getPluginManager().registerEvents(entityListener, this);
 
         this.getCommand("hunt").setExecutor(new HuntCommand());
@@ -52,6 +56,9 @@ public class MonsterHunt extends JavaPlugin {
         this.getCommand("huntzone").setExecutor(new HuntZoneCommand());
         this.getCommand("hunttele").setExecutor(new HuntTeleCommand());
         this.getCommand("huntreload").setExecutor(new HuntReloadCommand());
+        this.getCommand("huntkick").setExecutor(new HuntKickCommand());
+        this.getCommand("huntban").setExecutor(new HuntBanCommand());
+        this.getCommand("huntunban").setExecutor(new HuntUnbanCommand());
         HuntWorldManager.timer();
 
     }

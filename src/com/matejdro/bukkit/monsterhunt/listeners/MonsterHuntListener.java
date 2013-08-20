@@ -314,7 +314,10 @@ public class MonsterHuntListener implements Listener {
         points -= effectPenaltyPoints;
         
         if (!world.Score.containsKey(player.getName()) && !world.settings.getBoolean(Setting.EnableSignup)) {
-            world.Score.put(player.getName(), 0);
+        	if (!world.isBanned(player.getName()) && !world.isKicked(player.getName()))
+    		{
+    			world.signUp(player.getName());
+    		}
         }
         if (world.Score.containsKey(player.getName())) {
             int newscore = world.Score.get(player.getName()) + points;
