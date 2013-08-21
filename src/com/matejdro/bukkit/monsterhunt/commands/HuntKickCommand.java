@@ -28,7 +28,7 @@ public class HuntKickCommand implements CommandExecutor
 			for(MonsterHuntWorld world : HuntWorldManager.getWorlds())
 			{
 				world.kick(player.getName());
-				String message = world.settings.getString(Setting.AnnounceKick).replace("<PlayerName>",  player.getName());
+				String message = world.worldSettings.getString(Setting.AnnounceKick).replace("<PlayerName>",  player.getName());
 	        	Util.Broadcast(message);
 			}
         }
@@ -50,7 +50,7 @@ public class HuntKickCommand implements CommandExecutor
 	        else
 	        {
 	        	world.kick(player.getName());
-				String message = world.settings.getString(Setting.AnnounceKick).replace("<PlayerName>", player.getName());
+				String message = world.worldSettings.getString(Setting.AnnounceKick).replace("<PlayerName>", player.getName());
 	        	Util.Broadcast(message);
 	        }
 		}

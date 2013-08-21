@@ -36,7 +36,10 @@ public class MonsterHuntWorld {
     public boolean waitday;
     public int curday;
     public boolean nextnight;
-    public Settings settings;
+    public Settings worldSettings;
+    
+    public List<HuntSpecification> huntList = new ArrayList<HuntSpecification>();
+    public HuntSpecification activeHuntSpecification;
     public long lastAnnounceTime;
     
     public HashMap<String, Integer> Score = new HashMap<String, Integer>();
@@ -46,7 +49,6 @@ public class MonsterHuntWorld {
     public HashMap<Player, Location> tplocations = new HashMap<Player, Location>();
     
     private static final String OBJECTIVE_NAME = "HuntScore";
-	private static final String OBJECTIVE_DISPLAY_NAME = "The Hunt";
     private Scoreboard scoreboard;
     private Objective objective ;
     public MonsterHuntWorld(String w) {
@@ -56,15 +58,15 @@ public class MonsterHuntWorld {
         curday = 0;
         name = w;
     }
-
+    
     public World getWorld() {
         return MonsterHunt.instance.getServer().getWorld(name);
     }
 
     public int getSignUpPeriodTime() {
-        int time = settings.getInt(Setting.SignUpPeriodTime);
+        int time = worldSettings.getInt(Setting.SignUpPeriodTime);
         if (time != 0) {
-            time = settings.getInt(Setting.StartTime) - settings.getInt(Setting.SignUpPeriodTime) * 1200;
+            time = worldSettings.getInt(Setting.StartTime) - worldSettings.getInt(Setting.SignUpPeriodTime) * 1200;
             if (time < 0) {
                 Log.warning("Wrong SignUpPeriodTime Configuration! Sign Up period will be disabled!");
                 time = 0;
@@ -105,8 +107,9 @@ public class MonsterHuntWorld {
 		kickedPlayers.remove(name);
 	}
     public void start() {
-        String message = settings.getString(Setting.StartMessage);
+        String message = worldSettings.getString(Setting.StartMessage);
         message = message.replace("<World>", name);
+        message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
         Util.Broadcast(message);
         state = 2;
         waitday = true;
@@ -120,7 +123,7 @@ public class MonsterHuntWorld {
     {
     	scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         objective = scoreboard.registerNewObjective(OBJECTIVE_NAME, "");
-        objective.setDisplayName(OBJECTIVE_DISPLAY_NAME);
+        objective.setDisplayName(activeHuntSpecification.getDisplayName());
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 	}
 	public void refreshScoreboards()
@@ -140,7 +143,6 @@ public class MonsterHuntWorld {
 	
     private void refreshScoreboardPoints()
     {
-    	
     	for(String playerName : Score.keySet())	
 		{
 			OfflinePlayer offlinePlayer = MonsterHunt.instance.getServer().getOfflinePlayer(playerName);
@@ -180,8 +182,9 @@ public class MonsterHuntWorld {
         if (state < 2) {
             return;
         }
-        if (Score.size() < settings.getInt(Setting.MinimumPlayers)) {
-            String message = settings.getString(Setting.FinishMessageNotEnoughPlayers);
+        if (Score.size() < worldSettings.getInt(Setting.MinimumPlayers)) {
+            String message = worldSettings.getString(Setting.FinishMessageNotEnoughPlayers);
+            message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
             message = message.replace("<World>", name);
             Util.Broadcast(message);
         } else {
@@ -204,7 +207,7 @@ public class MonsterHuntWorld {
                 InputOutput.UpdateHighScore(i, score);
                 Player player = MonsterHunt.instance.getServer().getPlayer(i);
                 if (player != null) {
-                    String message = settings.getString(Setting.HighScoreMessage);
+                    String message = worldSettings.getString(Setting.HighScoreMessage);
                     message = message.replace("<Points>", String.valueOf(score));
                     Util.Message(message, player);
                 }
@@ -215,18 +218,45 @@ public class MonsterHuntWorld {
         Score.clear();
         kickedPlayers.clear();
         properlyspawned.clear();
+        randomizeHunt();
     }
+    
+	public void randomizeHunt()
+	{
+		int weightSum = 0;
+		for(HuntSpecification hs : huntList)
+			weightSum += hs.getChance();
+		
+		Random r = new Random();
+		int roll = r.nextInt(weightSum);
+		
+		int sum = 0;
+    	boolean found = false;
+    	int i = 0;
+    	while(!found && i < huntList.size())
+    	{
+    		HuntSpecification hs = huntList.get(i);
+    		sum += hs.getChance();
+    		if (roll < sum)
+    		{
+    			found = true;
+    			worldSettings = hs.getSettings();
+    			activeHuntSpecification = hs;
+    		}
+    		i++;
+    	}
+	}
 
     public void skipNight() {
-        if (settings.getInt(Setting.SkipToIfFailsToStart) >= 0) {
-            getWorld().setTime(settings.getInt(Setting.SkipToIfFailsToStart));
+        if (worldSettings.getInt(Setting.SkipToIfFailsToStart) >= 0) {
+            getWorld().setTime(worldSettings.getInt(Setting.SkipToIfFailsToStart));
         }
     }
-
+    
     public boolean canStart() {
         if (curday == 0) {
-            curday = settings.getInt(Setting.SkipDays);
-            if ((new Random().nextInt(100)) < settings.getInt(Setting.StartChance)) {
+            curday = worldSettings.getInt(Setting.SkipDays);
+            if ((new Random().nextInt(100)) < worldSettings.getInt(Setting.StartChance)) {
                 return true;
             }
         } else {
@@ -237,7 +267,7 @@ public class MonsterHuntWorld {
     
     public void removeHostileMobs()
     {
-    	if(settings.getBoolean(Setting.PurgeAllHostileMobsOnStart))
+    	if(worldSettings.getBoolean(Setting.PurgeAllHostileMobsOnStart))
         {
     		@SuppressWarnings("rawtypes")
 			Class[] classes = {Creeper.class, Skeleton.class,Zombie.class, Spider.class, Enderman.class, Ghast.class, Slime.class
@@ -253,6 +283,7 @@ public class MonsterHuntWorld {
         	}
         }	
     }
+
 
 	
 }

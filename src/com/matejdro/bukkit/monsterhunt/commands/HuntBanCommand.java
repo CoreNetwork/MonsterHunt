@@ -33,7 +33,7 @@ public class HuntBanCommand implements CommandExecutor {
 				HuntWorldManager.bannedPlayers.add(player.getName().toLowerCase());
 				InputOutput.banPlayer(player.getName().toLowerCase(), reason);
 				
-				String message = Settings.globals.getString(Setting.AnnounceBan.getString());
+				String message = Settings.globals.config.getString(Setting.AnnounceBan.getString());
 				message = message.replace("<PlayerName>", player.getName());
 				message = message.replace("<Reason>", reason);
 	        	Util.Broadcast(message);

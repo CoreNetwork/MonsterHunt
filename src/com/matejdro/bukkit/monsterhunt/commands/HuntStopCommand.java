@@ -13,7 +13,7 @@ import com.matejdro.bukkit.monsterhunt.Util;
 public class HuntStopCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
-        if (args.length < 1 && Settings.globals.getBoolean(Setting.HuntZoneMode.getString(), false)) {
+        if (args.length < 1 && Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false)) {
             args = new String[] { "something" };
         } else if (args.length < 1) {
             Util.Message("Usage: /huntstop [World Name]", sender);

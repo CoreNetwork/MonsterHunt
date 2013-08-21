@@ -24,6 +24,7 @@ public enum Setting {
     RewardParametersEveryone("Rewards.RewardParametersEveryone", "3 1-1"),
 	
     EnabledWorlds("EnabledWorlds", MonsterHunt.instance.getServer().getWorlds().get(0).getName()),
+    Hunts("Hunts", ""),
     MinimumPlayers("MinimumPlayers", 2),
     StartChance("StartChance", 100),
     SkipDays("SkipDays", 0),

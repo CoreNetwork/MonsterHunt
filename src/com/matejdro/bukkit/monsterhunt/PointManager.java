@@ -25,17 +25,17 @@ public class PointManager {
 		ItemStack boots = eq.getBoots();
 		ItemStack weapon = eq.getItemInHand();
 
-		int leatherPoints = world.settings.getInt(Setting.EqLeather);
-		int goldPoints = world.settings.getInt(Setting.EqGold);
-		int ironPoints = world.settings.getInt(Setting.EqIron);
-		int chainPoints = world.settings.getInt(Setting.EqChain);
-		int diamondPoints = world.settings.getInt(Setting.EqDiamond);
-		int shovelPoints = world.settings.getInt(Setting.EqShovel);
-		int swordPoints = world.settings.getInt(Setting.EqSword);
-		int enchantedArmorPoints = world.settings.getInt(Setting.EqEnchArmor);
-		int enchantedSwordPoints = world.settings.getInt(Setting.EqEnchSword);
-		int enchantedShovelPoints = world.settings.getInt(Setting.EqEnchShovel);
-		int enchantedBowPoints = world.settings.getInt(Setting.EqEnchBow);
+		int leatherPoints = world.worldSettings.getInt(Setting.EqLeather);
+		int goldPoints = world.worldSettings.getInt(Setting.EqGold);
+		int ironPoints = world.worldSettings.getInt(Setting.EqIron);
+		int chainPoints = world.worldSettings.getInt(Setting.EqChain);
+		int diamondPoints = world.worldSettings.getInt(Setting.EqDiamond);
+		int shovelPoints = world.worldSettings.getInt(Setting.EqShovel);
+		int swordPoints = world.worldSettings.getInt(Setting.EqSword);
+		int enchantedArmorPoints = world.worldSettings.getInt(Setting.EqEnchArmor);
+		int enchantedSwordPoints = world.worldSettings.getInt(Setting.EqEnchSword);
+		int enchantedShovelPoints = world.worldSettings.getInt(Setting.EqEnchShovel);
+		int enchantedBowPoints = world.worldSettings.getInt(Setting.EqEnchBow);
 		
 		//Helmet
 		if(helmet != null && eq.getHelmetDropChance() < 1)
@@ -145,7 +145,7 @@ public class PointManager {
 		for (PotionEffect potionEffect : potionEffects) {
 			String name = potionEffect.getType().getName();
 			int level = potionEffect.getAmplifier() + 1;
-			String penalty = world.settings.getEffectPenalty(name, level);
+			String penalty = world.worldSettings.getEffectPenalty(name, level);
 			if (penalty.charAt(penalty.length() - 1) == '%')
 			{
 				newPoints -= Math.round(points * Integer.parseInt(penalty.substring(0, penalty.length() -1)) / 100 );

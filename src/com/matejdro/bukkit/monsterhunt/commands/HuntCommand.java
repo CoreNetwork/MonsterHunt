@@ -46,7 +46,7 @@ public class HuntCommand implements CommandExecutor {
             return true;
     	}
         if (world.Score.containsKey(((Player) sender).getName())) {
-            Util.Message(world.settings.getString(Setting.MessageAlreadySignedUp), sender);
+            Util.Message(world.worldSettings.getString(Setting.MessageAlreadySignedUp), sender);
             return true;
         }
 
@@ -55,59 +55,59 @@ public class HuntCommand implements CommandExecutor {
         	
         	if (world.isBanned(playerName))
         	{
-        		String message = world.settings.getString(Setting.BannedPlayerSignUp);
+        		String message = world.worldSettings.getString(Setting.BannedPlayerSignUp);
         		Util.Message(message, sender);
         		return true;
         	}
         	if (world.isKicked(playerName))
         	{
-        		String message = world.settings.getString(Setting.KickedPlayerSignUp);
+        		String message = world.worldSettings.getString(Setting.KickedPlayerSignUp);
         		Util.Message(message, sender);
         		return true;
         	}
         	
             world.signUp(playerName);
         	
-        	if (world.settings.getBoolean(Setting.AnnounceSignUp)) {
-                String message = world.settings.getString(Setting.SignUpAnnouncement);
+        	if (world.worldSettings.getBoolean(Setting.AnnounceSignUp)) {
+                String message = world.worldSettings.getString(Setting.SignUpAnnouncement);
                 message = message.replace("<World>", world.name);
                 message = message.replace("<Player>", ((Player) sender).getName());
                 Util.Broadcast(message);
             } else {
-                String message = world.settings.getString(Setting.SignUpBeforeHuntMessage);
+                String message = world.worldSettings.getString(Setting.SignUpBeforeHuntMessage);
                 message = message.replace("<World>", world.name);
                 Util.Message(message, sender);
             }
 
-        } else if (world.state == 2 && (world.getSignUpPeriodTime() == 0 || world.settings.getBoolean(Setting.AllowSignUpAfterStart))) {
+        } else if (world.state == 2 && (world.getSignUpPeriodTime() == 0 || world.worldSettings.getBoolean(Setting.AllowSignUpAfterStart))) {
         	
         	if (world.isKicked(playerName))
         	{
-        		String message = world.settings.getString(Setting.KickedPlayerSignUp);
+        		String message = world.worldSettings.getString(Setting.KickedPlayerSignUp);
         		Util.Message(message, sender);
         		return true;
         	}
         	if (world.isBanned(playerName))
         	{
-        		String message = world.settings.getString(Setting.BannedPlayerSignUp);
+        		String message = world.worldSettings.getString(Setting.BannedPlayerSignUp);
         		Util.Message(message, sender);
         		return true;
         	}
         	
         	 world.signUp(playerName);
         	
-        	if (world.settings.getBoolean(Setting.AnnounceSignUp)) {
-                String message = world.settings.getString(Setting.SignUpAnnouncement);
+        	if (world.worldSettings.getBoolean(Setting.AnnounceSignUp)) {
+                String message = world.worldSettings.getString(Setting.SignUpAnnouncement);
                 message = message.replace("<World>", world.name);
                 message = message.replace("<Player>", ((Player) sender).getName());
                 Util.Broadcast(message);
             } else {
-                String message = world.settings.getString(Setting.SignUpAfterHuntMessage);
+                String message = world.worldSettings.getString(Setting.SignUpAfterHuntMessage);
                 message = message.replace("<World>", world.name);
                 Util.Message(message, sender);
             }            
         } else {
-            Util.Message(world.settings.getString(Setting.MessageTooLateSignUp), sender);
+            Util.Message(world.worldSettings.getString(Setting.MessageTooLateSignUp), sender);
         }
         return true;
     }

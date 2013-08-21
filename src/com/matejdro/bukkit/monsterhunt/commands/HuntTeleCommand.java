@@ -21,16 +21,16 @@ public class HuntTeleCommand implements CommandExecutor {
         }
         Player player = (Player) sender;
         MonsterHuntWorld world = HuntWorldManager.getWorld(player.getWorld().getName());
-        if (!Settings.globals.getBoolean(Setting.HuntZoneMode.getString(), false) || world == null || world.getWorld() == null)
+        if (!Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false) || world == null || world.getWorld() == null)
             return false;
 
         boolean permission = !sender.hasPermission("monsterhunt.noteleportrestrictions");
 
         if (world.state == 0 && permission) {
-            Util.Message(world.settings.getString(Setting.MessageHuntTeleNoHunt), player);
+            Util.Message(world.worldSettings.getString(Setting.MessageHuntTeleNoHunt), player);
             return true;
-        } else if (world.Score.containsKey(player.getName()) && world.settings.getBoolean(Setting.EnableSignup) && permission) {
-            Util.Message(world.settings.getString(Setting.MessageHuntTeleNotSignedUp), player);
+        } else if (world.Score.containsKey(player.getName()) && world.worldSettings.getBoolean(Setting.EnableSignup) && permission) {
+            Util.Message(world.worldSettings.getString(Setting.MessageHuntTeleNotSignedUp), player);
             return true;
         }
 

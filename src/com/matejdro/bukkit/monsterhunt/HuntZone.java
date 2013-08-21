@@ -8,7 +8,7 @@ public class HuntZone {
     public static Location teleport;
 
     public static boolean isInsideZone(Location loc) {
-        if (!Settings.globals.getBoolean(Setting.HuntZoneMode.getString(), false)) {
+        if (!Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false)) {
             return true;
         }
 

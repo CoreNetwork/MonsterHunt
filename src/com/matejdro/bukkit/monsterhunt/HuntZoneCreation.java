@@ -14,8 +14,8 @@ public class HuntZoneCreation {
         if (players.containsKey(player.getName())) {
             players.remove(player.getName());
         }
-        if (!player.getInventory().contains(Settings.globals.getInt(Setting.SelectionTool.getString(), 268))) {
-            player.getInventory().addItem(new ItemStack(Settings.globals.getInt(Setting.SelectionTool.getString(), 268), 1));
+        if (!player.getInventory().contains(Settings.globals.config.getInt(Setting.SelectionTool.getString(), 268))) {
+            player.getInventory().addItem(new ItemStack(Settings.globals.config.getInt(Setting.SelectionTool.getString(), 268), 1));
         }
         Util.Message("§Hunt Zone Selection:", player);
         Util.Message("First, you must select hunt zone cuboid. Select first point of the cuboid by right clicking on the block with your wooden sword. DO NOT FORGET TO MARK FLOOR AND CEILING TOO!", player);
