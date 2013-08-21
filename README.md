@@ -27,7 +27,9 @@ Monster Hunt is an event happening at night. It uses natural monster spawning, c
 |`/huntstop [<world>]`|`monsterhunt.admincmd.huntstop`|Manually stop the hunt. Like with `/huntstart`, you have to provide world name if running it in more than one world.|
 |`/huntzone`|`monsterhunt.admincmd.huntzone`|Select border and teleport point for hunt zone (if you configured to use it instead world/worlds).|
 |`/huntreload`|`monsterhunt.admincmd.huntreload`|Reload configuration from the file. Harmless, it will only stop an ongoing hunt if you remove its world from config.|
-
+|`/huntkick <player> [<world>]`|`monsterhunt.admincmd.huntkick`|Kicks player from the hunt in all or specified word. If there is no hunt ongoing, player won't be able the next hunt.
+|`/huntban <player> [<reason>]`|`monsterhunt.admincmd.huntban`|Player won't be able to participate in any hunt.
+|`/huntunban <player>`|`monsterhunt.admincmd.huntunban`|
 ## Additional permission nodes
 
 * `monsterhunt.rewardeverytime` – always reward the owner regardless of their hunt score.
