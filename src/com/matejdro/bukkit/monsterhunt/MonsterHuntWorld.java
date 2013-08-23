@@ -29,6 +29,8 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+
+import us.corenetwork.core.scoreboard.CoreScoreboardManager;
 public class MonsterHuntWorld {
     public String name;
     public boolean manual;
@@ -134,11 +136,21 @@ public class MonsterHuntWorld {
 
 	private void clearScoreboard(String playerName)
 	{
-		setScoreboard(playerName, Bukkit.getScoreboardManager().getNewScoreboard());
+		Player player = Bukkit.getPlayerExact(playerName);
+		
+		if (player != null)
+			CoreScoreboardManager.unregisterScoreboard(player, 1);
 	}
     private void clearScoreboards()
     {
-    	setScoreboards(Bukkit.getScoreboardManager().getNewScoreboard());
+    	for(String playerName : Score.keySet())	
+		{
+			Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
+			if(player != null)
+			{
+				CoreScoreboardManager.unregisterScoreboard(player, 1);
+			}
+ 		}
     }
 	
     private void refreshScoreboardPoints()
@@ -164,7 +176,7 @@ public class MonsterHuntWorld {
 			Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
 			if(player != null)
 			{
-				player.setScoreboard(scoreboard);
+				CoreScoreboardManager.registerScoreboard(player, 1, scoreboard);
 			}
  		}
     }
@@ -174,7 +186,7 @@ public class MonsterHuntWorld {
     	Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
 		if(player != null)
 		{
-			player.setScoreboard(scoreboard);
+			CoreScoreboardManager.registerScoreboard(player, 1, scoreboard);
 		}
     }
 

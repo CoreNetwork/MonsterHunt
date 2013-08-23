@@ -3,6 +3,7 @@ main: com.matejdro.bukkit.monsterhunt.MonsterHunt
 version: '${project.version}'
 website: http://dev.bukkit.org/server-mods/monsterhunt/
 authors: [eliadil, mbaxter, matejdro, angelofdev]
+depend: [Core]
 softdepend: [Vault]
 commands:
     hunt:
