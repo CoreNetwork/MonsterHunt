@@ -170,7 +170,7 @@ public class Settings {
 	        {
 	        	String name = (String) huntSpecRaw.get("Name");
 	        	String displayName = (String) huntSpecRaw.get("DisplayName");
-	        	int chance = (int) huntSpecRaw.get("Chance");
+	        	int chance = (Integer) huntSpecRaw.get("Chance");
 	        	
 	        	String filename = (String) huntSpecRaw.get("Name");
 	        	Settings huntSettings;
