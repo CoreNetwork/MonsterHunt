@@ -139,7 +139,12 @@ public class MonsterHuntWorld {
 		Player player = Bukkit.getPlayerExact(playerName);
 		
 		if (player != null)
-			CoreScoreboardManager.unregisterScoreboard(player, 1);
+		{
+			if (MonsterHunt.coreInstalled)
+				CoreScoreboardManager.unregisterScoreboard(player, 1);
+			else
+				player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		}
 	}
     private void clearScoreboards()
     {
@@ -148,7 +153,10 @@ public class MonsterHuntWorld {
 			Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
 			if(player != null)
 			{
-				CoreScoreboardManager.unregisterScoreboard(player, 1);
+				if (MonsterHunt.coreInstalled)
+					CoreScoreboardManager.unregisterScoreboard(player, 1);
+				else
+					player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 			}
  		}
     }
@@ -176,7 +184,10 @@ public class MonsterHuntWorld {
 			Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
 			if(player != null)
 			{
-				CoreScoreboardManager.registerScoreboard(player, 1, scoreboard);
+				if (MonsterHunt.coreInstalled)
+					CoreScoreboardManager.registerScoreboard(player, 1, scoreboard);
+				else
+					player.setScoreboard(scoreboard);
 			}
  		}
     }
@@ -186,7 +197,10 @@ public class MonsterHuntWorld {
     	Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
 		if(player != null)
 		{
-			CoreScoreboardManager.registerScoreboard(player, 1, scoreboard);
+			if (MonsterHunt.coreInstalled)
+				CoreScoreboardManager.registerScoreboard(player, 1, scoreboard);
+			else
+				player.setScoreboard(scoreboard);
 		}
     }
 

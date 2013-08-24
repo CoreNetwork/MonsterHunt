@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import javax.swing.Timer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +25,8 @@ public class MonsterHunt extends JavaPlugin {
     public static Logger log = Logger.getLogger("Minecraft");
     private MonsterHuntListener entityListener;
     Timer timer;
+    
+    public static boolean coreInstalled = false;
 
     //public static HashMap<String,Integer> highscore = new HashMap<String,Integer>();
 
@@ -60,6 +63,8 @@ public class MonsterHunt extends JavaPlugin {
         this.getCommand("huntban").setExecutor(new HuntBanCommand());
         this.getCommand("huntunban").setExecutor(new HuntUnbanCommand());
         HuntWorldManager.timer();
+        
+        coreInstalled = Bukkit.getPluginManager().isPluginEnabled("Core");
 
     }
 
