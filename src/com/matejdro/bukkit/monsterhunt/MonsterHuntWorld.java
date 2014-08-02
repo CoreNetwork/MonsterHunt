@@ -57,7 +57,7 @@ public class MonsterHuntWorld {
         state = 0;
         waitday = false;
         manual = false;
-        curday = 0;
+        curday = worldSettings.getInt(Setting.SkipDays);;
         name = w;
     }
     
@@ -286,7 +286,7 @@ public class MonsterHuntWorld {
                 return true;
             }
         } else {
-            curday--;
+            curday--; 
         }
         return false;
     }
