@@ -85,8 +85,8 @@ public class RewardManager {
                 if (player == null)
                     continue;
                 
-                // don't reward "everyone" reward if they already won a top award
-                if( rewardedPlayers.contains(player.getName()) )
+                // don't reward "everyone" reward if they already won a top award, except if config allows so
+                if(!world.worldSettings.getBoolean(Setting.RewardEveryoneIncludesWinners) && rewardedPlayers.contains(player.getName()) )
                 	continue;
                 
                 RewardString = world.worldSettings.getString(Setting.RewardParametersEveryone);

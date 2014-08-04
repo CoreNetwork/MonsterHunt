@@ -18,6 +18,7 @@ public enum Setting {
     NumberOfWinners("Rewards.NumberOfWinners", 3),
     EnableRewardEveryonePermission("Rewards.EnableRewardEveryonePermission", false),
     RewardEveryone("Rewards.RewardEveryone", false),
+    RewardEveryoneIncludesWinners("Rewards.RewardEveryoneAlsoRewardsWinners", true),
     MinimumPointsPlace("Rewards.MinimumPointsPlace", "", false),
     RewardParametersPlace("Rewards.RewardParametersPlace", "", false),
     MinimumPointsEveryone("Rewards.MinimumPointsEveryone", 1),
