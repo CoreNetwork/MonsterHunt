@@ -1,5 +1,7 @@
 package com.matejdro.bukkit.monsterhunt;
 
+import java.util.ArrayList;
+
 public enum Setting {
 
 	EqLeather("Points.Equipment.Leather", 1),
@@ -14,21 +16,27 @@ public enum Setting {
 	EqEnchShovel("Points.Equipment.EnchantedShovel", 1),
 	EqEnchBow("Points.Equipment.EnchantedBow", 2),
 	  
-	EnableReward("Rewards.EnableReward", true),
+	EnableReward("Rewards.EnableRewards", true),
     NumberOfWinners("Rewards.NumberOfWinners", 3),
     EnableRewardEveryonePermission("Rewards.EnableRewardEveryonePermission", false),
-    RewardEveryone("Rewards.RewardEveryone", false),
-    RewardEveryoneIncludesWinners("Rewards.RewardEveryoneAlsoRewardsWinners", true),
-    MinimumPointsPlace("Rewards.MinimumPointsPlace", "", false),
-    RewardParametersPlace("Rewards.RewardParametersPlace", "", false),
-    MinimumPointsEveryone("Rewards.MinimumPointsEveryone", 1),
-    RewardParametersEveryone("Rewards.RewardParametersEveryone", "3 1-1"),
+    RewardEveryone("Rewards.RewardEveryone.Enabled", false),
+    RewardEveryoneIncludesWinners("Rewards.RewardEveryone.AlsoRewardWinners", true),
+    MinimumPointsEveryone("Rewards.RewardEveryone.MinimumPoints", 1),
+    RewardParametersEveryone("Rewards.RewardEveryone.RewardParameters", "3 1-1"),
+    RewardCommandsEveryone("Rewards.RewardEveryone.Commands", new ArrayList<String>()),
+
+    MinimumPointsPlace("MinimumPoints", "", false),
+    RewardParametersPlace("RewardParameters", "", false),
+    CommandsPlace("CommandsPlace", "", false),
+    
+	GiveRewardsImmediatelly("Rewards.GiveRewardImmediatelly", true),
 	
     EnabledWorlds("EnabledWorlds", MonsterHunt.instance.getServer().getWorlds().get(0).getName()),
     Hunts("Hunts", ""),
     MinimumPlayers("MinimumPlayers", 2),
     StartChance("StartChance", 100),
     SkipDays("SkipDays", 0),
+    HuntLimit("HuntLimit", -1),
     StartTime("StartTime", 13000),
     EndTime("EndTime", 23600),
     DeathPenalty("DeathPenalty", 30),
@@ -61,7 +69,7 @@ public enum Setting {
  
     StartMessage("Messages.StartMessage", "&2Monster Hunt have started in world <World>! Go kill those damn mobs!"),
     FinishMessageWinnersHeader("Messages.FinishMessageWinners.Header", "Sun is rising, so monster Hunt is finished in world <World>! Winners of the today's match are: [NEWLINE] "),
-    WinnerMessagePlace("Messages.FinishMessageWinners.WinnerPlace","",false),
+    WinnerMessagePlace("WinMessage","",false),
     FinishMessageWinnersFooter("Messages.FinishMessageWinners.Footer", "Congratulations!"),
     KillMessageGeneral("Messages.KillMessageGeneral", "You got <MobValue> points from killing that <MobName>. You have <Points> points so far. Keep it up!"),
     KillMessageWolf("Messages.KillMessageWolf", "You got <MobValue> points because your wolf killed <MobName>. You have <Points> points so far. Keep it up!"),
@@ -94,6 +102,7 @@ public enum Setting {
     MessageLead("Messages.MessageLead", "<Player> has just taken over lead with <Points> points!"),
     MessageHuntTeleNoHunt("Messages.MessageHuntTeleNoHunt", "You cannot teleport to hunt zone when there is no hunt!"),
     MessageHuntTeleNotSignedUp("Messages.MessageHuntTeleNotSignedUp", "You cannot teleport to hunt zone if you are not signed up to the hunt!"),
+    MessageNoRewardToClaim("Messages.NoRewardToClaim", "You don't have any rewards waiting to claim!"),
     SignUpAnnouncement("Messages.SignUpAnnouncement", "<Player> has signed up for the hunt in world <World>!"),
     
     UseMySQL("Database.UseMySQL", false),

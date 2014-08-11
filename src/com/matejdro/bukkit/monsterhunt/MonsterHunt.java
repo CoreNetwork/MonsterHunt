@@ -9,6 +9,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.matejdro.bukkit.monsterhunt.commands.HuntBanCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntClaimCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntKickCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
@@ -62,6 +63,8 @@ public class MonsterHunt extends JavaPlugin {
         this.getCommand("huntkick").setExecutor(new HuntKickCommand());
         this.getCommand("huntban").setExecutor(new HuntBanCommand());
         this.getCommand("huntunban").setExecutor(new HuntUnbanCommand());
+        this.getCommand("huntclaim").setExecutor(new HuntClaimCommand());
+
         HuntWorldManager.timer();
         
         coreInstalled = Bukkit.getPluginManager().isPluginEnabled("Core");

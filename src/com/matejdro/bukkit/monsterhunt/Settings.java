@@ -16,6 +16,7 @@ public class Settings {
 
 	public YamlConfiguration config;
 	private Settings parent;
+	private File file;
 
 	public static void loadGlobals(File file) throws FileNotFoundException, IOException, InvalidConfigurationException
 	{
@@ -25,6 +26,7 @@ public class Settings {
 
 	public Settings(File file, Settings parent)
 	{
+		this.file = file;
 		this.parent = parent;
 		config = new YamlConfiguration();
 		if (file.exists())
@@ -51,49 +53,58 @@ public class Settings {
 		this.config = config;
 	}
 
+	
+	public Object getObject(Setting setting)
+	{
+		Object result = getObject(setting.getString());
+		if (result == null)
+			return setting.getDefault();
+		
+		return result;
+	}
+	
+	public Object getObject(String path)
+	{		
+		if (config.contains(path))
+		{
+			return config.get(path);
+		}
+		else if (parent == null)
+		{
+			Log.warning("Missing config option: " + path);
+			return null;
+		}
+		else
+		{
+			return parent.getObject(path);
+		}
+	}
+		
 	public int getInt(Setting setting)
 	{
-		if (config.contains(setting.getString()))
-			return config.getInt(setting.getString());
-		else
-			return parent.getInt(setting);
+		return (Integer) getObject(setting);
 	}
 
 	public String getString(Setting setting)
 	{
-		String property = (String) config.get(setting.getString());
-		if (property == null)
-		{
-			property = parent.getString(setting);
-		}
-		return property;
+		return (String) getObject(setting);
 	}
 
 	public boolean getBoolean(Setting setting)
 	{
-		return config.getBoolean(setting.getString(), parent != null ? parent.getBoolean(setting) : false);
+		return (Boolean) getObject(setting);
 	}
 
 	public int getPlaceInt(Setting setting, int place)
 	{
-		Integer property = (Integer) config.get(setting.getString() + String.valueOf(place));
-		if (property == null)
-		{
-			property = parent.getPlaceInt(setting, place);
-		}
-		return property;
+		return (Integer) getObject("Rewards.Place" +  String.valueOf(place) + "." + setting.getString());
 	}
 
 	public String getPlaceString(Setting setting, int place)
 	{
-		String property = (String) config.get(setting.getString() + String.valueOf(place));
-		if (property == null)
-		{
-			property = parent.getPlaceString(setting, place);
-		}
-		return property;
+		return (String) getObject("Rewards.Place" +  String.valueOf(place) + "." + setting.getString());
 	}
-
+	
 	public int getMonsterValue(String mobname, String killer)
 	{
 		String setting = "Points.Mobs." + mobname + "." + killer;
@@ -157,6 +168,28 @@ public class Settings {
 		} 
 		else 
 			return null;
+	}
+	
+	public void setInt(Setting setting, int value)
+	{
+		config.set(setting.getString(), value);
+	}
+	
+	public void save()
+	{
+		File file = this.file;
+		
+		if (!file.exists())
+			file = parent.file;
+		
+		try
+		{
+			config.save(file);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	@SuppressWarnings("unchecked")

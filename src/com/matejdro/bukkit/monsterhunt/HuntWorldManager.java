@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+
 public class HuntWorldManager {
     public static MonsterHuntWorld HuntZoneWorld;
     public static HashMap<String, MonsterHuntWorld> worlds = new HashMap<String, MonsterHuntWorld>();
@@ -36,7 +38,7 @@ public class HuntWorldManager {
                     if (world == null || world.getWorld() == null)
                         return;
                     long time = world.getWorld().getTime();
-
+                    
                     if (world.state == 0 && time < world.worldSettings.getInt(Setting.StartTime) && time > world.getSignUpPeriodTime() && world.getSignUpPeriodTime() > 0 && !world.manual && !world.waitday) {
                         if (world.canStart()) {
                             world.state = 1;

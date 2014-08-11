@@ -57,7 +57,7 @@ public class MonsterHuntWorld {
         state = 0;
         waitday = false;
         manual = false;
-        curday = worldSettings.getInt(Setting.SkipDays);;
+        curday = 0;
         name = w;
     }
     
@@ -117,8 +117,19 @@ public class MonsterHuntWorld {
         waitday = true;
         removeHostileMobs();
         
+        updateLimit();
         generateScoreboard();
         refreshScoreboards(); 
+    }
+    
+    private void updateLimit()
+    {
+    	int curLimit = Settings.globals.getInt(Setting.HuntLimit); //Limit is global not per type
+    	if (curLimit < 0)
+    		return;
+    	
+    	Settings.globals.setInt(Setting.HuntLimit, curLimit - 1);
+    	Settings.globals.save();
     }
     
     private void generateScoreboard() 
@@ -283,7 +294,8 @@ public class MonsterHuntWorld {
         if (curday == 0) {
             curday = worldSettings.getInt(Setting.SkipDays);
             if ((new Random().nextInt(100)) < worldSettings.getInt(Setting.StartChance)) {
-                return true;
+                return worldSettings.getInt(Setting.HuntLimit) != 0; //Only start if limit is not 0 (can be -1 for no limit)
+              
             }
         } else {
             curday--; 

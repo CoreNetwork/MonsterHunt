@@ -38,6 +38,9 @@ commands:
     huntunban:
         description: Unbans player from the hunt.
         permission: monsterhunt.admincmd.huntunban
+    huntclaim:
+        description: Claim previous reward
+        permission: monsterhunt.usercmd.huntclaim
 permissions:
     monsterhunt.*:
         children:
