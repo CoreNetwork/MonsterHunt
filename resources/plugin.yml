@@ -6,41 +6,7 @@ authors: [eliadil, mbaxter, matejdro, angelofdev]
 softdepend: [Vault, Core]
 commands:
     hunt:
-        description: Sign up for the hunt.
-        permission: monsterhunt.usercmd.hunt
-    huntscore:
-        description: Check your current high score
-        permission: monsterhunt.usercmd.huntscore
-    huntstart:
-        description: Start hunt manually.
-        permission: monsterhunt.admincmd.huntstart
-    huntstatus:
-        description: Check the hunt status
-        permission: monsterhunt.usercmd.huntstatus
-    huntstop:
-        description: Stop hunt manually
-        permission: monsterhunt.admincmd.huntstop
-    hunttele:
-        description: Teleport to the hunt zone
-        permission: monsterhunt.usercmd.hunttele
-    huntzone:
-        description: Select hunt zone.
-        permission: monsterhunt.admincmd.huntzone
-    huntreload:
-        description: Reload config(s).
-        permission: monsterhunt.admincmd.huntreload
-    huntkick:
-        description: Kick player from active hunt.
-        permission: monsterhunt.admincmd.huntkick
-    huntban:
-        description: Ban player from the hunt.
-        permission: monsterhunt.admincmd.huntban
-    huntunban:
-        description: Unbans player from the hunt.
-        permission: monsterhunt.admincmd.huntunban
-    huntclaim:
-        description: Claim previous reward
-        permission: monsterhunt.usercmd.huntclaim
+        description: Base command.
 permissions:
     monsterhunt.*:
         children:

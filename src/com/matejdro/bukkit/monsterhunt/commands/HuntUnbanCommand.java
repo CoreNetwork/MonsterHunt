@@ -11,9 +11,17 @@ import com.matejdro.bukkit.monsterhunt.MonsterHunt;
 import com.matejdro.bukkit.monsterhunt.MonsterHuntWorld;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntUnbanCommand implements CommandExecutor {
+public class HuntUnbanCommand extends BaseMHCommand {
 
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+	public HuntUnbanCommand()
+	{
+		permission = "unban";
+		desc = "Unban player from the hunt";
+		needPlayer = false;
+	}
+
+
+	public void run(CommandSender sender, String[] args)
 	{
 		if (args.length == 1)
         {
@@ -38,7 +46,5 @@ public class HuntUnbanCommand implements CommandExecutor {
 		{
 			sender.sendMessage("Usage: /huntunban <player>");
 		}
-		
-		return true;
 	}
 }

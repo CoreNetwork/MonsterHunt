@@ -104,7 +104,8 @@ public enum Setting {
     MessageHuntTeleNotSignedUp("Messages.MessageHuntTeleNotSignedUp", "You cannot teleport to hunt zone if you are not signed up to the hunt!"),
     MessageNoRewardToClaim("Messages.NoRewardToClaim", "You don't have any rewards waiting to claim!"),
     SignUpAnnouncement("Messages.SignUpAnnouncement", "<Player> has signed up for the hunt in world <World>!"),
-    
+	MessageNoPermission("Messages.NoPermission", "No permission!"),
+
     UseMySQL("Database.UseMySQL", false),
     MySQLConn("Database.MySQLConn", "jdbc:mysql://localhost:3306/minecraft"),
     MySQLUsername("Database.MySQLUsername", "root"),

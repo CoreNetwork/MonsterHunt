@@ -11,13 +11,17 @@ import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Settings;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntStatusCommand implements CommandExecutor {
+public class HuntStatusCommand extends BaseMHCommand {
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Sorry, but you need to execute this command as player.");
-            return true;
-        }
+	public HuntStatusCommand()
+	{
+		permission = "status";
+		desc = "Check hunt status";
+		needPlayer = true;
+	}
+
+
+	public void run(CommandSender sender, String[] args){
         Player player = (Player) sender;
         boolean anyactive = false;
         String actives = "";
@@ -34,7 +38,7 @@ public class HuntStatusCommand implements CommandExecutor {
         }
         MonsterHuntWorld world = HuntWorldManager.getWorld(player.getWorld().getName());
         if (world == null || world.getWorld() == null)
-            return true;
+            return;
 
         if (world.state == 0) {
 
@@ -60,6 +64,5 @@ public class HuntStatusCommand implements CommandExecutor {
                 Util.Message(world.worldSettings.getString(Setting.MessageHuntStatusTimeReamining).replace("<Timeleft>", String.valueOf(curpercent)), player);
             }
         }
-        return true;
     }
 }

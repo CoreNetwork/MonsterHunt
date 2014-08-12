@@ -5,8 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,14 +14,18 @@ import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Settings;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntClaimCommand implements CommandExecutor {
+public class HuntClaimCommand extends BaseMHCommand {
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Sorry, but you need to execute this command as player.");
-            return true;
-        }
+    public HuntClaimCommand()
+	{
+		permission = "claim";
+		desc = "Claim your hunt rewards";
+		needPlayer = true;
+	}
 
+
+	public void run(CommandSender sender, String[] args)
+	{
         boolean anythingClaimed = false;
         Player player = (Player) sender;
         
@@ -53,7 +55,7 @@ public class HuntClaimCommand implements CommandExecutor {
         if (!anythingClaimed)
         {
         	Util.Message(Settings.globals.getString(Setting.MessageNoRewardToClaim), sender);
-        	return true;
+        	return;
         }
     
         try
@@ -70,7 +72,7 @@ public class HuntClaimCommand implements CommandExecutor {
         	e.printStackTrace();
         }
         
-        return true;
+        return;
     }
 
 }

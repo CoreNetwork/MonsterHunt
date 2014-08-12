@@ -20,7 +20,7 @@ public class Settings {
 
 	public static void loadGlobals(File file) throws FileNotFoundException, IOException, InvalidConfigurationException
 	{
-		globals = new Settings(new YamlConfiguration());
+		globals = new Settings(file, new YamlConfiguration());
 		globals.config.load(file);
 	}
 
@@ -48,9 +48,10 @@ public class Settings {
 		}
 	}
 
-	public Settings(YamlConfiguration config)
+	public Settings(File file, YamlConfiguration config)
 	{
 		this.config = config;
+		this.file = file;
 	}
 
 	
@@ -216,6 +217,22 @@ public class Settings {
 	        }
 		}
 		return hunts;
+	}
+	
+	public String getCommandDescription(String cmd, String type, String def)
+	{
+		String path = "CommandDescriptions." + type + "." + cmd;
+		
+		Object descO = config.get(path);
+		if (descO == null)
+		{
+			config.set(path, "&a/" + type + " " + cmd + " &8-&f " + def);
+			save();
+			descO = config.get(path);
+		}
+		
+		return (String) descO;
+		
 	}
 	
 }

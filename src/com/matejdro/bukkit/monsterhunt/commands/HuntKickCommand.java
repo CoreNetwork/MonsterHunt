@@ -1,7 +1,5 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,11 +9,17 @@ import com.matejdro.bukkit.monsterhunt.MonsterHuntWorld;
 import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntKickCommand implements CommandExecutor 
+public class HuntKickCommand extends BaseMHCommand 
 {
-	// /huntkick <player> [<world>]
-	
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+	public HuntKickCommand()
+	{
+		permission = "kick";
+		desc = "Kick player from the hunt";
+		needPlayer = false;
+	}
+
+
+	public void run(CommandSender sender, String[] args)
 	{
 		if (args.length == 1)
         {
@@ -23,7 +27,7 @@ public class HuntKickCommand implements CommandExecutor
 			if(player == null)
 			{
 				Util.Message("There is no player called " + args[0], sender);
-				return true;
+				return;
 			}
 			for(MonsterHuntWorld world : HuntWorldManager.getWorlds())
 			{
@@ -38,14 +42,14 @@ public class HuntKickCommand implements CommandExecutor
 			if(player == null)
 			{
 				Util.Message("There is no player called " + args[0], sender);
-				return true;
+				return;
 			}
 			
 			MonsterHuntWorld world = HuntWorldManager.getWorld(args[1]);
 	        if (world == null || world.getWorld() == null)
 	        {
 	    		Util.Message("There is no such world!", sender);
-	            return true;
+	            return;
 	    	}
 	        else
 	        {
@@ -59,7 +63,7 @@ public class HuntKickCommand implements CommandExecutor
 			sender.sendMessage("Usage: /huntkick <player> [<world>]");
 		}
 		
-		return true;
+		return;
 	}
 	
 

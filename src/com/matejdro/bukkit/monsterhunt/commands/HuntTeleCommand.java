@@ -1,7 +1,5 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,31 +10,34 @@ import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Settings;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntTeleCommand implements CommandExecutor {
+public class HuntTeleCommand extends BaseMHCommand {
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Sorry, but you need to execute this command as player.");
-            return true;
-        }
+	public HuntTeleCommand()
+	{
+		permission = "tele";
+		desc = "Teleport to hunt zone";
+		needPlayer = true;
+	}
+
+
+	public void run(CommandSender sender, String[] args){
         Player player = (Player) sender;
         MonsterHuntWorld world = HuntWorldManager.getWorld(player.getWorld().getName());
         if (!Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false) || world == null || world.getWorld() == null)
-            return false;
+            return;
 
         boolean permission = !sender.hasPermission("monsterhunt.noteleportrestrictions");
 
         if (world.state == 0 && permission) {
             Util.Message(world.worldSettings.getString(Setting.MessageHuntTeleNoHunt), player);
-            return true;
+            return;
         } else if (world.Score.containsKey(player.getName()) && world.worldSettings.getBoolean(Setting.EnableSignup) && permission) {
             Util.Message(world.worldSettings.getString(Setting.MessageHuntTeleNotSignedUp), player);
-            return true;
+            return;
         }
 
         world.tplocations.put(player, player.getLocation());
         player.teleport(HuntZone.teleport);
-        return true;
     }
 
 }

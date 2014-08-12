@@ -1,19 +1,25 @@
 package com.matejdro.bukkit.monsterhunt;
 
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.swing.Timer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.matejdro.bukkit.monsterhunt.commands.BaseMHCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntBanCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntClaimCommand;
-import com.matejdro.bukkit.monsterhunt.commands.HuntCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntHelpCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntKickCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntScoreCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntSignupCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStartCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStatusCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStopCommand;
@@ -22,7 +28,7 @@ import com.matejdro.bukkit.monsterhunt.commands.HuntUnbanCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntZoneCommand;
 import com.matejdro.bukkit.monsterhunt.listeners.MonsterHuntListener;
 
-public class MonsterHunt extends JavaPlugin {
+public class MonsterHunt extends JavaPlugin implements CommandExecutor {
     public static Logger log = Logger.getLogger("Minecraft");
     private MonsterHuntListener entityListener;
     Timer timer;
@@ -30,7 +36,8 @@ public class MonsterHunt extends JavaPlugin {
     public static boolean coreInstalled = false;
 
     //public static HashMap<String,Integer> highscore = new HashMap<String,Integer>();
-
+    public static HashMap<String, BaseMHCommand> commands = new HashMap<String, BaseMHCommand>();
+    
     public static MonsterHunt instance;
 
     @Override
@@ -52,18 +59,19 @@ public class MonsterHunt extends JavaPlugin {
         
         getServer().getPluginManager().registerEvents(entityListener, this);
 
-        this.getCommand("hunt").setExecutor(new HuntCommand());
-        this.getCommand("huntscore").setExecutor(new HuntScoreCommand());
-        this.getCommand("huntstart").setExecutor(new HuntStartCommand());
-        this.getCommand("huntstatus").setExecutor(new HuntStatusCommand());
-        this.getCommand("huntstop").setExecutor(new HuntStopCommand());
-        this.getCommand("huntzone").setExecutor(new HuntZoneCommand());
-        this.getCommand("hunttele").setExecutor(new HuntTeleCommand());
-        this.getCommand("huntreload").setExecutor(new HuntReloadCommand());
-        this.getCommand("huntkick").setExecutor(new HuntKickCommand());
-        this.getCommand("huntban").setExecutor(new HuntBanCommand());
-        this.getCommand("huntunban").setExecutor(new HuntUnbanCommand());
-        this.getCommand("huntclaim").setExecutor(new HuntClaimCommand());
+        commands.put("ban", new HuntBanCommand());
+        commands.put("claim", new HuntClaimCommand());
+        commands.put("help", new HuntHelpCommand());
+        commands.put("kick", new HuntKickCommand());
+        commands.put("reload", new HuntReloadCommand());
+        commands.put("score", new HuntScoreCommand());
+        commands.put("signup", new HuntSignupCommand());
+        commands.put("status", new HuntStatusCommand());
+        commands.put("stop", new HuntStopCommand());
+        commands.put("start", new HuntStartCommand());
+        commands.put("tele", new HuntTeleCommand());
+        commands.put("unban", new HuntUnbanCommand());
+        commands.put("zone", new HuntZoneCommand()); 
 
         HuntWorldManager.timer();
         
@@ -74,6 +82,19 @@ public class MonsterHunt extends JavaPlugin {
     private void initialize() {
         entityListener = new MonsterHuntListener();
         instance = this;
+    }
+    
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (args.length < 1)
+			return commands.get("signup").execute(sender, args);
+
+		BaseMHCommand cmd = commands.get(args[0]);
+		if (cmd != null)
+			return cmd.execute(sender, args);
+		else
+			return commands.get("help").execute(sender, args);
+
     }
 
 }

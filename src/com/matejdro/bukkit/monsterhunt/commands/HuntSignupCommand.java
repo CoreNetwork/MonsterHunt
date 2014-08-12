@@ -1,7 +1,5 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -10,14 +8,17 @@ import com.matejdro.bukkit.monsterhunt.MonsterHuntWorld;
 import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntCommand implements CommandExecutor {
+public class HuntSignupCommand extends BaseMHCommand {
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Sorry, but you need to execute this command as player.");
-            return true;
-        }
-        
+	public HuntSignupCommand()
+	{
+		permission = "signup";
+		desc = "Signup for hunt (you can also just use /hunt)";
+		needPlayer = true;
+	}
+
+
+	public void run(CommandSender sender, String[] args){        
     	String worldName = "";
         MonsterHuntWorld world = null;
         
@@ -43,11 +44,11 @@ public class HuntCommand implements CommandExecutor {
         if (world == null || world.getWorld() == null)
         {
     		Util.Message("There is no such world!", sender);
-            return true;
+            return;
     	}
         if (world.Score.containsKey(((Player) sender).getName())) {
             Util.Message(world.worldSettings.getString(Setting.MessageAlreadySignedUp), sender);
-            return true;
+            return;
         }
 
         String playerName = ((Player) sender).getName();
@@ -57,13 +58,13 @@ public class HuntCommand implements CommandExecutor {
         	{
         		String message = world.worldSettings.getString(Setting.BannedPlayerSignUp);
         		Util.Message(message, sender);
-        		return true;
+        		return;
         	}
         	if (world.isKicked(playerName))
         	{
         		String message = world.worldSettings.getString(Setting.KickedPlayerSignUp);
         		Util.Message(message, sender);
-        		return true;
+        		return;
         	}
         	
             world.signUp(playerName);
@@ -85,13 +86,13 @@ public class HuntCommand implements CommandExecutor {
         	{
         		String message = world.worldSettings.getString(Setting.KickedPlayerSignUp);
         		Util.Message(message, sender);
-        		return true;
+        		return;
         	}
         	if (world.isBanned(playerName))
         	{
         		String message = world.worldSettings.getString(Setting.BannedPlayerSignUp);
         		Util.Message(message, sender);
-        		return true;
+        		return;
         	}
         	
         	 world.signUp(playerName);
@@ -109,7 +110,6 @@ public class HuntCommand implements CommandExecutor {
         } else {
             Util.Message(world.worldSettings.getString(Setting.MessageTooLateSignUp), sender);
         }
-        return true;
     }
 
 }

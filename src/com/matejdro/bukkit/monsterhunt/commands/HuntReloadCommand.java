@@ -1,20 +1,23 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import com.matejdro.bukkit.monsterhunt.InputOutput;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntReloadCommand implements CommandExecutor {
+public class HuntReloadCommand extends BaseMHCommand {
+	
+	public HuntReloadCommand()
+	{
+		permission = "reload";
+		desc = "Reload hunt configuration";
+		needPlayer = false;
+	}
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String label, String[] args) {
+
+	public void run(CommandSender sender, String[] args) {
 		InputOutput.ReloadSettings();
 		Util.Message("Settings reloaded.", sender);
-		return true;
 	}
 
 }

@@ -1,7 +1,5 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,9 +11,17 @@ import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Settings;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntBanCommand implements CommandExecutor {
+public class HuntBanCommand extends BaseMHCommand {
 
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+	public HuntBanCommand()
+	{
+		permission = "ban";
+		desc = "Ban player from the hunt";
+		needPlayer = false;
+	}
+
+
+	public void run(CommandSender sender, String[] args)	
 	{
 		if (args.length == 1 || args.length == 2)
         {
@@ -47,7 +53,5 @@ public class HuntBanCommand implements CommandExecutor {
 		{
 			sender.sendMessage("Usage: /huntban <player> [<reason>]");
 		}
-		
-		return true;
 	}
 }

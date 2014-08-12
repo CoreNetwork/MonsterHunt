@@ -10,23 +10,30 @@ import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Settings;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntStopCommand implements CommandExecutor {
+public class HuntStopCommand extends BaseMHCommand {
 
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
+	public HuntStopCommand()
+	{
+		permission = "stop";
+		desc = "Stop hunt now";
+		needPlayer = false;
+	}
+
+
+	public void run(CommandSender sender, String[] args){
         if (args.length < 1 && Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false)) {
             args = new String[] { "something" };
         } else if (args.length < 1) {
             Util.Message("Usage: /huntstop [World Name]", sender);
-            return true;
+            return;
         } else if (HuntWorldManager.getWorld(args[0]) == null) {
             Util.Message("There is no such world!", sender);
-            return true;
+            return;
         }
         MonsterHuntWorld world = HuntWorldManager.getWorld(args[0]);
         world.stop();
         world.manual = false;
         world.waitday = true;
-        return true;
     }
 
 }
