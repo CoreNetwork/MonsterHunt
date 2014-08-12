@@ -385,10 +385,12 @@ public class InputOutput {
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS `monsterhunt_highscores` ( `name` varchar(250) NOT NULL DEFAULT '', `highscore` integer DEFAULT NULL, PRIMARY KEY (`name`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS `monsterhunt_bans` ( `name` varchar(250) NOT NULL DEFAULT '',`reason` varchar(250), PRIMARY KEY (`name`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS monsterhunt_RewardsToClaim (PlayerUUID VARCHAR(250) NOT NULL, HuntName VARCHAR(250), RewardType VARCHAR(250), Score INTEGER)");
+                st.executeUpdate("CREATE TABLE IF NOT EXISTS monsterhunt_BoughtHunts (UUID VARCHAR(250) PRIMARY KEY NOT NULL, Amount INTEGER)");
             } else {
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS \"monsterhunt_highscores\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL , \"highscore\" INTEGER)");
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS \"monsterhunt_bans\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL, \"reason\" VARCHAR)");
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS monsterhunt_RewardsToClaim (PlayerName VARCHAR NOT NULL, HuntName VARCHAR, RewardType VARCHAR, Score INTEGER)");
+                st.executeUpdate("CREATE TABLE IF NOT EXISTS monsterhunt_BoughtHunts (UUID VARCHAR PRIMARY KEY NOT NULL, Amount INTEGER)");
             }
             conn.commit();
         } catch (SQLException e) {

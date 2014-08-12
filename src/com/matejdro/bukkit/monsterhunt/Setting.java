@@ -105,6 +105,14 @@ public enum Setting {
     MessageNoRewardToClaim("Messages.NoRewardToClaim", "You don't have any rewards waiting to claim!"),
     SignUpAnnouncement("Messages.SignUpAnnouncement", "<Player> has signed up for the hunt in world <World>!"),
 	MessageNoPermission("Messages.NoPermission", "No permission!"),
+	MessageBoughtHunts("Messages.BoughtHunts", "You have successfully bought <Amount> hunt<PluralS>! Total hunts on your account: <TotalHunts>."),
+	MessageCheckHunts("Messages.CheckHunts", "You currently have <TotalHunts> hunt<PluralS> left to start."),
+	MessageCantScheduleHunt("Messages.CantScheduleHunt", "Sorry, you don't have any hunts bought to start."),
+	MessageHuntScheduled("Messages.HuntScheduled", "You just bought a hunt for entire server! It will start at next sunset in approximately <Time>."),
+	MessageHuntScheduledMultiple("Messages.HuntScheduledMultiple", "You just bought a hunt for entire server! There are still previous hunts left to start, so one you bought will start after <QueueLength> days in approximately <Time>."),
+	MessageHuntScheduledAnnouncement("Messages.HuntScheduledAnnouncement", "Player <Player> just bought a hunt for entire server! It will start at next sunset in approximately <Time>."),
+	MessageHuntScheduledMultipleAnnouncement("Messages.HuntScheduledAnnouncementMultiple", "Player <Player> just bought another hunt for entire server! That means server will enjoy hunts for next <QueueLength> nights!"),
+
 
     UseMySQL("Database.UseMySQL", false),
     MySQLConn("Database.MySQLConn", "jdbc:mysql://localhost:3306/minecraft"),

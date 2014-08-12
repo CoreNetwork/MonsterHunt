@@ -125,7 +125,7 @@ public class MonsterHuntWorld {
     private void updateLimit()
     {
     	int curLimit = Settings.globals.getInt(Setting.HuntLimit); //Limit is global not per type
-    	if (curLimit < 0)
+    	if (curLimit <= 0)
     		return;
     	
     	Settings.globals.setInt(Setting.HuntLimit, curLimit - 1);
@@ -294,7 +294,7 @@ public class MonsterHuntWorld {
         if (curday == 0) {
             curday = worldSettings.getInt(Setting.SkipDays);
             if ((new Random().nextInt(100)) < worldSettings.getInt(Setting.StartChance)) {
-                return worldSettings.getInt(Setting.HuntLimit) != 0; //Only start if limit is not 0 (can be -1 for no limit)
+                return Settings.globals.getInt(Setting.HuntLimit) != 0; //Only start if limit is not 0 (can be -1 for no limit)
               
             }
         } else {

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -77,6 +78,15 @@ public class Util {
             Message(message, i);
         }
     }
+    
+    public static void Broadcast(String message, String exclusion)
+	{
+		for (Player p : Bukkit.getOnlinePlayers())
+		{
+			if (!p.getName().equals(exclusion))
+				Util.Message(message, p);
+		}
+	}
 
     public static void BroadcastToParticipants(String message) {
     	for(MonsterHuntWorld mhw : HuntWorldManager.getWorlds()) {

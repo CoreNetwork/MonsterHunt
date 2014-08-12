@@ -14,10 +14,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.matejdro.bukkit.monsterhunt.commands.BaseMHCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntBanCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntBuyCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntCheckCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntClaimCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntHelpCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntKickCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntRunCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntScoreCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntSignupCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStartCommand;
@@ -72,6 +75,9 @@ public class MonsterHunt extends JavaPlugin implements CommandExecutor {
         commands.put("tele", new HuntTeleCommand());
         commands.put("unban", new HuntUnbanCommand());
         commands.put("zone", new HuntZoneCommand()); 
+        commands.put("buy", new HuntBuyCommand()); 
+        commands.put("check", new HuntCheckCommand()); 
+        commands.put("run", new HuntRunCommand()); 
 
         HuntWorldManager.timer();
         
