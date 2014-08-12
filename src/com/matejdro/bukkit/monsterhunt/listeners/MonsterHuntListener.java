@@ -46,6 +46,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.projectiles.ProjectileSource;
 
 import com.matejdro.bukkit.monsterhunt.HuntWorldManager;
 import com.matejdro.bukkit.monsterhunt.HuntZone;
@@ -151,7 +152,7 @@ public class MonsterHuntListener implements Listener {
                 } else {
                     cause = "Arrow";
                 }
-                LivingEntity shooter = ((Projectile) event.getDamager()).getShooter();
+                ProjectileSource shooter = ((Projectile) event.getDamager()).getShooter();
                 if (shooter instanceof Player) {
                     player = (Player) shooter;
                 }
