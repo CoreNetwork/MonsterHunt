@@ -24,7 +24,7 @@ public class HuntStopCommand extends BaseMHCommand {
         if (args.length < 1 && Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false)) {
             args = new String[] { "something" };
         } else if (args.length < 1) {
-            Util.Message("Usage: /huntstop [World Name]", sender);
+            Util.Message("Usage: /hunt stop [World Name]", sender);
             return;
         } else if (HuntWorldManager.getWorld(args[0]) == null) {
             Util.Message("There is no such world!", sender);

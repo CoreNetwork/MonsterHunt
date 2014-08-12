@@ -27,8 +27,7 @@ permissions:
             monsterhunt.command.status: true
             monsterhunt.command.tele: true
             monsterhunt.command.claim: true
-            monsterhunt.command.help: true
-            
+            monsterhunt.command.help: true           
     monsterhunt.usercmd.*:
         children:
     monsterhunt.admincmd.huntstart:

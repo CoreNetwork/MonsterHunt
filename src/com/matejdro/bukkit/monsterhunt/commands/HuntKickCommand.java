@@ -60,7 +60,7 @@ public class HuntKickCommand extends BaseMHCommand
 		}
 		else
 		{
-			sender.sendMessage("Usage: /huntkick <player> [<world>]");
+			sender.sendMessage("Usage: /hunt kick <player> [<world>]");
 		}
 		
 		return;

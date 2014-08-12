@@ -44,7 +44,7 @@ public class HuntUnbanCommand extends BaseMHCommand {
         }
 		else
 		{
-			sender.sendMessage("Usage: /huntunban <player>");
+			sender.sendMessage("Usage: /hunt unban <player>");
 		}
 	}
 }
