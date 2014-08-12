@@ -10,25 +10,27 @@ commands:
 permissions:
     monsterhunt.*:
         children:
-            monsterhunt.admincmd.*: true
-            monsterhunt.usercmd.*: true
+            monsterhunt.command.*: true
             monsterhunt.rewardeverytime: true
             monsterhunt.noteleportrestrictions: true
-    monsterhunt.admincmd.*:
+    monsterhunt.command.*:
         children:
-            monsterhunt.admincmd.huntstart: true
-            monsterhunt.admincmd.huntstop: true
-            monsterhunt.admincmd.huntzone: true
-            monsterhunt.admincmd.huntreload: true
-            monsterhunt.admincmd.huntkick: true
-            monsterhunt.admincmd.huntban: true
-            monsterhunt.admincmd.huntunban: true
+            monsterhunt.command.start: true
+            monsterhunt.command.stop: true
+            monsterhunt.command.zone: true
+            monsterhunt.command.reload: true
+            monsterhunt.command.kick: true
+            monsterhunt.command.ban: true
+            monsterhunt.command.unban: true
+            monsterhunt.command.signup: true
+            monsterhunt.command.score: true
+            monsterhunt.command.status: true
+            monsterhunt.command.tele: true
+            monsterhunt.command.claim: true
+            monsterhunt.command.help: true
+            
     monsterhunt.usercmd.*:
         children:
-            monsterhunt.usercmd.hunt: true
-            monsterhunt.usercmd.huntscore: true
-            monsterhunt.usercmd.huntstatus: true
-            monsterhunt.usercmd.hunttele: true
     monsterhunt.admincmd.huntstart:
         default: op
     monsterhunt.admincmd.huntstop:
