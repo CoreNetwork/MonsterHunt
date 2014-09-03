@@ -16,13 +16,14 @@ import com.matejdro.bukkit.monsterhunt.commands.BaseMHCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntBanCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntBuyCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntCheckCommand;
-import com.matejdro.bukkit.monsterhunt.commands.HuntRewardCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntHelpCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntJoinCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntKickCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntLeaveCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntRewardCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntRunCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntScoreCommand;
-import com.matejdro.bukkit.monsterhunt.commands.HuntJoinCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStartCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStatusCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStopCommand;
@@ -78,6 +79,7 @@ public class MonsterHunt extends JavaPlugin implements CommandExecutor {
         commands.put("buy", new HuntBuyCommand()); 
         commands.put("check", new HuntCheckCommand()); 
         commands.put("run", new HuntRunCommand()); 
+        commands.put("leave", new HuntLeaveCommand()); 
 
         HuntWorldManager.timer();
         

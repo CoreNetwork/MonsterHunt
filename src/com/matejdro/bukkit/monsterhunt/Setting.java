@@ -112,7 +112,8 @@ public enum Setting {
 	MessageHuntScheduledMultiple("Messages.HuntScheduledMultiple", "You just bought a hunt for entire server! There are still previous hunts left to start, so one you bought will start after <QueueLength> days in approximately <Time>."),
 	MessageHuntScheduledAnnouncement("Messages.HuntScheduledAnnouncement", "Player <Player> just bought a hunt for entire server! It will start at next sunset in approximately <Time>."),
 	MessageHuntScheduledMultipleAnnouncement("Messages.HuntScheduledAnnouncementMultiple", "Player <Player> just bought another hunt for entire server! That means server will enjoy hunts for next <QueueLength> nights!"),
-
+	MessageLeftHunt("Messages.LeftHunt", "You just left hunt. Your score was reset to 0."),
+	MessageNoHunt("Messages.NoHunt", "There is no hunt in progress!"),
 
     UseMySQL("Database.UseMySQL", false),
     MySQLConn("Database.MySQLConn", "jdbc:mysql://localhost:3306/minecraft"),
