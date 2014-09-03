@@ -304,7 +304,7 @@ public class MonsterHuntListener implements Listener {
         } else {
             return;
         }
-        if (points < 1) {
+        if (points == 0) {
             return;
         }
         points += PointManager.getPointsForEquipment(monster, world);

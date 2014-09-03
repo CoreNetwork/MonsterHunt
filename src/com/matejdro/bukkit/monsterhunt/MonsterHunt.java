@@ -93,7 +93,7 @@ public class MonsterHunt extends JavaPlugin implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length < 1)
-			return commands.get("signup").execute(sender, args);
+			return commands.get("login").execute(sender, args);
 
 		BaseMHCommand cmd = commands.get(args[0]);
 		if (cmd != null)
