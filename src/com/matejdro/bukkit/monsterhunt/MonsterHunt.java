@@ -22,7 +22,7 @@ import com.matejdro.bukkit.monsterhunt.commands.HuntKickCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntRunCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntScoreCommand;
-import com.matejdro.bukkit.monsterhunt.commands.HuntSignupCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntJoinCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStartCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStatusCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntStopCommand;
@@ -68,7 +68,7 @@ public class MonsterHunt extends JavaPlugin implements CommandExecutor {
         commands.put("kick", new HuntKickCommand());
         commands.put("reload", new HuntReloadCommand());
         commands.put("score", new HuntScoreCommand());
-        commands.put("signup", new HuntSignupCommand());
+        commands.put("join", new HuntJoinCommand());
         commands.put("status", new HuntStatusCommand());
         commands.put("stop", new HuntStopCommand());
         commands.put("start", new HuntStartCommand());

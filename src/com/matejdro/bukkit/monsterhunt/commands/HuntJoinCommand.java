@@ -8,11 +8,11 @@ import com.matejdro.bukkit.monsterhunt.MonsterHuntWorld;
 import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntSignupCommand extends BaseMHCommand {
+public class HuntJoinCommand extends BaseMHCommand {
 
-	public HuntSignupCommand()
+	public HuntJoinCommand()
 	{
-		permission = "signup";
+		permission = "join";
 		desc = "Signup for hunt (you can also just use /hunt)";
 		needPlayer = true;
 	}
