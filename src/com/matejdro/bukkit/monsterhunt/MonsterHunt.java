@@ -16,7 +16,7 @@ import com.matejdro.bukkit.monsterhunt.commands.BaseMHCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntBanCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntBuyCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntCheckCommand;
-import com.matejdro.bukkit.monsterhunt.commands.HuntClaimCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntRewardCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntHelpCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntKickCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
@@ -63,7 +63,7 @@ public class MonsterHunt extends JavaPlugin implements CommandExecutor {
         getServer().getPluginManager().registerEvents(entityListener, this);
 
         commands.put("ban", new HuntBanCommand());
-        commands.put("claim", new HuntClaimCommand());
+        commands.put("reward", new HuntRewardCommand());
         commands.put("help", new HuntHelpCommand());
         commands.put("kick", new HuntKickCommand());
         commands.put("reload", new HuntReloadCommand());

@@ -14,11 +14,11 @@ import com.matejdro.bukkit.monsterhunt.Setting;
 import com.matejdro.bukkit.monsterhunt.Settings;
 import com.matejdro.bukkit.monsterhunt.Util;
 
-public class HuntClaimCommand extends BaseMHCommand {
+public class HuntRewardCommand extends BaseMHCommand {
 
-    public HuntClaimCommand()
+    public HuntRewardCommand()
 	{
-		permission = "claim";
+		permission = "reward";
 		desc = "Claim your hunt rewards";
 		needPlayer = true;
 	}
