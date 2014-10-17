@@ -34,10 +34,10 @@ public class HuntBanCommand extends BaseMHCommand {
 			{
 				for(MonsterHuntWorld world : HuntWorldManager.getWorlds())
 				{
-					world.kick(player.getName());
+					world.kick(player.getUniqueId());
 				}
-				HuntWorldManager.bannedPlayers.add(player.getName().toLowerCase());
-				InputOutput.banPlayer(player.getName().toLowerCase(), reason);
+				HuntWorldManager.bannedPlayers.add(player.getUniqueId());
+				InputOutput.banPlayer(player.getUniqueId(), reason);
 				
 				String message = Settings.globals.config.getString(Setting.AnnounceBan.getString());
 				message = message.replace("<PlayerName>", player.getName());

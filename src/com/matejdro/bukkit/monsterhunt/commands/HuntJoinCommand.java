@@ -1,5 +1,7 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
+import java.util.UUID;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -51,23 +53,23 @@ public class HuntJoinCommand extends BaseMHCommand {
             return;
         }
 
-        String playerName = ((Player) sender).getName();
+        UUID playerUUID = ((Player) sender).getUniqueId();
         if (world.state < 2) {
         	
-        	if (world.isBanned(playerName))
+        	if (world.isBanned(playerUUID))
         	{
         		String message = world.worldSettings.getString(Setting.BannedPlayerSignUp);
         		Util.Message(message, sender);
         		return;
         	}
-        	if (world.isKicked(playerName))
+        	if (world.isKicked(playerUUID))
         	{
         		String message = world.worldSettings.getString(Setting.KickedPlayerSignUp);
         		Util.Message(message, sender);
         		return;
         	}
         	
-            world.signUp(playerName);
+            world.signUp(playerUUID);
         	
         	if (world.worldSettings.getBoolean(Setting.AnnounceSignUp)) {
                 String message = world.worldSettings.getString(Setting.SignUpAnnouncement);
@@ -82,20 +84,20 @@ public class HuntJoinCommand extends BaseMHCommand {
 
         } else if (world.state == 2 && (world.getSignUpPeriodTime() == 0 || world.worldSettings.getBoolean(Setting.AllowSignUpAfterStart))) {
         	
-        	if (world.isKicked(playerName))
+        	if (world.isKicked(playerUUID))
         	{
         		String message = world.worldSettings.getString(Setting.KickedPlayerSignUp);
         		Util.Message(message, sender);
         		return;
         	}
-        	if (world.isBanned(playerName))
+        	if (world.isBanned(playerUUID))
         	{
         		String message = world.worldSettings.getString(Setting.BannedPlayerSignUp);
         		Util.Message(message, sender);
         		return;
         	}
         	
-        	 world.signUp(playerName);
+        	 world.signUp(playerUUID);
         	
         	if (world.worldSettings.getBoolean(Setting.AnnounceSignUp)) {
                 String message = world.worldSettings.getString(Setting.SignUpAnnouncement);

@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -53,7 +55,7 @@ public class InputOutput {
         }
     }
 
-    public static Integer getHighScore(String player) {
+    public static Integer getHighScore(UUID player) {
         Connection conn = getConnection();
         PreparedStatement ps = null;
         ResultSet set = null;
@@ -62,7 +64,7 @@ public class InputOutput {
         try {
             ps = conn.prepareStatement("SELECT * FROM monsterhunt_highscores WHERE name = ? LIMIT 1");
 
-            ps.setString(1, player);
+            ps.setString(1, player.toString());
             set = ps.executeQuery();
 
             if (set.next()) {
@@ -78,7 +80,7 @@ public class InputOutput {
         return score;
     }
 
-    public static Integer getHighScoreRank(String player) {
+    public static Integer getHighScoreRank(UUID player) {
         Connection conn = getConnection();
         PreparedStatement ps = null;
         ResultSet set = null;
@@ -110,11 +112,11 @@ public class InputOutput {
         }
     }
 
-    public static LinkedHashMap<String, Integer> getTopScores(int number) {
+    public static LinkedHashMap<UUID, Integer> getTopScores(int number) {
         Connection conn = getConnection();
         PreparedStatement ps = null;
         ResultSet set = null;
-        LinkedHashMap<String, Integer> map = new LinkedHashMap<String, Integer>();
+        LinkedHashMap<UUID, Integer> map = new LinkedHashMap<UUID, Integer>();
 
         try {
             ps = conn.prepareStatement("SELECT * FROM monsterhunt_highscores ORDER BY highscore DESC LIMIT ?");
@@ -122,9 +124,9 @@ public class InputOutput {
             set = ps.executeQuery();
 
             while (set.next()) {
-                String name = set.getString("name");
+                String uuid = set.getString("name");
                 Integer score = set.getInt("highscore");
-                map.put(name, score);
+                map.put(UUID.fromString(uuid), score);
             }
             set.close();
             ps.close();
@@ -136,11 +138,11 @@ public class InputOutput {
         return map;
     }
 
-    public static void UpdateHighScore(String playername, int score) {
+    public static void UpdateHighScore(UUID player, int score) {
         try {
             Connection conn = InputOutput.getConnection();
             PreparedStatement ps = conn.prepareStatement("REPLACE INTO monsterhunt_highscores VALUES (?,?)");
-            ps.setString(1, playername);
+            ps.setString(1, player.toString());
             ps.setInt(2, score);
             ps.executeUpdate();
             conn.commit();
@@ -224,8 +226,8 @@ public class InputOutput {
             set = ps.executeQuery();
 
             while (set.next()) {
-                String name = set.getString("name");
-                HuntWorldManager.bannedPlayers.add(name);
+                String uuid = set.getString("name");
+                HuntWorldManager.bannedPlayers.add(UUID.fromString(uuid));
             }
             set.close();
             ps.close();
@@ -236,12 +238,12 @@ public class InputOutput {
         }
     }
     
-    public static void banPlayer(String playerName, String reason) 
+    public static void banPlayer(UUID player, String reason) 
     {
     	try {
             Connection conn = InputOutput.getConnection();
             PreparedStatement ps = conn.prepareStatement("REPLACE INTO monsterhunt_bans VALUES (?,?)");
-            ps.setString(1, playerName);
+            ps.setString(1, player.toString());
             ps.setString(2, reason);
             ps.executeUpdate();
             conn.commit();
@@ -252,11 +254,11 @@ public class InputOutput {
             e.printStackTrace();
         }
 	}
-    public static void unbanPlayer(String playerName) {
+    public static void unbanPlayer(UUID player) {
     	try {
             Connection conn = InputOutput.getConnection();
             PreparedStatement ps = conn.prepareStatement("DELETE FROM monsterhunt_bans WHERE NAME = ?");
-            ps.setString(1, playerName);
+            ps.setString(1, player.toString());
             ps.executeUpdate();
             conn.commit();
             ps.close();
@@ -396,8 +398,75 @@ public class InputOutput {
         } catch (SQLException e) {
             Log.severe("Error while creating tables! - " + e.getMessage());
         }
+        
+        upgradeDB();
     }
 
+    public static void upgradeDB()
+    {
+    	migrateToUUID("monsterhunt_bans", "name");
+    	migrateToUUID("monsterhunt_highscores", "name");
+    	migrateToUUID("monsterhunt_RewardsToClaim", "PlayerName");
+    }
+    
+    private static void migrateToUUID(String table, String field)
+    {
+    	if (!arePlayersStoredAsNames(table, field))
+    		return;
+    	
+    	Log.info("Migrating table " + table + " to UUID...");
+    	
+    	try {
+			PreparedStatement updateStatement = getConnection().prepareStatement("UPDATE " + table + " SET " + field + " = ? WHERE " + field + " = ?");
+			PreparedStatement selectStatement = getConnection().prepareStatement("SELECT " + field + " FROM " + table);
+			ResultSet set = selectStatement.executeQuery();
+			
+			while (set.next())
+			{
+				String name = set.getString(1);
+				UUID uuid = Bukkit.getOfflinePlayer(name).getUniqueId();
+				
+				updateStatement.setString(1, uuid.toString());
+				updateStatement.setString(2, name);
+				updateStatement.addBatch();
+
+			}
+			
+			selectStatement.close();
+			updateStatement.executeBatch();
+			updateStatement.close();
+			getConnection().commit();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+        
+    private static boolean arePlayersStoredAsNames(String table, String field)
+    {
+    	boolean playersStoredAsNames = false;
+    	
+    	try
+    	{
+    		PreparedStatement statement = getConnection().prepareStatement("SELECT " + field + " FROM " + table + " LIMIT 1");
+    		ResultSet set = statement.executeQuery();
+    		
+    		if (set.next())
+    		{
+    			String name = set.getString(1);
+    			playersStoredAsNames = !name.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+    		}
+    		
+    		statement.close();
+    	}
+    	catch (SQLException e)
+    	{
+    		e.printStackTrace();
+    	}
+    	
+    	return playersStoredAsNames;
+    }
 	
 
 	

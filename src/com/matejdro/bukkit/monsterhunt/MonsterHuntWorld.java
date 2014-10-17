@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,9 +45,9 @@ public class MonsterHuntWorld {
     public HuntSpecification activeHuntSpecification;
     public long lastAnnounceTime;
     
-    public HashMap<String, Integer> Score = new HashMap<String, Integer>();
-    public List<String> kickedPlayers = new ArrayList<String>();
-    public HashMap<String, Integer> lastScore = new HashMap<String, Integer>();
+    public HashMap<UUID, Integer> Score = new HashMap<UUID, Integer>();
+    public List<UUID> kickedPlayers = new ArrayList<UUID>();
+    public HashMap<UUID, Integer> lastScore = new HashMap<UUID, Integer>();
     public ArrayList<Integer> properlyspawned = new ArrayList<Integer>();
     public HashMap<Player, Location> tplocations = new HashMap<Player, Location>();
     
@@ -77,36 +78,36 @@ public class MonsterHuntWorld {
         return time;
     }
     
-    public boolean isKicked(String name)
+    public boolean isKicked(UUID uuid)
     {
-    	return kickedPlayers.contains(name);
+    	return kickedPlayers.contains(uuid);
     }
     
-    public boolean isBanned(String name)
+    public boolean isBanned(UUID uuid)
     {
-    	return HuntWorldManager.bannedPlayers.contains(name);
+    	return HuntWorldManager.bannedPlayers.contains(uuid);
     }
     
-    public void signUp(String name, int points)
+    public void signUp(UUID uuid, int points)
     {
-    	Score.put(name, points);
+    	Score.put(uuid, points);
     }
     
-    public void signUp(String name)
+    public void signUp(UUID uuid)
     {
-    	signUp(name, 0);
+    	signUp(uuid, 0);
     }
     
-    public void kick(String name)
+    public void kick(UUID uuid)
     {
-    	Score.remove(name);
-    	kickedPlayers.add(name);
+    	Score.remove(uuid);
+    	kickedPlayers.add(uuid);
     	refreshScoreboardPoints();
-    	clearScoreboard(name);
+    	clearScoreboard(uuid);
     }
-    public void unkick(String name) 
+    public void unkick(UUID uuid) 
     {
-		kickedPlayers.remove(name);
+		kickedPlayers.remove(uuid);
 	}
     public void start() {
         String message = worldSettings.getString(Setting.StartMessage);
@@ -145,9 +146,9 @@ public class MonsterHuntWorld {
 		setScoreboards(scoreboard);
 	}
 
-	private void clearScoreboard(String playerName)
+	private void clearScoreboard(UUID uuid)
 	{
-		Player player = Bukkit.getPlayerExact(playerName);
+		Player player = Bukkit.getPlayer(uuid);
 		
 		if (player != null)
 		{
@@ -159,9 +160,9 @@ public class MonsterHuntWorld {
 	}
     private void clearScoreboards()
     {
-    	for(String playerName : Score.keySet())	
+    	for(UUID uuid : Score.keySet())	
 		{
-			Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
+			Player player = MonsterHunt.instance.getServer().getPlayer(uuid);
 			if(player != null)
 			{
 				if (MonsterHunt.coreInstalled)
@@ -174,15 +175,15 @@ public class MonsterHuntWorld {
 	
     private void refreshScoreboardPoints()
     {
-    	for(String playerName : Score.keySet())	
+    	for(UUID uuid : Score.keySet())	
 		{
-			OfflinePlayer offlinePlayer = MonsterHunt.instance.getServer().getOfflinePlayer(playerName);
+			OfflinePlayer offlinePlayer = MonsterHunt.instance.getServer().getOfflinePlayer(uuid);
 			if(offlinePlayer != null)
 			{
 				scoreboard.resetScores(offlinePlayer);
-				if (Score.get(playerName) != 0)
+				if (Score.get(uuid) != 0)
 				{
-					objective.getScore(offlinePlayer).setScore(Score.get(playerName));
+					objective.getScore(offlinePlayer).setScore(Score.get(uuid));
 				}
 			}
  		}
@@ -190,9 +191,9 @@ public class MonsterHuntWorld {
     
     private void setScoreboards(Scoreboard scoreboard)
     {
-    	for(String playerName : Score.keySet())	
+    	for(UUID uuid : Score.keySet())	
 		{
-			Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
+			Player player = MonsterHunt.instance.getServer().getPlayer(uuid);
 			if(player != null)
 			{
 				if (MonsterHunt.coreInstalled)
@@ -203,18 +204,6 @@ public class MonsterHuntWorld {
  		}
     }
     
-    private void setScoreboard(String playerName, Scoreboard scoreboard)
-    {
-    	Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
-		if(player != null)
-		{
-			if (MonsterHunt.coreInstalled)
-				CoreScoreboardManager.registerScoreboard(player, 1, scoreboard);
-			else
-				player.setScoreboard(scoreboard);
-		}
-    }
-
     public void stop() {
         if (state < 2) {
             return;
@@ -235,14 +224,14 @@ public class MonsterHuntWorld {
             player.teleport(e.getValue());
         }
         state = 0;
-        for (String i : Score.keySet()) {
-            Integer hs = InputOutput.getHighScore(i);
+        for (UUID uuid : Score.keySet()) {
+            Integer hs = InputOutput.getHighScore(uuid);
             if (hs == null)
                 hs = 0;
-            int score = Score.get(i);
+            int score = Score.get(uuid);
             if (score > hs) {
-                InputOutput.UpdateHighScore(i, score);
-                Player player = MonsterHunt.instance.getServer().getPlayer(i);
+                InputOutput.UpdateHighScore(uuid, score);
+                Player player = MonsterHunt.instance.getServer().getPlayer(uuid);
                 if (player != null) {
                     String message = worldSettings.getString(Setting.HighScoreMessage);
                     message = message.replace("<Points>", String.valueOf(score));

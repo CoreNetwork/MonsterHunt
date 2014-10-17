@@ -1,5 +1,7 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
+import java.util.UUID;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -48,9 +50,9 @@ public class HuntLeaveCommand extends BaseMHCommand {
             return;
     	}
         
-        String name = ((Player) sender).getName();
-        world.kick(name);
-        world.unkick(name);
+        UUID uuid = ((Player) sender).getUniqueId();
+        world.kick(uuid);
+        world.unkick(uuid);
         
         Util.Message(world.worldSettings.getString(Setting.MessageLeftHunt), sender);
     }

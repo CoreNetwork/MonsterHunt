@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-
-import org.bukkit.Bukkit;
+import java.util.UUID;
 
 public class HuntWorldManager {
     public static MonsterHuntWorld HuntZoneWorld;
     public static HashMap<String, MonsterHuntWorld> worlds = new HashMap<String, MonsterHuntWorld>();
-    public static List<String> bannedPlayers = new ArrayList<String>();
+    public static List<UUID> bannedPlayers = new ArrayList<UUID>();
     
     public static MonsterHuntWorld getWorld(String name) {
         if (Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false)) {

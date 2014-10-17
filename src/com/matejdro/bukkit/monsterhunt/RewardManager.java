@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.UUID;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -26,7 +27,7 @@ public class RewardManager {
     @SuppressWarnings("rawtypes")
     public static void RewardWinners(MonsterHuntWorld world) {
 
-        HashMap<String, Integer>[] Winners = GetWinners(world);
+        HashMap<UUID, Integer>[] Winners = GetWinners(world);
         if (Winners[0].size() < 1) {
             String message = world.worldSettings.getString(Setting.FinishMessageNotEnoughPlayers);
             message = message.replace("<World>", world.name);
@@ -47,7 +48,7 @@ public class RewardManager {
 
         // keep track of players we reward so we don't reward them again
         // in the RewardEveryone section
-        final ArrayList<String> rewardedPlayers = new ArrayList<String>();
+        final ArrayList<UUID> rewardedPlayers = new ArrayList<UUID>();
         
         final boolean enableReward=world.worldSettings.getBoolean(Setting.EnableReward);
         Util.Debug("EnabledReward="+enableReward);
@@ -63,12 +64,12 @@ public class RewardManager {
                 if (score >= world.worldSettings.getPlaceInt(Setting.MinimumPointsPlace, place + 1)) {
 //                    Winners[place].clear();
                     Util.Debug("score is >= minscore");
-                    for (String playerName : Winners[place].keySet()) {
-                        Util.Debug("player="+playerName);
+                    for (UUID uuid : Winners[place].keySet()) {
+                        Util.Debug("player="+ uuid);
                         String rewardType = "Place" + (place + 1);
-                        Reward(playerName, rewardType, world, score);
+                        Reward(uuid, rewardType, world, score);
                         
-                        rewardedPlayers.add(playerName);
+                        rewardedPlayers.add(uuid);
                     }
                 }
             }
@@ -76,10 +77,10 @@ public class RewardManager {
 
         //RewardEveryone
         if (!(!world.worldSettings.getBoolean(Setting.EnableRewardEveryonePermission) && !world.worldSettings.getBoolean(Setting.RewardEveryone))) {
-            for (Entry i : world.Score.entrySet()) {
+            for (Entry<UUID, Integer> i : world.Score.entrySet()) {
                 if (((Integer) i.getValue()) < world.worldSettings.getInt(Setting.MinimumPointsEveryone))
                     continue;
-                Player player = plugin.getServer().getPlayer((String) i.getKey());
+                Player player = plugin.getServer().getPlayer(i.getKey());
                 if (player == null)
                     continue;
                 
@@ -88,7 +89,7 @@ public class RewardManager {
                 	continue;
                                 
                 if (world.worldSettings.getBoolean(Setting.RewardEveryone) || (player.hasPermission("monsterhunt.rewardeverytime") && world.worldSettings.getBoolean(Setting.EnableRewardEveryonePermission))) {
-                    Reward((String) i.getKey(), "RewardEveryone", world, (Integer) i.getValue());
+                    Reward(i.getKey(), "RewardEveryone", world, i.getValue());
                 }
             }
         }
@@ -106,8 +107,8 @@ public class RewardManager {
             String placeMessage = world.worldSettings.getPlaceString(Setting.WinnerMessagePlace, place + 1);
             if (Winners[place].size() > 0 && placeMessage != null) {
                 score = Winners[place].get(Winners[place].keySet().toArray()[0]);
-                for (String i : Winners[place].keySet()) {
-                    players += i + ", ";
+                for (UUID uuid : Winners[place].keySet()) {
+                    players += Bukkit.getOfflinePlayer(uuid).getName() + ", ";
                 }
                 players = players.substring(0, players.length() - 2);
                 
@@ -120,15 +121,16 @@ public class RewardManager {
         Util.Broadcast(message);
     }
 
-    private static void Reward(String playerName, String rewardType, MonsterHuntWorld world, int score)
+    private static void Reward(UUID playerUUID, String rewardType, MonsterHuntWorld world, int score)
     {
-    	if (world.worldSettings.getBoolean(Setting.GiveRewardsImmediatelly))
-    		giveItems(playerName, rewardType, world.worldSettings, score);
+    	Player player = Bukkit.getPlayer(playerUUID);
+    	if (world.worldSettings.getBoolean(Setting.GiveRewardsImmediatelly) && player != null)
+    		giveItems(player, rewardType, world.worldSettings, score);
     	else
-    		storeReward(playerName, rewardType, world, score);
+    		storeReward(playerUUID, rewardType, world, score);
     }
     
-    private static void storeReward(String playerName, String rewardType, MonsterHuntWorld world, int score)
+    private static void storeReward(UUID playerUUID, String rewardType, MonsterHuntWorld world, int score)
     {
     	try
     	{
@@ -137,7 +139,7 @@ public class RewardManager {
     			huntName = world.name;
     		
     		PreparedStatement statement = InputOutput.getConnection().prepareStatement("INSERT INTO monsterhunt_RewardsToClaim (PlayerName, HuntName, RewardType, Score) VALUES (?,?,?,?)"); 
-    		statement.setString(1, playerName);
+    		statement.setString(1, playerUUID.toString());
     		statement.setString(2, huntName);
     		statement.setString(3, rewardType);
     		statement.setInt(4, score);
@@ -152,8 +154,8 @@ public class RewardManager {
     	}
     }
     
-    public static void giveItems(String playerName, String rewardType, Settings activeSettings, int score) {
-    	Util.Debug("Rewarding "+playerName);
+    public static void giveItems(Player player, String rewardType, Settings activeSettings, int score) {
+    	Util.Debug("Rewarding "+ player);
     	Util.Debug("RewardType="+rewardType);
     	
     	String rewardString = (String) activeSettings.config.get("Rewards." + rewardType + ".RewardParameters");
@@ -164,9 +166,10 @@ public class RewardManager {
             }
     		
         	String[] split = rewardString.split(",");
-        	Player player = plugin.getServer().getPlayer(playerName);
+        	
         	if (player == null)
         		return;
+        	
         	for (String i2 : split) {
             	String items = "";
         		Util.Debug("Reward i2="+i2);
@@ -217,7 +220,7 @@ public class RewardManager {
     	    		//give reward
     	    		if (BlockId == 0) {
     	    			Util.Debug("rewarding iConomy amount="+amount);
-    	    			String item = iConomyReward(playerName, amount);
+    	    			String item = iConomyReward(player.getName(), amount);
     	    			if (amount > 0) {
     	    				items += item + ", ";
     	    			}
@@ -317,27 +320,27 @@ public class RewardManager {
     }
 
     @SuppressWarnings("unchecked")
-    private static HashMap<String, Integer>[] GetWinners(MonsterHuntWorld world) {
-        HashMap<String, Integer> scores = new HashMap<String, Integer>();
+    private static HashMap<UUID, Integer>[] GetWinners(MonsterHuntWorld world) {
+        HashMap<UUID, Integer> scores = new HashMap<UUID, Integer>();
         scores.putAll(world.Score);
         int num = world.worldSettings.getInt(Setting.NumberOfWinners);
-        HashMap<String, Integer>[] winners = new HashMap[num];
+        HashMap<UUID, Integer>[] winners = new HashMap[num];
         for (int place = 0; place < num; place++) {
-            winners[place] = new HashMap<String, Integer>();
+            winners[place] = new HashMap<UUID, Integer>();
             int tmp = 0;
-            for (String i : scores.keySet()) {
-                int value = scores.get(i);
+            for (UUID uuid : scores.keySet()) {
+                int value = scores.get(uuid);
                 if (value > tmp) {
                     winners[place].clear();
-                    winners[place].put(i, value);
+                    winners[place].put(uuid, value);
                     tmp = value;
                 } else if (value == tmp) {
-                    winners[place].put(i, value);
+                    winners[place].put(uuid, value);
                 }
             }
 
-            for (String i : winners[place].keySet()) {
-                scores.remove(i);
+            for (UUID uuid : winners[place].keySet()) {
+                scores.remove(uuid);
             }
         }
         return winners;

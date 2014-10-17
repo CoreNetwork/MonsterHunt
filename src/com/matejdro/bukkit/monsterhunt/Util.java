@@ -3,6 +3,7 @@ package com.matejdro.bukkit.monsterhunt;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -91,11 +92,11 @@ public class Util {
     public static void BroadcastToParticipants(String message) {
     	for(MonsterHuntWorld mhw : HuntWorldManager.getWorlds()) {
     		if(mhw.state > 0) {
-    			for(String playerName : mhw.Score.keySet())	{
-    				Player player = MonsterHunt.instance.getServer().getPlayerExact(playerName);
+    			for(UUID uuid : mhw.Score.keySet())	{
+    				Player player = MonsterHunt.instance.getServer().getPlayer(uuid);
     				if(player != null)
     				{
-    					Message(message, MonsterHunt.instance.getServer().getPlayerExact(playerName));
+    					Message(message, player);
     				}
     			}
     		}

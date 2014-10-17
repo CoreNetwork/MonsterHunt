@@ -32,7 +32,7 @@ public class HuntRewardCommand extends BaseMHCommand {
         try
         {
         	PreparedStatement statement = InputOutput.getConnection().prepareStatement("SELECT * FROM monsterhunt_RewardsToClaim WHERE PlayerName = ?");
-        	statement.setString(1, player.getName());
+        	statement.setString(1, player.getUniqueId().toString());
         	
         	ResultSet set = statement.executeQuery();
         	while (set.next())
@@ -44,7 +44,7 @@ public class HuntRewardCommand extends BaseMHCommand {
         		int score = set.getInt("Score");
         		
         		Settings huntSettings = new Settings(new File("plugins" + File.separator + "MonsterHunt" + File.separator, huntName + ".yml"), Settings.globals);
-        		RewardManager.giveItems(player.getName(), rewardType, huntSettings, score);
+        		RewardManager.giveItems(player, rewardType, huntSettings, score);
         	}
         }
         catch (SQLException e)
@@ -61,7 +61,7 @@ public class HuntRewardCommand extends BaseMHCommand {
         try
         {
         	PreparedStatement statement = InputOutput.getConnection().prepareStatement("DELETE FROM monsterhunt_RewardsToClaim WHERE PlayerName = ?");
-        	statement.setString(1, player.getName());
+        	statement.setString(1, player.getUniqueId().toString());
 
         	statement.executeUpdate();
         	statement.close();

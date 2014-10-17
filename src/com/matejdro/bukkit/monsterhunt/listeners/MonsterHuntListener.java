@@ -1,6 +1,7 @@
 package com.matejdro.bukkit.monsterhunt.listeners;
 
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Blaze;
@@ -112,7 +113,7 @@ public class MonsterHuntListener implements Listener {
             if (world.worldSettings.getInt(Setting.DeathPenalty) != 0 && world.Score.containsKey(player.getName())) {
                 double score = world.Score.get(player.getName()) + 0.00;
                 score = score - (score * world.worldSettings.getInt(Setting.DeathPenalty) / 100.00);
-                world.Score.put(player.getName(), (int) Math.round(score));
+                world.Score.put(player.getUniqueId(), (int) Math.round(score));
                 Util.Message(world.worldSettings.getString(Setting.DeathMessage), player);
                 if(world.worldSettings.getBoolean(Setting.ScoreboardEnabled))
                 {
@@ -313,18 +314,18 @@ public class MonsterHuntListener implements Listener {
         points -= effectPenaltyPoints;
         
         if (!world.Score.containsKey(player.getName()) && !world.worldSettings.getBoolean(Setting.EnableSignup)) {
-        	if (!world.isBanned(player.getName()) && !world.isKicked(player.getName()))
+        	if (!world.isBanned(player.getUniqueId()) && !world.isKicked(player.getUniqueId()))
     		{
-    			world.signUp(player.getName());
+    			world.signUp(player.getUniqueId());
     		}
         }
         if (world.Score.containsKey(player.getName())) {
             int newscore = world.Score.get(player.getName()) + points;
 
             if (world.worldSettings.getBoolean(Setting.AnnounceLead)) {
-                Entry<String, Integer> leadpoints = null;
-                for (Entry<String, Integer> e : world.Score.entrySet()) {
-                    if (leadpoints == null || e.getValue() > leadpoints.getValue() || (e.getValue() == leadpoints.getValue() && leadpoints.getKey().equalsIgnoreCase(player.getName()))) {
+                Entry<UUID, Integer> leadpoints = null;
+                for (Entry<UUID, Integer> e : world.Score.entrySet()) {
+                    if (leadpoints == null || e.getValue() > leadpoints.getValue() || (e.getValue() == leadpoints.getValue() && leadpoints.getKey().equals(player.getUniqueId()))) {
                         leadpoints = e;
                     }
                 }
@@ -347,7 +348,7 @@ public class MonsterHuntListener implements Listener {
                 }
             }
 
-            world.Score.put(player.getName(), newscore);
+            world.Score.put(player.getUniqueId(), newscore);
 
             world.properlyspawned.remove((Object) monster.getEntityId());
             

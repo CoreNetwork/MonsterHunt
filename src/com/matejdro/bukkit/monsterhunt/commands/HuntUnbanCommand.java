@@ -29,10 +29,10 @@ public class HuntUnbanCommand extends BaseMHCommand {
 			if(player != null)
 			{
 				HuntWorldManager.bannedPlayers.remove(player.getName().toLowerCase());
-				InputOutput.unbanPlayer(player.getName().toLowerCase());
+				InputOutput.unbanPlayer(player.getUniqueId());
 				for(MonsterHuntWorld world : HuntWorldManager.getWorlds())
 				{
-					world.unkick(player.getName());
+					world.unkick(player.getUniqueId());
 				}
 				
 				Util.Message("Player " + args[0] + " unbanned.", sender);

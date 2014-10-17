@@ -31,7 +31,7 @@ public class HuntKickCommand extends BaseMHCommand
 			}
 			for(MonsterHuntWorld world : HuntWorldManager.getWorlds())
 			{
-				world.kick(player.getName());
+				world.kick(player.getUniqueId());
 				String message = world.worldSettings.getString(Setting.AnnounceKick).replace("<PlayerName>",  player.getName());
 	        	Util.Broadcast(message);
 			}
@@ -53,7 +53,7 @@ public class HuntKickCommand extends BaseMHCommand
 	    	}
 	        else
 	        {
-	        	world.kick(player.getName());
+	        	world.kick(player.getUniqueId());
 				String message = world.worldSettings.getString(Setting.AnnounceKick).replace("<PlayerName>", player.getName());
 	        	Util.Broadcast(message);
 	        }
