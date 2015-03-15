@@ -16,8 +16,8 @@ public class HuntRunCommand extends BaseMHCommand {
 
 	public HuntRunCommand()
 	{
-		permission = "check";
-		desc = "Check amount of hunts you have left to use";
+		permission = "run";
+		desc = "Run Monster Hunt pass";
 		needPlayer = true;
 	}
 
