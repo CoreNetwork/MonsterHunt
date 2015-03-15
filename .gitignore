@@ -1,8 +1,17 @@
 *.class
-.settings
-target/classes
-target/generated-sources
-target/maven-archiver
-target/surefire
-target/*.jar
+
+# Package Files #
+*.war
+*.ear
+
+# idea project files
+.idea/
+*.iml
+*.eml
+out/
 /target
+.classpath
+.project
+.settings/
+
+bin/
