@@ -32,7 +32,7 @@ public class HuntKickCommand extends BaseMHCommand
 			for(MonsterHuntWorld world : HuntWorldManager.getWorlds())
 			{
 				world.kick(player.getUniqueId());
-				String message = world.worldSettings.getString(Setting.AnnounceKick).replace("<PlayerName>",  player.getName());
+				String message = world.getSettings().getString(Setting.AnnounceKick).replace("<PlayerName>",  player.getName());
 	        	Util.Broadcast(message);
 			}
         }
@@ -46,7 +46,7 @@ public class HuntKickCommand extends BaseMHCommand
 			}
 			
 			MonsterHuntWorld world = HuntWorldManager.getWorld(args[1]);
-	        if (world == null || world.getWorld() == null)
+	        if (world == null || world.getBukkitWorld() == null)
 	        {
 	    		Util.Message("There is no such world!", sender);
 	            return;
@@ -54,7 +54,7 @@ public class HuntKickCommand extends BaseMHCommand
 	        else
 	        {
 	        	world.kick(player.getUniqueId());
-				String message = world.worldSettings.getString(Setting.AnnounceKick).replace("<PlayerName>", player.getName());
+				String message = world.getSettings().getString(Setting.AnnounceKick).replace("<PlayerName>", player.getName());
 	        	Util.Broadcast(message);
 	        }
 		}
@@ -62,8 +62,6 @@ public class HuntKickCommand extends BaseMHCommand
 		{
 			sender.sendMessage("Usage: /hunt kick <player> [<world>]");
 		}
-		
-		return;
 	}
 	
 

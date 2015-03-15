@@ -1,5 +1,6 @@
 package com.matejdro.bukkit.monsterhunt.listeners;
 
+import com.matejdro.bukkit.monsterhunt.HuntState;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -72,7 +73,7 @@ public class MonsterHuntListener implements Listener {
     		return;
     	MonsterHuntWorld world = HuntWorldManager.getWorld(combustee.getWorld().getName());
     	
-    	if(world != null && world.state == 2)
+    	if(world != null && world.getState() == HuntState.RUNNING)
     	{
 	    	Player damager = null;
 	    	if(combusterEntity instanceof Arrow)
@@ -104,18 +105,18 @@ public class MonsterHuntListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
     	
     	MonsterHuntWorld world = HuntWorldManager.getWorld(event.getEntity().getWorld().getName());
-        if (world == null || world.getWorld() == null || world.state < 2) {
+        if (world == null || world.getBukkitWorld() == null || world.getState() != HuntState.RUNNING) {
             return;
         }
     	
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (world.worldSettings.getInt(Setting.DeathPenalty) != 0 && world.Score.containsKey(player.getName())) {
-                double score = world.Score.get(player.getName()) + 0.00;
-                score = score - (score * world.worldSettings.getInt(Setting.DeathPenalty) / 100.00);
+            if (world.getSettings().getInt(Setting.DeathPenalty) != 0 && world.Score.containsKey(player.getUniqueId())) {
+                double score = world.Score.get(player.getUniqueId()) + 0.00;
+                score = score - (score * world.getSettings().getInt(Setting.DeathPenalty) / 100.00);
                 world.Score.put(player.getUniqueId(), (int) Math.round(score));
-                Util.Message(world.worldSettings.getString(Setting.DeathMessage), player);
-                if(world.worldSettings.getBoolean(Setting.ScoreboardEnabled))
+                Util.Message(world.getSettings().getString(Setting.DeathMessage), player);
+                if(world.getSettings().getBoolean(Setting.ScoreboardEnabled))
                 {
                 	world.refreshScoreboards();
                 }
@@ -137,7 +138,7 @@ public class MonsterHuntListener implements Listener {
         Player player = null;
         String cause = "General";
         
-        if(world.worldSettings.getBoolean(Setting.DontCountNamedMobs) && monster.getCustomName() != null) {
+        if(world.getSettings().getBoolean(Setting.DontCountNamedMobs) && monster.getCustomName() != null) {
         	return;
         }
         if (!(world.properlyspawned.contains(monster.getEntityId()))) {
@@ -205,102 +206,104 @@ public class MonsterHuntListener implements Listener {
             Skeleton skeleton = (Skeleton) monster;
             SkeletonType skeletonType = skeleton.getSkeletonType();
             if (skeletonType.equals(SkeletonType.NORMAL)) {
-                points = world.worldSettings.getMonsterValue("Skeleton", cause);
+                points = world.getSettings().getMonsterValue("Skeleton", cause);
                 name = "Skeleton";
-            } else {
-                points = world.worldSettings.getMonsterValue("WitherSkeleton", cause);
+            } else
+            {
+                points = world.getSettings().getMonsterValue("WitherSkeleton", cause);
                 name = "Wither Skeleton";
             }
+        } else if (monster instanceof CaveSpider) {
+            points = world.getSettings().getMonsterValue("CaveSpider", cause);
+            name = "CaveSpider";
         } else if (monster instanceof Spider) {
-            points = world.worldSettings.getMonsterValue("Spider", cause);
+            points = world.getSettings().getMonsterValue("Spider", cause);
             name = "Spider";
         } else if (monster instanceof Creeper) {
             Creeper creeper = (Creeper) monster;
             if (creeper.isPowered()) {
-                points = world.worldSettings.getMonsterValue("ElectrifiedCreeper", cause);
+                points = world.getSettings().getMonsterValue("ElectrifiedCreeper", cause);
                 name = "Electrified Creeper";
             } else {
-                points = world.worldSettings.getMonsterValue("Creeper", cause);
+                points = world.getSettings().getMonsterValue("Creeper", cause);
                 name = "Creeper";
             }
         } else if (monster instanceof Ghast) {
-            points = world.worldSettings.getMonsterValue("Ghast", cause);
+            points = world.getSettings().getMonsterValue("Ghast", cause);
             name = "Ghast";
+        } else if (monster instanceof MagmaCube) {
+            points = world.getSettings().getMonsterValue("MagmaCube", cause);
+            name = "Magma Cube";
         } else if (monster instanceof Slime) {
-            points = world.worldSettings.getMonsterValue("Slime", cause);
+            points = world.getSettings().getMonsterValue("Slime", cause);
             name = "Slime";
         } else if (monster instanceof PigZombie) {
-            points = world.worldSettings.getMonsterValue("ZombiePigman", cause);
+            points = world.getSettings().getMonsterValue("ZombiePigman", cause);
             name = "Zombie Pigman";
         } else if (monster instanceof Giant) {
-            points = world.worldSettings.getMonsterValue("Giant", cause);
+            points = world.getSettings().getMonsterValue("Giant", cause);
             name = "Giant";
         } else if (monster instanceof Zombie) {
-            points = world.worldSettings.getMonsterValue("Zombie", cause);
+            points = world.getSettings().getMonsterValue("Zombie", cause);
             name = "Zombie";
         } else if (monster instanceof Wolf) {
             Wolf wolf = (Wolf) monster;
             if (wolf.isTamed()) {
-                points = world.worldSettings.getMonsterValue("TamedWolf", cause);
+                points = world.getSettings().getMonsterValue("TamedWolf", cause);
                 name = "Tamed Wolf";
             } else {
-                points = world.worldSettings.getMonsterValue("WildWolf", cause);
+                points = world.getSettings().getMonsterValue("WildWolf", cause);
                 name = "Wild Wolf";
             }
 
         } else if (monster instanceof Player) {
-            points = world.worldSettings.getMonsterValue("Player", cause);
+            points = world.getSettings().getMonsterValue("Player", cause);
             name = "Player";
         } else if (monster instanceof Enderman) {
-            points = world.worldSettings.getMonsterValue("Enderman", cause);
+            points = world.getSettings().getMonsterValue("Enderman", cause);
             name = "Enderman";
-        } else if (monster instanceof Silverfish) {
-            points = world.worldSettings.getMonsterValue("Silverfish", cause);
+        } else if (monster instanceof Silverfish)
+        {
+            points = world.getSettings().getMonsterValue("Silverfish", cause);
             name = "Silverfish";
-        } else if (monster instanceof CaveSpider) {
-            points = world.worldSettings.getMonsterValue("CaveSpider", cause);
-            name = "CaveSpider";
         } else if (monster instanceof EnderDragon) {
-            points = world.worldSettings.getMonsterValue("EnderDragon", cause);
+            points = world.getSettings().getMonsterValue("EnderDragon", cause);
             name = "Ender Dragon";
-        } else if (monster instanceof MagmaCube) {
-            points = world.worldSettings.getMonsterValue("MagmaCube", cause);
-            name = "Magma Cube";
         } else if (monster instanceof MushroomCow) {
-            points = world.worldSettings.getMonsterValue("Mooshroom", cause);
+            points = world.getSettings().getMonsterValue("Mooshroom", cause);
             name = "Mooshroom";
         } else if (monster instanceof Chicken) {
-            points = world.worldSettings.getMonsterValue("Chicken", cause);
+            points = world.getSettings().getMonsterValue("Chicken", cause);
             name = "Chicken";
         } else if (monster instanceof Cow) {
-            points = world.worldSettings.getMonsterValue("Cow", cause);
+            points = world.getSettings().getMonsterValue("Cow", cause);
             name = "Cow";
         } else if (monster instanceof Blaze) {
-            points = world.worldSettings.getMonsterValue("Blaze", cause);
+            points = world.getSettings().getMonsterValue("Blaze", cause);
             name = "Blaze";
         } else if (monster instanceof Pig) {
-            points = world.worldSettings.getMonsterValue("Pig", cause);
+            points = world.getSettings().getMonsterValue("Pig", cause);
             name = "Pig";
         } else if (monster instanceof Sheep) {
-            points = world.worldSettings.getMonsterValue("Sheep", cause);
+            points = world.getSettings().getMonsterValue("Sheep", cause);
             name = "Sheep";
         } else if (monster instanceof Snowman) {
-            points = world.worldSettings.getMonsterValue("SnowGolem", cause);
+            points = world.getSettings().getMonsterValue("SnowGolem", cause);
             name = "Snow Golem";
         } else if (monster instanceof Squid) {
-            points = world.worldSettings.getMonsterValue("Squid", cause);
+            points = world.getSettings().getMonsterValue("Squid", cause);
             name = "Squid";
         } else if (monster instanceof Villager) {
-            points = world.worldSettings.getMonsterValue("Villager", cause);
+            points = world.getSettings().getMonsterValue("Villager", cause);
             name = "Villager";
         } else if (monster instanceof IronGolem) {
-            points = world.worldSettings.getMonsterValue("IronGolem", cause);
+            points = world.getSettings().getMonsterValue("IronGolem", cause);
             name = "Iron Golem";
         } else if (monster instanceof Witch) {
-            points = world.worldSettings.getMonsterValue("Witch", cause);
+            points = world.getSettings().getMonsterValue("Witch", cause);
             name = "Witch";
         }else if (monster instanceof Wither) {
-            points = world.worldSettings.getMonsterValue("Wither", cause);
+            points = world.getSettings().getMonsterValue("Wither", cause);
             name = "Wither";
         } else {
             return;
@@ -313,48 +316,42 @@ public class MonsterHuntListener implements Listener {
         int effectPenaltyPoints = Math.abs(points - PointManager.applyEffectPenalty(points, player.getActivePotionEffects(), world));
         points -= effectPenaltyPoints;
         
-        if (!world.Score.containsKey(player.getName()) && !world.worldSettings.getBoolean(Setting.EnableSignup)) {
-        	if (!world.isBanned(player.getUniqueId()) && !world.isKicked(player.getUniqueId()))
-    		{
-    			world.signUp(player.getUniqueId());
-    		}
-        }
-        if (world.Score.containsKey(player.getName())) {
-            int newscore = world.Score.get(player.getName()) + points;
+        if (world.Score.containsKey(player.getUniqueId())) {
+            int newscore = world.Score.get(player.getUniqueId()) + points;
 
-            if (world.worldSettings.getBoolean(Setting.AnnounceLead)) {
+            if (world.getSettings().getBoolean(Setting.AnnounceLead)) {
                 Entry<UUID, Integer> leadpoints = null;
                 for (Entry<UUID, Integer> e : world.Score.entrySet()) {
-                    if (leadpoints == null || e.getValue() > leadpoints.getValue() || (e.getValue() == leadpoints.getValue() && leadpoints.getKey().equals(player.getUniqueId()))) {
+                    if (leadpoints == null || e.getValue() > leadpoints.getValue() || (e.getValue().equals(leadpoints.getValue()) && leadpoints.getKey().equals(player.getUniqueId()))) {
                         leadpoints = e;
                     }
                 }
                 
-                if (leadpoints != null && newscore > leadpoints.getValue() && !leadpoints.getKey().equals(player.getName())) {
-                    String message = world.worldSettings.getString(Setting.MessageLead);
+                if (leadpoints != null && newscore > leadpoints.getValue() && !leadpoints.getKey().equals(player.getUniqueId())) {
+                    String message = world.getSettings().getString(Setting.MessageLead);
                     message = message.replace("<Player>", player.getName());
                     message = message.replace("<Points>", String.valueOf(newscore));
                     message = message.replace("<World>", world.name);
                     
                     long timeInWorld = monster.getWorld().getTime();
-                    if(timeInWorld >= world.worldSettings.getInt(Setting.AnnounceLeadInterval) + world.lastAnnounceTime)
+                    if(timeInWorld >= world.getSettings().getInt(Setting.AnnounceLeadInterval) + world.lastAnnounceTime)
                     {
                     	world.lastAnnounceTime = timeInWorld;
-	                    if(world.worldSettings.getBoolean(Setting.AnnounceLeadEveryone))
+	                    if(world.getSettings().getBoolean(Setting.AnnounceLeadEveryone))
 	                    	Util.Broadcast(message);
 	                    else
-	                    	Util.BroadcastToParticipants(message);
+	                    	HuntWorldManager.BroadcastToAllParticipants(message);
                     }
                 }
             }
 
             world.Score.put(player.getUniqueId(), newscore);
 
-            world.properlyspawned.remove((Object) monster.getEntityId());
+            world.properlyspawned.remove(monster.getEntityId());
             
-            if (world.worldSettings.getBoolean(Setting.ShowKillMessage)) 
+            if (world.getSettings().getBoolean(Setting.ShowKillMessage))
             {
-	            String message = world.worldSettings.getKillMessage(cause);
+	            String message = world.getSettings().getKillMessage(cause);
 	            message = message.replace("<MobValue>", String.valueOf(points));
 	            message = message.replace("<MobName>", name);
 	            message = message.replace("<Points>", String.valueOf(newscore));
@@ -364,15 +361,15 @@ public class MonsterHuntListener implements Listener {
 	            {
 	            	if (points == 0)
 	            	{
-	            		Util.SpamMessage(world.worldSettings.getString(Setting.KillMobUnderPotionNoPoints), player);
+	            		Util.SpamMessage(world.getSettings().getString(Setting.KillMobUnderPotionNoPoints), player);
 	            	}
 	            	else
 	            	{
-	            		Util.SpamMessage(world.worldSettings.getString(Setting.KillMobUnderPotionSomePoints), player);
+	            		Util.SpamMessage(world.getSettings().getString(Setting.KillMobUnderPotionSomePoints), player);
 	            	}
 	            }
             }
-            if(world.worldSettings.getBoolean(Setting.ScoreboardEnabled))
+            if(world.getSettings().getBoolean(Setting.ScoreboardEnabled))
             {
             	world.refreshScoreboards();
             }
@@ -384,13 +381,15 @@ public class MonsterHuntListener implements Listener {
     public void onCreatureSpawn(CreatureSpawnEvent event) 
 	{
         MonsterHuntWorld world = HuntWorldManager.getWorld(event.getLocation().getWorld().getName());
-        if (world == null || world.getWorld() == null) {
+        if (world == null || world.getBukkitWorld() == null) {
             return;
         }
-        if (world.state == 0) {
+
+        if (!world.isActive()) {
             return;
         }
-        if (world.worldSettings.getBoolean(Setting.DontCountMobsFromSpawners) && event.getSpawnReason().equals(SpawnReason.SPAWNER)) {
+
+        if (world.getSettings().getBoolean(Setting.DontCountMobsFromSpawners) && event.getSpawnReason().equals(SpawnReason.SPAWNER)) {
         	return;
         }
         world.properlyspawned.add(event.getEntity().getEntityId());

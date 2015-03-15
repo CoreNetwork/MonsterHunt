@@ -1,5 +1,6 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
+import com.matejdro.bukkit.monsterhunt.HuntState;
 import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
@@ -43,74 +44,53 @@ public class HuntJoinCommand extends BaseMHCommand {
         
         world = HuntWorldManager.getWorld(worldName);
         
-        if (world == null || world.getWorld() == null)
+        if (world == null || world.getBukkitWorld() == null)
         {
     		Util.Message("There is no such world!", sender);
             return;
     	}
         if (world.Score.containsKey(((Player) sender).getName())) {
-            Util.Message(world.worldSettings.getString(Setting.MessageAlreadySignedUp), sender);
+            Util.Message(world.getSettings().getString(Setting.MessageAlreadySignedUp), sender);
             return;
         }
 
         UUID playerUUID = ((Player) sender).getUniqueId();
-        if (world.state < 2) {
-        	
+        if (world.getState() == HuntState.SIGNUP)
+        {
         	if (world.isBanned(playerUUID))
         	{
-        		String message = world.worldSettings.getString(Setting.BannedPlayerSignUp);
+        		String message = world.getSettings().getString(Setting.BannedPlayerSignUp);
         		Util.Message(message, sender);
         		return;
         	}
+
         	if (world.isKicked(playerUUID))
         	{
-        		String message = world.worldSettings.getString(Setting.KickedPlayerSignUp);
+        		String message = world.getSettings().getString(Setting.KickedPlayerSignUp);
         		Util.Message(message, sender);
         		return;
         	}
         	
             world.signUp(playerUUID);
         	
-        	if (world.worldSettings.getBoolean(Setting.AnnounceSignUp)) {
-                String message = world.worldSettings.getString(Setting.SignUpAnnouncement);
+        	if (world.getSettings().getBoolean(Setting.AnnounceSignUp))
+            {
+                String message = world.getSettings().getString(Setting.SignUpAnnouncement);
                 message = message.replace("<World>", world.name);
-                message = message.replace("<Player>", ((Player) sender).getName());
+                message = message.replace("<Player>", sender.getName());
                 Util.Broadcast(message);
-            } else {
-                String message = world.worldSettings.getString(Setting.SignUpBeforeHuntMessage);
+            }
+            else
+            {
+                String message = world.getSettings().getString(Setting.SignUpBeforeHuntMessage);
                 message = message.replace("<World>", world.name);
                 Util.Message(message, sender);
             }
 
-        } else if (world.state == 2 && (world.getSignUpPeriodTime() == 0 || world.worldSettings.getBoolean(Setting.AllowSignUpAfterStart))) {
-        	
-        	if (world.isKicked(playerUUID))
-        	{
-        		String message = world.worldSettings.getString(Setting.KickedPlayerSignUp);
-        		Util.Message(message, sender);
-        		return;
-        	}
-        	if (world.isBanned(playerUUID))
-        	{
-        		String message = world.worldSettings.getString(Setting.BannedPlayerSignUp);
-        		Util.Message(message, sender);
-        		return;
-        	}
-        	
-        	 world.signUp(playerUUID);
-        	
-        	if (world.worldSettings.getBoolean(Setting.AnnounceSignUp)) {
-                String message = world.worldSettings.getString(Setting.SignUpAnnouncement);
-                message = message.replace("<World>", world.name);
-                message = message.replace("<Player>", ((Player) sender).getName());
-                Util.Broadcast(message);
-            } else {
-                String message = world.worldSettings.getString(Setting.SignUpAfterHuntMessage);
-                message = message.replace("<World>", world.name);
-                Util.Message(message, sender);
-            }            
-        } else {
-            Util.Message(world.worldSettings.getString(Setting.MessageTooLateSignUp), sender);
+        }
+        else
+        {
+            Util.Message(world.getSettings().getString(Setting.MessageTooLateSignUp), sender);
         }
     }
 

@@ -39,14 +39,13 @@ public enum Setting {
     HuntLimit("HuntLimit", -1),
     StartTime("StartTime", 13000),
     EndTime("EndTime", 23600),
+    MinTicksBeforeToStart("MinTicksBeforeToStart", 5 * 1200),
     DeathPenalty("DeathPenalty", 30),
 
-    EnableSignup("EnableSignup", true),
     SignUpPeriodTime("SignUpPeriodTime", 5),
-    
+
     AllowSignUpAfterStart("AllowSignUpAfterStart", false),
-    SkipToIfFailsToStart("SkipToIfFailsToStart", -1),
-    
+
     PurgeAllHostileMobsOnStart("PurgeAllHostileMobsOnStart", true),
     DontCountNamedMobs("DontCountNamedMobs", true),
     DontCountMobsFromSpawners("DontCountMobsFromSpawners", true),

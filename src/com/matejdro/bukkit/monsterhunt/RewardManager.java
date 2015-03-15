@@ -29,17 +29,17 @@ public class RewardManager {
 
         HashMap<UUID, Integer>[] Winners = GetWinners(world);
         if (Winners[0].size() < 1) {
-            String message = world.worldSettings.getString(Setting.FinishMessageNotEnoughPlayers);
+            String message = world.getSettings().getString(Setting.FinishMessageNotEnoughPlayers);
             message = message.replace("<World>", world.name);
             message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
             Util.Broadcast(message);
             return;
         }
-        int numberOfWinners = world.worldSettings.getInt(Setting.NumberOfWinners);
+        int numberOfWinners = world.getSettings().getInt(Setting.NumberOfWinners);
 
-        int score = Winners[0].get(Winners[0].keySet().toArray()[0]);
-        if (score < world.worldSettings.getPlaceInt(Setting.MinimumPointsPlace, 1)) {
-            String message = world.worldSettings.getString(Setting.FinishMessageNotEnoughPoints);
+        int score = Winners[0].values().iterator().next();
+        if (score < world.getSettings().getPlaceInt(Setting.MinimumPointsPlace, 1)) {
+            String message = world.getSettings().getString(Setting.FinishMessageNotEnoughPoints);
             message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
             message = message.replace("<World>", world.name);
             Util.Broadcast(message);
@@ -50,7 +50,7 @@ public class RewardManager {
         // in the RewardEveryone section
         final ArrayList<UUID> rewardedPlayers = new ArrayList<UUID>();
         
-        final boolean enableReward=world.worldSettings.getBoolean(Setting.EnableReward);
+        final boolean enableReward=world.getSettings().getBoolean(Setting.EnableReward);
         Util.Debug("EnabledReward="+enableReward);
         //Normal reward
         if (enableReward) {
@@ -60,8 +60,8 @@ public class RewardManager {
                     continue;
                 score = Winners[place].get(Winners[place].keySet().toArray()[0]);
                 Util.Debug("score="+String.valueOf(score));
-                Util.Debug("minscore="+String.valueOf(world.worldSettings.getPlaceInt(Setting.MinimumPointsPlace, place + 1)));
-                if (score >= world.worldSettings.getPlaceInt(Setting.MinimumPointsPlace, place + 1)) {
+                Util.Debug("minscore="+String.valueOf(world.getSettings().getPlaceInt(Setting.MinimumPointsPlace, place + 1)));
+                if (score >= world.getSettings().getPlaceInt(Setting.MinimumPointsPlace, place + 1)) {
 //                    Winners[place].clear();
                     Util.Debug("score is >= minscore");
                     for (UUID uuid : Winners[place].keySet()) {
@@ -76,19 +76,19 @@ public class RewardManager {
         }
 
         //RewardEveryone
-        if (!(!world.worldSettings.getBoolean(Setting.EnableRewardEveryonePermission) && !world.worldSettings.getBoolean(Setting.RewardEveryone))) {
+        if (!(!world.getSettings().getBoolean(Setting.EnableRewardEveryonePermission) && !world.getSettings().getBoolean(Setting.RewardEveryone))) {
             for (Entry<UUID, Integer> i : world.Score.entrySet()) {
-                if (((Integer) i.getValue()) < world.worldSettings.getInt(Setting.MinimumPointsEveryone))
+                if (((Integer) i.getValue()) < world.getSettings().getInt(Setting.MinimumPointsEveryone))
                     continue;
                 Player player = plugin.getServer().getPlayer(i.getKey());
                 if (player == null)
                     continue;
                 
                 // don't reward "everyone" reward if they already won a top award, except if config allows so
-                if(!world.worldSettings.getBoolean(Setting.RewardEveryoneIncludesWinners) && rewardedPlayers.contains(player.getName()) )
+                if(!world.getSettings().getBoolean(Setting.RewardEveryoneIncludesWinners) && rewardedPlayers.contains(player.getUniqueId()) )
                 	continue;
                                 
-                if (world.worldSettings.getBoolean(Setting.RewardEveryone) || (player.hasPermission("monsterhunt.rewardeverytime") && world.worldSettings.getBoolean(Setting.EnableRewardEveryonePermission))) {
+                if (world.getSettings().getBoolean(Setting.RewardEveryone) || (player.hasPermission("monsterhunt.rewardeverytime") && world.getSettings().getBoolean(Setting.EnableRewardEveryonePermission))) {
                     Reward(i.getKey(), "RewardEveryone", world, i.getValue());
                 }
             }
@@ -98,13 +98,13 @@ public class RewardManager {
         Util.Debug("[MonterHunt][DEBUG - NEVEREND]Broadcasting Winners");
         String message;
 
-        message = world.worldSettings.getString(Setting.FinishMessageWinnersHeader);
+        message = world.getSettings().getString(Setting.FinishMessageWinnersHeader);
         message = message.replace("<World>", world.name);
         message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
 
         for (int place = 0; place < numberOfWinners; place++) {
             String players = "";
-            String placeMessage = world.worldSettings.getPlaceString(Setting.WinnerMessagePlace, place + 1);
+            String placeMessage = world.getSettings().getPlaceString(Setting.WinnerMessagePlace, place + 1);
             if (Winners[place].size() > 0 && placeMessage != null) {
                 score = Winners[place].get(Winners[place].keySet().toArray()[0]);
                 for (UUID uuid : Winners[place].keySet()) {
@@ -117,15 +117,15 @@ public class RewardManager {
                 message = message + placeMessage;
             }
         }
-        message = message +  world.worldSettings.getString(Setting.FinishMessageWinnersFooter);
+        message = message +  world.getSettings().getString(Setting.FinishMessageWinnersFooter);
         Util.Broadcast(message);
     }
 
     private static void Reward(UUID playerUUID, String rewardType, MonsterHuntWorld world, int score)
     {
     	Player player = Bukkit.getPlayer(playerUUID);
-    	if (world.worldSettings.getBoolean(Setting.GiveRewardsImmediatelly) && player != null)
-    		giveItems(player, rewardType, world.worldSettings, score);
+    	if (world.getSettings().getBoolean(Setting.GiveRewardsImmediatelly) && player != null)
+    		giveItems(player, rewardType, world.getSettings(), score);
     	else
     		storeReward(playerUUID, rewardType, world, score);
     }
@@ -323,7 +323,7 @@ public class RewardManager {
     private static HashMap<UUID, Integer>[] GetWinners(MonsterHuntWorld world) {
         HashMap<UUID, Integer> scores = new HashMap<UUID, Integer>();
         scores.putAll(world.Score);
-        int num = world.worldSettings.getInt(Setting.NumberOfWinners);
+        int num = world.getSettings().getInt(Setting.NumberOfWinners);
         HashMap<UUID, Integer>[] winners = new HashMap[num];
         for (int place = 0; place < num; place++) {
             winners[place] = new HashMap<UUID, Integer>();

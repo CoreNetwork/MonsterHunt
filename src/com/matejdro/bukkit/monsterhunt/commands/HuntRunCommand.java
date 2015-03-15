@@ -1,5 +1,6 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
+import com.matejdro.bukkit.monsterhunt.TimeUtil;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,15 +38,24 @@ public class HuntRunCommand extends BaseMHCommand {
 		BougthHuntsStorage.setNumberOfBoughtHunts(player.getUniqueId(), --huntsLeft);
 		
 		MonsterHuntWorld mainWorld = HuntWorldManager.getWorlds().iterator().next();
-		mainWorld.waitday = true;
-		
-		int queueLength = Settings.globals.getInt(Setting.HuntLimit);
+
+
+
+        int timeLeftUntilNextNight = TimeUtil.getTimeDifference((int) mainWorld.getBukkitWorld().getTime(), mainWorld.getSettings().getInt(Setting.StartTime));
+        if (mainWorld.isWorldTimeGoodForHunt() || timeLeftUntilNextNight < mainWorld.getSettings().getInt(Setting.MinTicksBeforeToStart))
+        {
+            mainWorld.setShouldSkipNextNight(true);
+        }
+
+        Util.Debug("Time left until night: " + timeLeftUntilNextNight);
+
+        int queueLength = Settings.globals.getInt(Setting.HuntLimit);
 		Settings.globals.setInt(Setting.HuntLimit, ++queueLength);
 		Settings.globals.save();
 		
-		World world = mainWorld.getWorld();
+		World world = mainWorld.getBukkitWorld();
 		
-		int timeLeftOneNight = (int) (mainWorld.worldSettings.getInt(Setting.StartTime) - world.getTime());
+		int timeLeftOneNight = (int) (mainWorld.getSettings().getInt(Setting.StartTime) - world.getTime());
 		if (timeLeftOneNight < 0)
 			timeLeftOneNight += 24000;
 		
@@ -55,10 +65,10 @@ public class HuntRunCommand extends BaseMHCommand {
 		
 		if (queueLength == 1)
 		{
-			String buyerMessage = mainWorld.worldSettings.getString(Setting.MessageHuntScheduled);
+			String buyerMessage = mainWorld.getSettings().getString(Setting.MessageHuntScheduled);
 			buyerMessage = buyerMessage.replace("<Time>", timeLeftString);
 			
-			String announcementMessage = mainWorld.worldSettings.getString(Setting.MessageHuntScheduledAnnouncement);
+			String announcementMessage = mainWorld.getSettings().getString(Setting.MessageHuntScheduledAnnouncement);
 			announcementMessage = announcementMessage.replace("<Player>", playerName);
 			announcementMessage = announcementMessage.replace("<Time>", timeLeftString);
 			
@@ -69,11 +79,11 @@ public class HuntRunCommand extends BaseMHCommand {
 		}
 		else
 		{
-			String buyerMessage = mainWorld.worldSettings.getString(Setting.MessageHuntScheduledMultiple);
+			String buyerMessage = mainWorld.getSettings().getString(Setting.MessageHuntScheduledMultiple);
 			buyerMessage = buyerMessage.replace("<Time>", timeLeftString);
 			buyerMessage = buyerMessage.replace("<QueueLength>", Integer.toString(queueLength));
 
-			String announcementMessage = mainWorld.worldSettings.getString(Setting.MessageHuntScheduledMultipleAnnouncement);
+			String announcementMessage = mainWorld.getSettings().getString(Setting.MessageHuntScheduledMultipleAnnouncement);
 			announcementMessage = announcementMessage.replace("<Player>", playerName);
 			announcementMessage = announcementMessage.replace("<Time>", timeLeftString);
 			announcementMessage = announcementMessage.replace("<QueueLength>", Integer.toString(queueLength));

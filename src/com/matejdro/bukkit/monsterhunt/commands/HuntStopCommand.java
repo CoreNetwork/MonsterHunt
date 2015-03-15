@@ -32,8 +32,6 @@ public class HuntStopCommand extends BaseMHCommand {
         }
         MonsterHuntWorld world = HuntWorldManager.getWorld(args[0]);
         world.stop();
-        world.manual = false;
-        world.waitday = true;
     }
 
 }

@@ -189,17 +189,16 @@ public class InputOutput {
     
     private static MonsterHuntWorld LoadWorld(String worldName, List<HuntSpecification> globalHunts)
     {
-    	MonsterHuntWorld world = new MonsterHuntWorld(worldName);
+    	MonsterHuntWorld world = new MonsterHuntWorld(worldName, LoadWorldSettings(worldName));
     	
-    	world.worldSettings = LoadWorldSettings(worldName);
-        List<HuntSpecification> worldHunts = world.worldSettings.getListOfHunts();
+        List<HuntSpecification> worldHunts = world.getSettings().getListOfHunts();
         world.huntList.addAll(globalHunts);
         world.huntList.removeAll(worldHunts);
         world.huntList.addAll(worldHunts);
         
         if(world.huntList.size() == 0)
         {
-        	world.huntList.add(new HuntSpecification("default", "The Hunt", 100, world.worldSettings));
+        	world.huntList.add(new HuntSpecification("default", "The Hunt", 100, world.getSettings()));
         }
         
         world.randomizeHunt();

@@ -44,7 +44,7 @@ public class HuntLeaveCommand extends BaseMHCommand {
         
         world = HuntWorldManager.getWorld(worldName);
         
-        if (world == null || world.getWorld() == null)
+        if (world == null || world.getBukkitWorld() == null)
         {
     		Util.Message(Settings.globals.getString(Setting.MessageNoHunt), sender);
             return;
@@ -54,7 +54,7 @@ public class HuntLeaveCommand extends BaseMHCommand {
         world.kick(uuid);
         world.unkick(uuid);
         
-        Util.Message(world.worldSettings.getString(Setting.MessageLeftHunt), sender);
+        Util.Message(world.getSettings().getString(Setting.MessageLeftHunt), sender);
     }
 
 }

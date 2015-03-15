@@ -27,6 +27,7 @@ import org.bukkit.entity.Slime;
 import org.bukkit.entity.Spider;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -34,17 +35,17 @@ import org.bukkit.scoreboard.Scoreboard;
 import us.corenetwork.core.scoreboard.CoreScoreboardManager;
 public class MonsterHuntWorld {
     public String name;
-    public boolean manual;
-    public int state;
-    public boolean waitday;
+    private HuntState state;
     public int curday;
-    public boolean nextnight;
-    public Settings worldSettings;
-    
+    private Settings worldSettings;
+    private boolean skipNextNight;
+
+    private BukkitRunnable stateSwitchTimer;
+
     public List<HuntSpecification> huntList = new ArrayList<HuntSpecification>();
     public HuntSpecification activeHuntSpecification;
     public long lastAnnounceTime;
-    
+
     public HashMap<UUID, Integer> Score = new HashMap<UUID, Integer>();
     public List<UUID> kickedPlayers = new ArrayList<UUID>();
     public HashMap<UUID, Integer> lastScore = new HashMap<UUID, Integer>();
@@ -54,30 +55,24 @@ public class MonsterHuntWorld {
     private static final String OBJECTIVE_NAME = "HuntScore";
     private Scoreboard scoreboard;
     private Objective objective ;
-    public MonsterHuntWorld(String w) {
-        state = 0;
-        waitday = false;
-        manual = false;
+
+    public MonsterHuntWorld(String w, Settings settings) {
+        state = HuntState.WAITING_FOR_DAY;
         curday = 0;
         name = w;
+
+        this.worldSettings = settings;
     }
     
-    public World getWorld() {
+    public World getBukkitWorld() {
         return MonsterHunt.instance.getServer().getWorld(name);
     }
 
-    public int getSignUpPeriodTime() {
-        int time = worldSettings.getInt(Setting.SignUpPeriodTime);
-        if (time != 0) {
-            time = worldSettings.getInt(Setting.StartTime) - worldSettings.getInt(Setting.SignUpPeriodTime) * 1200;
-            if (time < 0) {
-                Log.warning("Wrong SignUpPeriodTime Configuration! Sign Up period will be disabled!");
-                time = 0;
-            }
-        }
-        return time;
+    public Settings getSettings()
+    {
+        return worldSettings;
     }
-    
+
     public boolean isKicked(UUID uuid)
     {
     	return kickedPlayers.contains(uuid);
@@ -109,20 +104,85 @@ public class MonsterHuntWorld {
     {
 		kickedPlayers.remove(uuid);
 	}
-    public void start() {
+
+    public void startSignups()
+    {
+        if (state == HuntState.SIGNUP)
+            return;
+
+        setState(HuntState.SIGNUP);
+
+        String message = worldSettings.getString(Setting.MessageSignUpPeriod);
+        message = message.replace("<World>", name);
+        message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
+        Util.Broadcast(message);
+
+        stateSwitchTimer = new BukkitRunnable()
+        {
+            public void run()
+            {
+                startHunt();
+            }
+        };
+
+        stateSwitchTimer.runTaskLater(MonsterHunt.instance, worldSettings.getInt(Setting.SignUpPeriodTime) * 1200);
+    }
+
+    public void startHunt()
+    {
+        if (state == HuntState.RUNNING)
+            return;
+
+        setState(HuntState.RUNNING);
+
         String message = worldSettings.getString(Setting.StartMessage);
         message = message.replace("<World>", name);
         message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
         Util.Broadcast(message);
-        state = 2;
-        waitday = true;
         removeHostileMobs();
         
         updateLimit();
         generateScoreboard();
         refreshScoreboards(); 
     }
-    
+
+    public HuntState getState()
+    {
+        return state;
+    }
+
+    public void setState(HuntState state)
+    {
+        this.state = state;
+
+        if (stateSwitchTimer != null)
+        {
+            stateSwitchTimer.cancel();
+            stateSwitchTimer = null;
+        }
+    }
+
+    public boolean isWorldTimeGoodForHunt()
+    {
+        int time = (int) getBukkitWorld().getTime();
+        return time >= worldSettings.getInt(Setting.StartTime) && time <= worldSettings.getInt(Setting.EndTime);
+    }
+
+    public boolean shouldISkipNextNight()
+    {
+        return skipNextNight;
+    }
+
+    public void setShouldSkipNextNight(boolean skipNextNight)
+    {
+        this.skipNextNight = skipNextNight;
+    }
+
+    public boolean isActive()
+    {
+        return state == HuntState.SIGNUP || state == HuntState.RUNNING;
+    }
+
     private void updateLimit()
     {
     	int curLimit = Settings.globals.getInt(Setting.HuntLimit); //Limit is global not per type
@@ -205,17 +265,22 @@ public class MonsterHuntWorld {
     }
     
     public void stop() {
-        if (state < 2) {
+        if (!isActive())
             return;
-        }
+
+        setState(HuntState.WAITING_FOR_DAY);
+
         if (Score.size() < worldSettings.getInt(Setting.MinimumPlayers)) {
             String message = worldSettings.getString(Setting.FinishMessageNotEnoughPlayers);
             message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
             message = message.replace("<World>", name);
             Util.Broadcast(message);
-        } else {
+        }
+        else
+        {
             RewardManager.RewardWinners(this);
         }
+
         for (Entry<Player, Location> e : tplocations.entrySet()) {
             Player player = e.getKey();
             if (player == null || !player.isOnline()) {
@@ -223,7 +288,7 @@ public class MonsterHuntWorld {
             }
             player.teleport(e.getValue());
         }
-        state = 0;
+
         for (UUID uuid : Score.keySet()) {
             Integer hs = InputOutput.getHighScore(uuid);
             if (hs == null)
@@ -273,13 +338,7 @@ public class MonsterHuntWorld {
     	}
 	}
 
-    public void skipNight() {
-        if (worldSettings.getInt(Setting.SkipToIfFailsToStart) >= 0) {
-            getWorld().setTime(worldSettings.getInt(Setting.SkipToIfFailsToStart));
-        }
-    }
-    
-    public boolean canStart() {
+    public boolean rollStartDie() {
         if (curday == 0) {
             curday = worldSettings.getInt(Setting.SkipDays);
             if ((new Random().nextInt(100)) < worldSettings.getInt(Setting.StartChance)) {
@@ -310,6 +369,7 @@ public class MonsterHuntWorld {
         	}
         }	
     }
+
 
 
 	

@@ -30,7 +30,6 @@ public class HuntStartCommand extends BaseMHCommand {
             return;
         }
         MonsterHuntWorld world = HuntWorldManager.getWorld(args[0]);
-        world.start();
-        world.manual = true;
+        world.startHunt();
     }
 }

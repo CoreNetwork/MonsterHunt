@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 public class HuntWorldManager {
     public static MonsterHuntWorld HuntZoneWorld;
@@ -29,47 +31,55 @@ public class HuntWorldManager {
         }
     }
 
+    public static void BroadcastToAllParticipants(String message) {
+        for(MonsterHuntWorld mhw : HuntWorldManager.getWorlds()) {
+            if(mhw.isActive())  {
+                for(UUID uuid : mhw.Score.keySet())	{
+                    Player player = MonsterHunt.instance.getServer().getPlayer(uuid);
+                    if(player != null)
+                    {
+                        Util.Message(message, player);
+                    }
+                }
+            }
+        }
+    }
+
+
     public static void timer() {
         MonsterHunt.instance.getServer().getScheduler().scheduleSyncRepeatingTask(MonsterHunt.instance, new Runnable() {
 
             public void run() {
                 for (MonsterHuntWorld world : getWorlds()) {
-                    if (world == null || world.getWorld() == null)
+                    if (world == null || world.getBukkitWorld() == null)
                         return;
-                    long time = world.getWorld().getTime();
-                    
-                    if (world.state == 0 && time < world.worldSettings.getInt(Setting.StartTime) && time > world.getSignUpPeriodTime() && world.getSignUpPeriodTime() > 0 && !world.manual && !world.waitday) {
-                        if (world.canStart()) {
-                            world.state = 1;
-                            String message = world.worldSettings.getString(Setting.MessageSignUpPeriod);
-                            message = message.replace("<World>", world.name);
-                            message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
-                            Util.Broadcast(message);
-                        }
-                        world.waitday = true;
 
-                    } else if (world.state < 2 && time > world.worldSettings.getInt(Setting.StartTime) && time < world.worldSettings.getInt(Setting.EndTime) && !world.manual) {
-                        if (world.state == 1) {
-                            if (world.Score.size() < world.worldSettings.getInt(Setting.MinimumPlayers) && world.worldSettings.getBoolean(Setting.EnableSignup)) {
-                                Util.Broadcast(world.worldSettings.getString(Setting.MessageStartNotEnoughPlayers));
-                                world.state = 0;
-                                world.Score.clear();
-                                world.waitday = true;
-                                world.skipNight();
-                            } else {
-	                             world.start();
-                            }
-                        } else if (!world.waitday && world.worldSettings.getInt(Setting.SignUpPeriodTime) == 0) {
-                            world.waitday = true;
-                            if (world.canStart())
-                                world.start();
+                    if (world.getState() == HuntState.WAITING_FOR_DAY)
+                    {
+                        if (!world.isWorldTimeGoodForHunt())
+                        {
+                            world.setState(HuntState.WAITING_FOR_NIGHT);
                         }
-                    } 
-                    else if (world.state == 2 && (time > world.worldSettings.getInt(Setting.EndTime) || time < world.worldSettings.getInt(Setting.StartTime)) && !world.manual) {
-                        Util.Debug("[DEBUG - NEVEREND]Stop Time");
-                        world.stop();
-                    } else if (world.waitday && (time > world.worldSettings.getInt(Setting.EndTime) || time < world.worldSettings.getInt(Setting.StartTime) - world.getSignUpPeriodTime())) {
-                        world.waitday = false;
+                    }
+                    else if (world.getState() == HuntState.WAITING_FOR_NIGHT)
+                    {
+                        if (!world.isWorldTimeGoodForHunt())
+                            return;
+
+                        if (world.getSettings().getInt(Setting.HuntLimit) == 0)
+                            return;
+
+                        if (!world.rollStartDie())
+                            return;
+
+                        world.startSignups();
+                    }
+                    else if (world.getState() == HuntState.RUNNING)
+                    {
+                        if (!world.isWorldTimeGoodForHunt())
+                        {
+                            world.stop();
+                        }
                     }
                 }
             }

@@ -23,16 +23,16 @@ public class HuntTeleCommand extends BaseMHCommand {
 	public void run(CommandSender sender, String[] args){
         Player player = (Player) sender;
         MonsterHuntWorld world = HuntWorldManager.getWorld(player.getWorld().getName());
-        if (!Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false) || world == null || world.getWorld() == null)
+        if (!Settings.globals.config.getBoolean(Setting.HuntZoneMode.getString(), false) || world == null || world.getBukkitWorld() == null)
             return;
 
         boolean permission = !sender.hasPermission("monsterhunt.noteleportrestrictions");
 
-        if (world.state == 0 && permission) {
-            Util.Message(world.worldSettings.getString(Setting.MessageHuntTeleNoHunt), player);
+        if (world.isActive() && permission) {
+            Util.Message(world.getSettings().getString(Setting.MessageHuntTeleNoHunt), player);
             return;
-        } else if (world.Score.containsKey(player.getName()) && world.worldSettings.getBoolean(Setting.EnableSignup) && permission) {
-            Util.Message(world.worldSettings.getString(Setting.MessageHuntTeleNotSignedUp), player);
+        } else if (world.Score.containsKey(player.getUniqueId()) && permission) {
+            Util.Message(world.getSettings().getString(Setting.MessageHuntTeleNotSignedUp), player);
             return;
         }
 

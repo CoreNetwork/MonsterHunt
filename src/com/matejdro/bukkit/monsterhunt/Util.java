@@ -89,32 +89,12 @@ public class Util {
 		}
 	}
 
-    public static void BroadcastToParticipants(String message) {
-    	for(MonsterHuntWorld mhw : HuntWorldManager.getWorlds()) {
-    		if(mhw.state > 0) {
-    			for(UUID uuid : mhw.Score.keySet())	{
-    				Player player = MonsterHunt.instance.getServer().getPlayer(uuid);
-    				if(player != null)
-    				{
-    					Message(message, player);
-    				}
-    			}
-    		}
-    	}
-    }
-    
     public static void Debug(String message) {
         if (Settings.globals.config.getBoolean(Setting.Debug.getString(), false)) {
             Log.info("[Debug]" + message);
         }
     }
 
-    public void StartFailed(MonsterHuntWorld world) {
-        if (world.worldSettings.getInt(Setting.SkipToIfFailsToStart) >= 0) {
-            world.getWorld().setTime(world.worldSettings.getInt(Setting.SkipToIfFailsToStart));
-        }
-    }
-    
 	public static Boolean isInteger(String text) {
 		try {
 			Integer.parseInt(text);
