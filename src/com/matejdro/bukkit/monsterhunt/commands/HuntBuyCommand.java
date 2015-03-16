@@ -53,7 +53,7 @@ public class HuntBuyCommand extends BaseMHCommand {
 			if (amount == 1)
 				message = message.replace("<PluralS>", "");
 			else
-				message = message.replace("<PluralS>", "s");
+				message = message.replace("<PluralS>", "es");
 			
 			message = message.replace("<TotalHunts>", Integer.toString(totalHunts));
 			Util.Message(message, player);
