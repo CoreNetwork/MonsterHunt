@@ -41,6 +41,8 @@ public class MonsterHuntWorld {
     private boolean waitUntilMorning;
     private boolean chainedHunt;
 
+    private String currentSponsor;
+
     private BukkitRunnable stateSwitchTimer;
 
     public List<HuntSpecification> huntList = new ArrayList<HuntSpecification>();
@@ -190,6 +192,11 @@ public class MonsterHuntWorld {
         Settings.globals.save();
     }
 
+    public String getCurrentSponsor()
+    {
+        return currentSponsor;
+    }
+
     public void startInBetweenHuntDelay()
     {
         state = HuntState.SLEEPING;
@@ -265,6 +272,7 @@ public class MonsterHuntWorld {
             return;
         }
 
+        currentSponsor = sponsorQueue.get(0).getName();
         sponsorQueue.remove(0);
 
     	Settings.globals.setList(Setting.SponsorQueue, sponsorQueue);
