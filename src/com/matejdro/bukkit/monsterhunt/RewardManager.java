@@ -35,6 +35,7 @@ public class RewardManager {
             message = message.replace("<World>", world.name);
             message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
             Util.Broadcast(message);
+            Log.info(message);
             return;
         }
         int numberOfWinners = world.getSettings().getInt(Setting.NumberOfWinners);
@@ -77,6 +78,7 @@ public class RewardManager {
             message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
             message = message.replace("<World>", world.name);
             Util.Broadcast(message);
+            Log.info(message);
             return;
         }
 
@@ -109,7 +111,6 @@ public class RewardManager {
         message = world.getSettings().getString(Setting.FinishMessageWinnersHeader);
         message = message.replace("<World>", world.name);
         message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
-        message = message.replace("<Sponsor>", world.getCurrentSponsor());
 
         for (int place = 0; place < numberOfWinners; place++) {
             String players = "";
@@ -130,6 +131,7 @@ public class RewardManager {
         message = message.replace("<Sponsor>", world.getCurrentSponsor());
 
         Util.Broadcast(message);
+        Log.info(message);
     }
 
     private static void Reward(UUID playerUUID, String rewardType, MonsterHuntWorld world, int score)

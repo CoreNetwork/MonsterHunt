@@ -130,6 +130,7 @@ public class MonsterHuntWorld {
             message = message.replace("<Time>", TimeUtil.formatTimeTicks(getTimeUntilStart()));
 
             Util.Broadcast(message);
+            Log.info(message);
         }
 
         signUp(sponsor.getUniqueId());
@@ -148,8 +149,9 @@ public class MonsterHuntWorld {
         message = message.replace("<World>", name);
         message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
         Util.Broadcast(message);
+        Log.info(message);
+
         removeHostileMobs();
-        
         popSponsorQueue();
         generateScoreboard();
         refreshScoreboards(); 
@@ -362,6 +364,7 @@ public class MonsterHuntWorld {
             message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
             message = message.replace("<World>", name);
             Util.Broadcast(message);
+            Log.info(message);
         }
         else
         {
