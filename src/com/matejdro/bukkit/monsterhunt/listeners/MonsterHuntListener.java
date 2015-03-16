@@ -1,6 +1,7 @@
 package com.matejdro.bukkit.monsterhunt.listeners;
 
 import com.matejdro.bukkit.monsterhunt.HuntState;
+import com.matejdro.bukkit.monsterhunt.TimeUtil;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -38,6 +39,7 @@ import org.bukkit.entity.Wither;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -47,6 +49,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
@@ -63,6 +66,33 @@ import com.matejdro.bukkit.monsterhunt.Util;
 public class MonsterHuntListener implements Listener {
     //HashMap<Integer, Player> lastHits = new HashMap<Integer, Player>();
     //HashMap<Integer, Integer> lastHitCauses = new HashMap<Integer, Integer>();
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        MonsterHuntWorld mainWorld = HuntWorldManager.getWorlds().iterator().next();
+
+        if (!mainWorld.isActive())
+            return;
+
+        // Signed up players do not get notification
+        if (mainWorld.Score.containsKey(event.getPlayer().getUniqueId()))
+            return;
+
+        if (mainWorld.getState() == HuntState.SIGNUP)
+        {
+            String message = mainWorld.getSettings().getString(Setting.MessageLoginSignupMode);
+            message = message.replace("<Time>", TimeUtil.formatTimeTicks(mainWorld.getTimeUntilStart()));
+            Util.Message(message, event.getPlayer());
+        }
+        else if (mainWorld.getState() == HuntState.RUNNING)
+        {
+            String message = mainWorld.getSettings().getString(Setting.MessageLoginSignupMode);
+            message = message.replace("<Time>", TimeUtil.formatTimeTicks(mainWorld.getTimeUntilEnd()));
+            Util.Message(message, event.getPlayer());
+        }
+
+    }
 
     @EventHandler()
     public void onEntityCombustByEntity(EntityCombustByEntityEvent event)
@@ -347,7 +377,8 @@ public class MonsterHuntListener implements Listener {
 
             world.Score.put(player.getUniqueId(), newscore);
 
-            world.properlyspawned.remove(monster.getEntityId());
+            //Object needs to be here, otherwise it will treat it as to remove n-th element instead of specific element.
+            world.properlyspawned.remove((Object) monster.getEntityId());
             
             if (world.getSettings().getBoolean(Setting.ShowKillMessage))
             {

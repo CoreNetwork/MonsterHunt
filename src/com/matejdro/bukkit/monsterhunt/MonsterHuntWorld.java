@@ -36,9 +36,10 @@ import us.corenetwork.core.scoreboard.CoreScoreboardManager;
 public class MonsterHuntWorld {
     public String name;
     private HuntState state;
-    public int curday;
     private Settings worldSettings;
     private boolean skipNextNight;
+    private boolean waitUntilMorning;
+    private boolean chainedHunt;
 
     private BukkitRunnable stateSwitchTimer;
 
@@ -51,17 +52,20 @@ public class MonsterHuntWorld {
     public HashMap<UUID, Integer> lastScore = new HashMap<UUID, Integer>();
     public ArrayList<Integer> properlyspawned = new ArrayList<Integer>();
     public HashMap<Player, Location> tplocations = new HashMap<Player, Location>();
-    
+    private List<OfflinePlayer> sponsorQueue;
+
     private static final String OBJECTIVE_NAME = "HuntScore";
     private Scoreboard scoreboard;
     private Objective objective ;
 
     public MonsterHuntWorld(String w, Settings settings) {
-        state = HuntState.WAITING_FOR_DAY;
-        curday = 0;
         name = w;
+        chainedHunt = false;
 
         this.worldSettings = settings;
+        sponsorQueue = (List<OfflinePlayer>) this.worldSettings.getList(Setting.SponsorQueue);
+
+        startInBetweenHuntDelay();
     }
     
     public World getBukkitWorld() {
@@ -112,20 +116,23 @@ public class MonsterHuntWorld {
 
         setState(HuntState.SIGNUP);
 
-        String message = worldSettings.getString(Setting.MessageSignUpPeriod);
-        message = message.replace("<World>", name);
-        message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
-        Util.Broadcast(message);
+        OfflinePlayer sponsor = sponsorQueue.get(0);
 
-        stateSwitchTimer = new BukkitRunnable()
+        String message;
+        if (chainedHunt)
         {
-            public void run()
-            {
-                startHunt();
-            }
-        };
+            message = worldSettings.getString(Setting.MessageSignUpPeriodChained);
+            message = message.replace("<World>", name);
+            message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
+            message = message.replace("<Sponsor>", sponsor.getName());
+            message = message.replace("<Time>", TimeUtil.formatTimeTicks(getTimeUntilStart()));
 
-        stateSwitchTimer.runTaskLater(MonsterHunt.instance, worldSettings.getInt(Setting.SignUpPeriodTime) * 1200);
+            Util.Broadcast(message);
+        }
+
+        signUp(sponsor.getUniqueId());
+
+        chainedHunt = true;
     }
 
     public void startHunt()
@@ -141,9 +148,52 @@ public class MonsterHuntWorld {
         Util.Broadcast(message);
         removeHostileMobs();
         
-        updateLimit();
+        popSponsorQueue();
         generateScoreboard();
         refreshScoreboards(); 
+    }
+
+    public void tryStartSignups()
+    {
+        if (!sponsorQueue.isEmpty())
+            startSignups();
+        else
+            chainedHunt = false;
+    }
+
+    public int getTimeUntilStart()
+    {
+        int ticksDifference = TimeUtil.getTimeDifference((int) getBukkitWorld().getTime(), worldSettings.getInt(Setting.StartTime));
+        if (shouldISkipNextNight())
+            ticksDifference += 24000;
+
+        return ticksDifference;
+    }
+
+    public int getTimeUntilEnd()
+    {
+        return TimeUtil.getTimeDifference((int) getBukkitWorld().getTime(), worldSettings.getInt(Setting.EndTime));
+    }
+
+    public int getSponsorQueueLength()
+    {
+        return sponsorQueue.size();
+    }
+
+    public void addSponsor(Player player)
+    {
+        if (isWorldTimeGoodForHunt() || getTimeUntilStart() < worldSettings.getInt(Setting.MinTicksBeforeToStart))
+            setShouldSkipNextNight(true);
+
+        sponsorQueue.add(player);
+        Settings.globals.setList(Setting.SponsorQueue, sponsorQueue);
+        Settings.globals.save();
+    }
+
+    public void startInBetweenHuntDelay()
+    {
+        state = HuntState.SLEEPING;
+        scheduleStateChange(HuntState.WAITING_FOR_SPONSOR, worldSettings.getInt(Setting.AfterHuntDelay));
     }
 
     public HuntState getState()
@@ -151,7 +201,7 @@ public class MonsterHuntWorld {
         return state;
     }
 
-    public void setState(HuntState state)
+    private void setState(HuntState state)
     {
         this.state = state;
 
@@ -160,6 +210,20 @@ public class MonsterHuntWorld {
             stateSwitchTimer.cancel();
             stateSwitchTimer = null;
         }
+
+        if (state == HuntState.WAITING_FOR_SPONSOR)
+        {
+            tryStartSignups();
+        }
+    }
+
+    public void scheduleStateChange(HuntState state, int ticksLater)
+    {
+        if (stateSwitchTimer != null)
+            stateSwitchTimer.cancel();
+
+        stateSwitchTimer = new StateChangerRunnable(state);
+        stateSwitchTimer.runTaskLater(MonsterHunt.instance, ticksLater);
     }
 
     public boolean isWorldTimeGoodForHunt()
@@ -178,21 +242,35 @@ public class MonsterHuntWorld {
         this.skipNextNight = skipNextNight;
     }
 
+    public boolean shouldIWaitUntilMorning()
+    {
+        return waitUntilMorning;
+    }
+
+    public void setShouldWaitUntilMorning(boolean waitUntilMorning)
+    {
+        this.waitUntilMorning = waitUntilMorning;
+    }
+
     public boolean isActive()
     {
         return state == HuntState.SIGNUP || state == HuntState.RUNNING;
     }
 
-    private void updateLimit()
+    private void popSponsorQueue()
     {
-    	int curLimit = Settings.globals.getInt(Setting.HuntLimit); //Limit is global not per type
-    	if (curLimit <= 0)
-    		return;
-    	
-    	Settings.globals.setInt(Setting.HuntLimit, curLimit - 1);
+    	if (sponsorQueue.size() == 0)
+        {
+            Log.severe("Starting hunt without sponsor! Error, bug matejdro!");
+            return;
+        }
+
+        sponsorQueue.remove(0);
+
+    	Settings.globals.setList(Setting.SponsorQueue, sponsorQueue);
     	Settings.globals.save();
     }
-    
+
     private void generateScoreboard() 
     {
     	scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -200,6 +278,7 @@ public class MonsterHuntWorld {
         objective.setDisplayName(activeHuntSpecification.getDisplayName());
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 	}
+
 	public void refreshScoreboards()
 	{
 		refreshScoreboardPoints();
@@ -268,7 +347,7 @@ public class MonsterHuntWorld {
         if (!isActive())
             return;
 
-        setState(HuntState.WAITING_FOR_DAY);
+        startInBetweenHuntDelay();
 
         if (Score.size() < worldSettings.getInt(Setting.MinimumPlayers)) {
             String message = worldSettings.getString(Setting.FinishMessageNotEnoughPlayers);
@@ -338,19 +417,6 @@ public class MonsterHuntWorld {
     	}
 	}
 
-    public boolean rollStartDie() {
-        if (curday == 0) {
-            curday = worldSettings.getInt(Setting.SkipDays);
-            if ((new Random().nextInt(100)) < worldSettings.getInt(Setting.StartChance)) {
-                return Settings.globals.getInt(Setting.HuntLimit) != 0; //Only start if limit is not 0 (can be -1 for no limit)
-              
-            }
-        } else {
-            curday--; 
-        }
-        return false;
-    }
-    
     public void removeHostileMobs()
     {
     	if(worldSettings.getBoolean(Setting.PurgeAllHostileMobsOnStart))
@@ -370,6 +436,20 @@ public class MonsterHuntWorld {
         }	
     }
 
+    private class StateChangerRunnable extends BukkitRunnable
+    {
+        private HuntState state;
+
+        public StateChangerRunnable(HuntState state)
+        {
+            this.state = state;
+        }
+
+        public void run()
+        {
+            setState(state);
+        }
+    }
 
 
 	

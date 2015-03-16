@@ -49,13 +49,13 @@ public class HuntJoinCommand extends BaseMHCommand {
     		Util.Message("There is no such world!", sender);
             return;
     	}
-        if (world.Score.containsKey(((Player) sender).getName())) {
+        if (world.Score.containsKey(((Player) sender).getUniqueId())) {
             Util.Message(world.getSettings().getString(Setting.MessageAlreadySignedUp), sender);
             return;
         }
 
         UUID playerUUID = ((Player) sender).getUniqueId();
-        if (world.getState() == HuntState.SIGNUP)
+        if (world.isActive())
         {
         	if (world.isBanned(playerUUID))
         	{
@@ -90,7 +90,7 @@ public class HuntJoinCommand extends BaseMHCommand {
         }
         else
         {
-            Util.Message(world.getSettings().getString(Setting.MessageTooLateSignUp), sender);
+            Util.Message(world.getSettings().getString(Setting.SignUpNoHuntMessage), sender);
         }
     }
 

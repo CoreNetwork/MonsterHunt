@@ -63,7 +63,7 @@ public class Settings {
 		
 		return result;
 	}
-	
+
 	public Object getObject(String path)
 	{		
 		if (config.contains(path))
@@ -86,7 +86,13 @@ public class Settings {
 		return (Integer) getObject(setting);
 	}
 
-	public String getString(Setting setting)
+    public List<?> getList(Setting setting)
+    {
+        return (List<?>) getObject(setting);
+    }
+
+
+    public String getString(Setting setting)
 	{
 		return (String) getObject(setting);
 	}
@@ -97,8 +103,8 @@ public class Settings {
 	}
 
 	public int getPlaceInt(Setting setting, int place)
-	{
-		return (Integer) getObject("Rewards.Place" +  String.valueOf(place) + "." + setting.getString());
+    {
+        return (Integer) getObject("Rewards.Place" +  String.valueOf(place) + "." + setting.getString());
 	}
 
 	public String getPlaceString(Setting setting, int place)
@@ -175,8 +181,12 @@ public class Settings {
 	{
 		config.set(setting.getString(), value);
 	}
-	
-	public void save()
+    public void setList(Setting setting, List<?> value)
+    {
+        config.set(setting.getString(), value);
+    }
+
+    public void save()
 	{
 		File file = this.file;
 		

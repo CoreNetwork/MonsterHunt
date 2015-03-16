@@ -25,10 +25,12 @@ public class RewardManager {
     public static Economy economy = null;
 
     @SuppressWarnings("rawtypes")
-    public static void RewardWinners(MonsterHuntWorld world) {
+    public static void RewardWinners(MonsterHuntWorld world)
+    {
 
         HashMap<UUID, Integer>[] Winners = GetWinners(world);
-        if (Winners[0].size() < 1) {
+        if (Winners[0].size() < 1)
+        {
             String message = world.getSettings().getString(Setting.FinishMessageNotEnoughPlayers);
             message = message.replace("<World>", world.name);
             message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
@@ -37,8 +39,40 @@ public class RewardManager {
         }
         int numberOfWinners = world.getSettings().getInt(Setting.NumberOfWinners);
 
+        // keep track of players we reward so we don't reward them again
+        // in the RewardEveryone section
+        final ArrayList<UUID> rewardedPlayers = new ArrayList<UUID>();
         int score = Winners[0].values().iterator().next();
-        if (score < world.getSettings().getPlaceInt(Setting.MinimumPointsPlace, 1)) {
+
+        final boolean enableReward=world.getSettings().getBoolean(Setting.EnableReward);
+        Util.Debug("EnabledReward="+enableReward);
+
+        //RewardEveryone
+        if (!(!world.getSettings().getBoolean(Setting.EnableRewardEveryonePermission) && !world.getSettings().getBoolean(Setting.RewardEveryone)))
+        {
+            for (Entry<UUID, Integer> i : world.Score.entrySet())
+            {
+                if (((Integer) i.getValue()) < world.getSettings().getInt(Setting.MinimumPointsEveryone))
+                    continue;
+                Player player = plugin.getServer().getPlayer(i.getKey());
+                if (player == null)
+                    continue;
+
+                // don't reward "everyone" reward if they already won a top award, except if config allows so
+                if (!world.getSettings().getBoolean(Setting.RewardEveryoneIncludesWinners) && rewardedPlayers.contains(player.getUniqueId()))
+                    continue;
+
+                if (world.getSettings().getBoolean(Setting.RewardEveryone) || (player.hasPermission("monsterhunt.rewardeverytime") && world.getSettings().getBoolean(Setting.EnableRewardEveryonePermission)))
+                {
+                    Reward(i.getKey(), "RewardEveryone", world, i.getValue());
+                }
+            }
+        }
+
+        //Normal reward
+
+        if (score < world.getSettings().getPlaceInt(Setting.MinimumPointsPlace, 1))
+        {
             String message = world.getSettings().getString(Setting.FinishMessageNotEnoughPoints);
             message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
             message = message.replace("<World>", world.name);
@@ -46,13 +80,6 @@ public class RewardManager {
             return;
         }
 
-        // keep track of players we reward so we don't reward them again
-        // in the RewardEveryone section
-        final ArrayList<UUID> rewardedPlayers = new ArrayList<UUID>();
-        
-        final boolean enableReward=world.getSettings().getBoolean(Setting.EnableReward);
-        Util.Debug("EnabledReward="+enableReward);
-        //Normal reward
         if (enableReward) {
             for (int place = 0; place < numberOfWinners; place++) {
                 Util.Debug("Checking place "+place);
@@ -68,28 +95,9 @@ public class RewardManager {
                         Util.Debug("player="+ uuid);
                         String rewardType = "Place" + (place + 1);
                         Reward(uuid, rewardType, world, score);
-                        
+
                         rewardedPlayers.add(uuid);
                     }
-                }
-            }
-        }
-
-        //RewardEveryone
-        if (!(!world.getSettings().getBoolean(Setting.EnableRewardEveryonePermission) && !world.getSettings().getBoolean(Setting.RewardEveryone))) {
-            for (Entry<UUID, Integer> i : world.Score.entrySet()) {
-                if (((Integer) i.getValue()) < world.getSettings().getInt(Setting.MinimumPointsEveryone))
-                    continue;
-                Player player = plugin.getServer().getPlayer(i.getKey());
-                if (player == null)
-                    continue;
-                
-                // don't reward "everyone" reward if they already won a top award, except if config allows so
-                if(!world.getSettings().getBoolean(Setting.RewardEveryoneIncludesWinners) && rewardedPlayers.contains(player.getUniqueId()) )
-                	continue;
-                                
-                if (world.getSettings().getBoolean(Setting.RewardEveryone) || (player.hasPermission("monsterhunt.rewardeverytime") && world.getSettings().getBoolean(Setting.EnableRewardEveryonePermission))) {
-                    Reward(i.getKey(), "RewardEveryone", world, i.getValue());
                 }
             }
         }
@@ -158,10 +166,12 @@ public class RewardManager {
     	Util.Debug("Rewarding "+ player);
     	Util.Debug("RewardType="+rewardType);
     	
-    	String rewardString = (String) activeSettings.config.get("Rewards." + rewardType + ".RewardParameters");
+    	String rewardString = (String) activeSettings.getObject("Rewards." + rewardType + ".RewardParameters");
     	if (rewardString != null)
     	{
-    		if (rewardString.contains(";")) {
+            String items = "";
+
+            if (rewardString.contains(";")) {
     			rewardString = PickRandom(rewardString);
             }
     		
@@ -171,7 +181,6 @@ public class RewardManager {
         		return;
         	
         	for (String i2 : split) {
-            	String items = "";
         		Util.Debug("Reward i2="+i2);
         		//Parse block ID
         		String BlockIdString = i2.substring(0, i2.indexOf(" "));
@@ -239,21 +248,27 @@ public class RewardManager {
     			else
     				Util.Debug("random value was 0, no rewards given");
         		
-        		if (items.trim() == "") {
-        			return;
-        		}
-        		String message = activeSettings.getString(Setting.RewardMessage);
-        		items = items.substring(0, items.length() - 2);
-        		message = message.replace("<Items>", items);
-        		Util.Message(message, player);
         	}
-    	}
-    	List<String> commands = (List<String>) activeSettings.config.get("Rewards." + rewardType + ".Commands");
+
+            if (!items.trim().isEmpty())
+            {
+                String message = activeSettings.getString(Setting.RewardMessage);
+                items = items.substring(0, items.length() - 2);
+                message = message.replace("<Items>", items);
+                Util.Message(message, player);
+            }
+
+        }
+    	List<String> commands = (List<String>) activeSettings.getObject("Rewards." + rewardType + ".Commands");
+        Util.Debug("Reward commands=" + commands);
     	if (commands != null)
     	{
     		for (String s : commands)
     		{
-    			Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), s);
+                s = s.replace("<Player>", player.getName());
+                Util.Debug("Sending command " + s);
+
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), s);
     		}
     	}
 

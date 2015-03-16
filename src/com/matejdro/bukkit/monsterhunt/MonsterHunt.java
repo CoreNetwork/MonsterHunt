@@ -24,9 +24,7 @@ import com.matejdro.bukkit.monsterhunt.commands.HuntReloadCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntRewardCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntRunCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntScoreCommand;
-import com.matejdro.bukkit.monsterhunt.commands.HuntStartCommand;
-import com.matejdro.bukkit.monsterhunt.commands.HuntStatusCommand;
-import com.matejdro.bukkit.monsterhunt.commands.HuntStopCommand;
+import com.matejdro.bukkit.monsterhunt.commands.HuntInfoCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntTeleCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntUnbanCommand;
 import com.matejdro.bukkit.monsterhunt.commands.HuntZoneCommand;
@@ -39,7 +37,6 @@ public class MonsterHunt extends JavaPlugin implements CommandExecutor {
     
     public static boolean coreInstalled = false;
 
-    //public static HashMap<String,Integer> highscore = new HashMap<String,Integer>();
     public static HashMap<String, BaseMHCommand> commands = new HashMap<String, BaseMHCommand>();
     
     public static MonsterHunt instance;
@@ -70,16 +67,14 @@ public class MonsterHunt extends JavaPlugin implements CommandExecutor {
         commands.put("reload", new HuntReloadCommand());
         commands.put("score", new HuntScoreCommand());
         commands.put("join", new HuntJoinCommand());
-        commands.put("status", new HuntStatusCommand());
-        commands.put("stop", new HuntStopCommand());
-        commands.put("start", new HuntStartCommand());
+        commands.put("info", new HuntInfoCommand());
         commands.put("tele", new HuntTeleCommand());
         commands.put("unban", new HuntUnbanCommand());
         commands.put("zone", new HuntZoneCommand()); 
         commands.put("buy", new HuntBuyCommand()); 
         commands.put("check", new HuntCheckCommand()); 
         commands.put("run", new HuntRunCommand()); 
-        commands.put("leave", new HuntLeaveCommand()); 
+        commands.put("leave", new HuntLeaveCommand());
 
         HuntWorldManager.timer();
         

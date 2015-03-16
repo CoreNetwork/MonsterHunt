@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class HuntWorldManager {
@@ -54,25 +53,20 @@ public class HuntWorldManager {
                     if (world == null || world.getBukkitWorld() == null)
                         return;
 
-                    if (world.getState() == HuntState.WAITING_FOR_DAY)
+                    if (world.getState() == HuntState.SIGNUP)
                     {
-                        if (!world.isWorldTimeGoodForHunt())
+                        boolean waitUntilNextNight = world.shouldISkipNextNight();
+                        boolean night = world.isWorldTimeGoodForHunt();
+
+                        if (waitUntilNextNight && night)
                         {
-                            world.setState(HuntState.WAITING_FOR_NIGHT);
+                            world.setShouldSkipNextNight(false);
+                            world.setShouldWaitUntilMorning(true);
                         }
-                    }
-                    else if (world.getState() == HuntState.WAITING_FOR_NIGHT)
-                    {
-                        if (!world.isWorldTimeGoodForHunt())
-                            return;
-
-                        if (world.getSettings().getInt(Setting.HuntLimit) == 0)
-                            return;
-
-                        if (!world.rollStartDie())
-                            return;
-
-                        world.startSignups();
+                        else if (!night && world.shouldIWaitUntilMorning())
+                            world.setShouldWaitUntilMorning(false);
+                        else if (!waitUntilNextNight && night && !world.shouldIWaitUntilMorning())
+                            world.startHunt();
                     }
                     else if (world.getState() == HuntState.RUNNING)
                     {

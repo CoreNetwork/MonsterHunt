@@ -1,5 +1,6 @@
 package com.matejdro.bukkit.monsterhunt.commands;
 
+import com.matejdro.bukkit.monsterhunt.HuntState;
 import com.matejdro.bukkit.monsterhunt.TimeUtil;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -38,32 +39,14 @@ public class HuntRunCommand extends BaseMHCommand {
 		BougthHuntsStorage.setNumberOfBoughtHunts(player.getUniqueId(), --huntsLeft);
 		
 		MonsterHuntWorld mainWorld = HuntWorldManager.getWorlds().iterator().next();
+        mainWorld.addSponsor(player);
 
-
-
-        int timeLeftUntilNextNight = TimeUtil.getTimeDifference((int) mainWorld.getBukkitWorld().getTime(), mainWorld.getSettings().getInt(Setting.StartTime));
-        if (mainWorld.isWorldTimeGoodForHunt() || timeLeftUntilNextNight < mainWorld.getSettings().getInt(Setting.MinTicksBeforeToStart))
-        {
-            mainWorld.setShouldSkipNextNight(true);
-        }
-
-        Util.Debug("Time left until night: " + timeLeftUntilNextNight);
-
-        int queueLength = Settings.globals.getInt(Setting.HuntLimit);
-		Settings.globals.setInt(Setting.HuntLimit, ++queueLength);
-		Settings.globals.save();
+        int numSponsorsBeforeMe = mainWorld.getSponsorQueueLength() - 1;
+		int timeUntilMyHuntStarts = mainWorld.getTimeUntilStart() + numSponsorsBeforeMe * 24000;
 		
-		World world = mainWorld.getBukkitWorld();
+		String timeLeftString = TimeUtil.formatTimeTicks(timeUntilMyHuntStarts);
 		
-		int timeLeftOneNight = (int) (mainWorld.getSettings().getInt(Setting.StartTime) - world.getTime());
-		if (timeLeftOneNight < 0)
-			timeLeftOneNight += 24000;
-		
-		int timeLeft = (queueLength - 1) * 24000 + timeLeftOneNight;
-		int timeLeftSeconds = timeLeft / 20;
-		String timeLeftString = formatTimeSeconds(timeLeftSeconds);
-		
-		if (queueLength == 1)
+		if (numSponsorsBeforeMe == 0 && mainWorld.getState() == HuntState.WAITING_FOR_SPONSOR)
 		{
 			String buyerMessage = mainWorld.getSettings().getString(Setting.MessageHuntScheduled);
 			buyerMessage = buyerMessage.replace("<Time>", timeLeftString);
@@ -81,49 +64,19 @@ public class HuntRunCommand extends BaseMHCommand {
 		{
 			String buyerMessage = mainWorld.getSettings().getString(Setting.MessageHuntScheduledMultiple);
 			buyerMessage = buyerMessage.replace("<Time>", timeLeftString);
-			buyerMessage = buyerMessage.replace("<QueueLength>", Integer.toString(queueLength));
+			buyerMessage = buyerMessage.replace("<QueueLength>", Integer.toString(numSponsorsBeforeMe));
 
 			String announcementMessage = mainWorld.getSettings().getString(Setting.MessageHuntScheduledMultipleAnnouncement);
 			announcementMessage = announcementMessage.replace("<Player>", playerName);
 			announcementMessage = announcementMessage.replace("<Time>", timeLeftString);
-			announcementMessage = announcementMessage.replace("<QueueLength>", Integer.toString(queueLength));
+			announcementMessage = announcementMessage.replace("<QueueLength>", Integer.toString(numSponsorsBeforeMe));
 			
 			Util.Message(buyerMessage, player);
 			Util.Broadcast(announcementMessage, playerName);
 			Log.info(announcementMessage);
 		}
-	}
-	
-	private static String formatTimeSeconds(int seconds)
-	{
-		if (seconds > 60)
-			return formatTimeMinutes((int) Math.round(seconds / 60.0));
-		
-		String out = Integer.toString(seconds).concat(" second");
-		if (seconds != 1)
-			out = out.concat("s");
-		return out;
-	}
-	
-	private static String formatTimeMinutes(int minutes)
-	{
-		if (minutes > 60)
-			return formatTimeHours((int) Math.round(minutes / 60.0));
-	
-		String out = Integer.toString(minutes).concat(" minute");
-		if (minutes != 1)
-			out = out.concat("s");
-		return out;
 
-	}
-	
-	
-	private static String formatTimeHours(int hours)
-	{
-		String out = Integer.toString(hours).concat(" hour");
-		if (hours != 1)
-			out = out.concat("s");
-		return out;
+        mainWorld.tryStartSignups();
+    }
 
-	}
 }
