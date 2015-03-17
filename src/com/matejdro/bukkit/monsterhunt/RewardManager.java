@@ -34,7 +34,7 @@ public class RewardManager {
             String message = world.getSettings().getString(Setting.FinishMessageNotEnoughPlayers);
             message = message.replace("<World>", world.name);
             message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
-            Util.Broadcast(message);
+            HuntWorldManager.BroadcastToAllParticipants(message);
             Log.info(message);
             return;
         }
@@ -77,7 +77,7 @@ public class RewardManager {
             String message = world.getSettings().getString(Setting.FinishMessageNotEnoughPoints);
             message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
             message = message.replace("<World>", world.name);
-            Util.Broadcast(message);
+            HuntWorldManager.BroadcastToAllParticipants(message);
             Log.info(message);
             return;
         }
@@ -130,7 +130,7 @@ public class RewardManager {
         message = message +  world.getSettings().getString(Setting.FinishMessageWinnersFooter);
         message = message.replace("<Sponsor>", world.getCurrentSponsor());
 
-        Util.Broadcast(message);
+        HuntWorldManager.BroadcastToAllParticipants(message);
         Log.info(message);
     }
 
