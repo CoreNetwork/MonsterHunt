@@ -174,7 +174,7 @@ public class MonsterHuntListener implements Listener {
         if (!(world.properlyspawned.contains(monster.getEntityId()))) {
             return;
         }
-        
+
         if(monster.getLastDamageCause() instanceof EntityDamageByEntityEvent)
         {
         	EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) monster.getLastDamageCause();
@@ -229,6 +229,13 @@ public class MonsterHuntListener implements Listener {
 
         if(player == null)
     		return;
+
+        int mobY = (int) monster.getLocation().getY();
+        if (mobY > world.getSettings().getInt(Setting.MobKillVerticalRangeMax) || mobY < world.getSettings().getInt(Setting.MobKillVerticalRangeMin))
+        {
+            Util.SpamMessage(world.getSettings().getString(Setting.KillMobInVerticalRange), player);
+            return;
+        }
 
         int points = 0;
         
