@@ -324,6 +324,9 @@ public class MonsterHuntWorld {
 	
     private void refreshScoreboardPoints()
     {
+        if (scoreboard == null)
+            return;
+
     	for(UUID uuid : Score.keySet())	
 		{
 			OfflinePlayer offlinePlayer = MonsterHunt.instance.getServer().getOfflinePlayer(uuid);
