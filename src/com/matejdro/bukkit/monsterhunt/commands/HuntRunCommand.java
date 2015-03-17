@@ -46,7 +46,7 @@ public class HuntRunCommand extends BaseMHCommand {
 		
 		String timeLeftString = TimeUtil.formatTimeTicks(timeUntilMyHuntStarts);
 		
-		if (numSponsorsBeforeMe == 0 && mainWorld.getState() == HuntState.WAITING_FOR_SPONSOR)
+		if (numSponsorsBeforeMe == 0)
 		{
 			String buyerMessage = mainWorld.getSettings().getString(Setting.MessageHuntScheduled);
 			buyerMessage = buyerMessage.replace("<Time>", timeLeftString);

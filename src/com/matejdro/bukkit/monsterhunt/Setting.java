@@ -105,8 +105,8 @@ public enum Setting {
 	MessageHuntScheduledMultipleAnnouncement("Messages.HuntScheduledAnnouncementMultiple", "Player <Player> just bought another hunt for entire server! That means server will enjoy hunts for next <QueueLength> nights!"),
 	MessageLeftHunt("Messages.LeftHunt", "You just left hunt. Your score was reset to 0."),
 	MessageNoHunt("Messages.NoHunt", "There is no hunt in progress!"),
-    MessageLoginSignupMode("Messges.LoginMessageSignupMode", "Hunt is currently in signups mode. You are not signed up. It will start in <Time>."),
-    MessageLoginRunningMode("Messges.LoginMessageRunningMode", "Hunt is currently in running mode. You are not signed up. You only have <Time> left."),
+    MessageLoginSignupMode("Messages.LoginMessageSignupMode", "Hunt is currently in signups mode. You are not signed up. It will start in <Time>."),
+    MessageLoginRunningMode("Messages.LoginMessageRunningMode", "Hunt is currently in running mode. You are not signed up. You only have <Time> left."),
 
 
     UseMySQL("Database.UseMySQL", false),
