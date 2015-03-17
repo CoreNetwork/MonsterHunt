@@ -357,8 +357,6 @@ public class MonsterHuntWorld {
         if (!isActive())
             return;
 
-        startInBetweenHuntDelay();
-
         if (Score.size() < worldSettings.getInt(Setting.MinimumPlayers)) {
             String message = worldSettings.getString(Setting.FinishMessageNotEnoughPlayers);
             message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
@@ -400,6 +398,8 @@ public class MonsterHuntWorld {
         kickedPlayers.clear();
         properlyspawned.clear();
         randomizeHunt();
+
+        startInBetweenHuntDelay();
     }
     
 	public void randomizeHunt()
