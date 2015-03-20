@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.matejdro.bukkit.monsterhunt.HuntWorldManager;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,7 +30,14 @@ public class HuntRewardCommand extends BaseMHCommand {
 	{
         boolean anythingClaimed = false;
         Player player = (Player) sender;
-        
+
+		if (!HuntWorldManager.worlds.keySet().contains(player.getWorld().getName()))
+		{
+			Util.Message(Settings.globals.getString(Setting.RewardMessageWrongWorld), sender);
+			return;
+		}
+
+
         try
         {
         	PreparedStatement statement = InputOutput.getConnection().prepareStatement("SELECT * FROM monsterhunt_RewardsToClaim WHERE PlayerName = ?");
@@ -44,6 +53,7 @@ public class HuntRewardCommand extends BaseMHCommand {
         		int score = set.getInt("Score");
         		
         		Settings huntSettings = new Settings(new File("plugins" + File.separator + "MonsterHunt" + File.separator, huntName + ".yml"), Settings.globals);
+
         		RewardManager.giveItems(player, rewardType, huntSettings, score);
         	}
         }
