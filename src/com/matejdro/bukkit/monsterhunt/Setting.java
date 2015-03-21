@@ -75,6 +75,7 @@ public enum Setting {
     KillMobUnderPotionSomePoints("Messages.KillMobUnderPotionSomePoints", "&cThis kill had little honor. Hunt without Beacon or potions!"),
     KillMobInVerticalRange("Messages.KillMobInVerticalRange", "&cThis kill was without honor. Hunt mobs on the ground!"),
     RewardMessage("Messages.RewardMessage", "Congratulations! You have received <Items>"),
+    RewardMessageWrongWorld("Messages.RewardMessageWrongWorld", "You can't claim loot in this world!"),
     DeathMessage("Messages.DeathMessage", "You have died, so your Monster Hunt score is reduced by 30%. Be more careful next time!"),
     SignUpBeforeHuntMessage("Messages.SignupBeforeHuntMessage", "You have signed up for the next hunt in world <World>!"),
     SignUpNoHuntMessage("Messages.SignUpNoHuntMessage", "There is no hunt active at the moment!"),
