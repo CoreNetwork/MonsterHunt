@@ -37,7 +37,7 @@ public class HuntInfoCommand extends BaseMHCommand {
             if (mainWorld.Score.containsKey(player.getUniqueId()))
                 message = mainWorld.getSettings().getString(Setting.MessageHuntInfoSignupsYouSignedUp);
             else
-                message = mainWorld.getSettings().getString(Setting.MessageHuntInfoSignupsYouSignedUp);
+                message = mainWorld.getSettings().getString(Setting.MessageHuntInfoSignupsYouNotSignedUp);
 
             message = message.replace("<Time>", TimeUtil.formatTimeTicks(mainWorld.getTimeUntilStart()));
             Util.Message(message, sender);
