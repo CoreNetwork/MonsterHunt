@@ -168,7 +168,7 @@ public class MonsterHuntWorld {
     public int getTimeUntilStart()
     {
         int ticksDifference = TimeUtil.getTimeDifference((int) getBukkitWorld().getTime(), worldSettings.getInt(Setting.StartTime));
-        if (shouldISkipNextNight())
+        if (shouldISkipNextNight() && getBukkitWorld().getTime() < worldSettings.getInt(Setting.StartTime))
             ticksDifference += 24000;
 
         return ticksDifference;

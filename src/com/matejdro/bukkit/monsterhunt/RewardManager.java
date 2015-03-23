@@ -132,6 +132,14 @@ public class RewardManager {
 
         HuntWorldManager.BroadcastToAllParticipants(message);
         Log.info(message);
+
+        try
+        {
+            InputOutput.getConnection().commit();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private static void Reward(UUID playerUUID, String rewardType, MonsterHuntWorld world, int score)
@@ -159,7 +167,6 @@ public class RewardManager {
     		
     		statement.executeUpdate();
     		statement.close();
-    		InputOutput.getConnection().commit();
     	}
     	catch (SQLException e)
     	{
