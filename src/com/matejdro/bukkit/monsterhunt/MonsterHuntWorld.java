@@ -174,10 +174,16 @@ public class MonsterHuntWorld {
 
     public void tryStartSignups()
     {
-        if (!sponsorQueue.isEmpty())
-            startSignups();
-        else
+        if (sponsorQueue.isEmpty())
+        {
             chainedHunt = false;
+        }
+        else if(getState() != HuntState.RUNNING)
+        {
+            startSignups();
+        }
+
+
     }
 
     public int getTimeUntilStart()
