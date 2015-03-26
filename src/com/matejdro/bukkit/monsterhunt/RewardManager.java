@@ -111,6 +111,7 @@ public class RewardManager {
         message = world.getSettings().getString(Setting.FinishMessageWinnersHeader);
         message = message.replace("<World>", world.name);
         message = message.replace("<HuntName>", world.activeHuntSpecification.getDisplayName());
+        message = message.replace("<Player>", world.getCurrentSponsor());
 
         for (int place = 0; place < numberOfWinners; place++) {
             String players = "";
