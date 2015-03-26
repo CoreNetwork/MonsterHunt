@@ -145,11 +145,26 @@ public class MonsterHuntWorld {
 
         setState(HuntState.RUNNING);
 
-        String message = worldSettings.getString(Setting.StartMessage);
-        message = message.replace("<World>", name);
-        message = message.replace("<HuntName>", activeHuntSpecification.getDisplayName());
-        Util.Broadcast(message);
-        Log.info(message);
+        String messageLong = worldSettings.getString(Setting.StartMessage);
+        messageLong = messageLong.replace("<World>", name);
+        messageLong = messageLong.replace("<HuntName>", activeHuntSpecification.getDisplayName());
+
+        String messageShort = worldSettings.getString(Setting.StartMessageNotSignedUp);
+        messageShort = messageShort.replace("<World>", name);
+        messageShort = messageShort.replace("<HuntName>", activeHuntSpecification.getDisplayName());
+
+        for(Player player : Bukkit.getServer().getOnlinePlayers())
+        {
+            if(Score.containsKey(player.getUniqueId()))
+            {
+                Util.Message(messageLong, player);
+            }
+            else
+            {
+                Util.Message(messageShort, player);
+            }
+        }
+        Log.info(messageLong);
 
         removeHostileMobs();
         popSponsorQueue();

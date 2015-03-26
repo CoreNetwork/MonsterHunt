@@ -64,6 +64,7 @@ public enum Setting {
     
  
     StartMessage("Messages.StartMessage", "&2Monster Hunt have started in world <World>! Go kill those damn mobs!"),
+    StartMessageNotSignedUp("Messages.StartMessageNotSignedUp", "&aMonster Hunt has begun!"),
     FinishMessageWinnersHeader("Messages.FinishMessageWinners.Header", "Sun is rising, so monster Hunt is finished in world <World>! Winners of the today's match are: [NEWLINE] "),
     WinnerMessagePlace("WinMessage","",false),
     FinishMessageWinnersFooter("Messages.FinishMessageWinners.Footer", "Congratulations!"),
