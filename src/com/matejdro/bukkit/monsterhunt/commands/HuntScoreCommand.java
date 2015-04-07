@@ -30,7 +30,7 @@ public class HuntScoreCommand extends BaseMHCommand {
                 Util.Message("You do not have your high score yet.", sender);
         } else if (args.length > 0 && args[0].equals("top")) {
             Integer number = 5;
-            if (args.length > 1)
+            if (args.length > 1 && Util.isInteger(args[1]))
                 number = Integer.parseInt(args[1]);
 
             LinkedHashMap<UUID, Integer> tops = InputOutput.getTopScores(number);
