@@ -17,12 +17,11 @@ public class HuntInfoCommand extends BaseMHCommand {
 	{
 		permission = "info";
 		desc = "Check hunt info";
-		needPlayer = true;
+		needPlayer = false;
 	}
 
 
 	public void run(CommandSender sender, String[] args){
-        Player player = (Player) sender;
 
         MonsterHuntWorld mainWorld = HuntWorldManager.getWorlds().iterator().next();
 
@@ -34,7 +33,9 @@ public class HuntInfoCommand extends BaseMHCommand {
         {
             String message;
 
-            if (mainWorld.Score.containsKey(player.getUniqueId()))
+            if(!(sender instanceof Player))
+                message = mainWorld.getSettings().getString(Setting.MessageHuntInfoSignupsConsole);
+            else if (mainWorld.Score.containsKey(((Player) sender).getUniqueId()))
                 message = mainWorld.getSettings().getString(Setting.MessageHuntInfoSignupsYouSignedUp);
             else
                 message = mainWorld.getSettings().getString(Setting.MessageHuntInfoSignupsYouNotSignedUp);
@@ -46,7 +47,9 @@ public class HuntInfoCommand extends BaseMHCommand {
         {
             String message;
 
-            if (mainWorld.Score.containsKey(player.getUniqueId()))
+            if(!(sender instanceof Player))
+                message = mainWorld.getSettings().getString(Setting.MessageHuntInfoSignupsConsole);
+            else if (mainWorld.Score.containsKey(((Player) sender).getUniqueId()))
                 message = mainWorld.getSettings().getString(Setting.MessageHuntInfoRunningYouSignedUp);
             else
                 message = mainWorld.getSettings().getString(Setting.MessageHuntInfoRunningYouNotSignedUp);

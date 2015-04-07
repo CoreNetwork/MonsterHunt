@@ -91,6 +91,7 @@ public enum Setting {
     MessageAlreadySignedUp("Messages.MessageAlreadySignedUp", "You are already signed up!"),
     MessageStartNotEnoughPlayers("Messages.MessageStartNotEnoughPlayers", "Monster Hunt was about to start, but unfortunately there were not enough players signed up. "),
     MessageHuntInfoNotActive("Messages.MessageHuntInfoNotActive", "Hunt is currently not active anywhere"),
+    MessageHuntInfoSignupsConsole("Messages.MessageHuntInfoSignupsConsole", "Hunt is currently in signups mode. It will start in <Time>."),
     MessageHuntInfoSignupsYouSignedUp("Messages.MessageHuntInfoSignupsYouSignedUp", "Hunt is currently in signups mode. You are signed up. It will start in <Time>."),
     MessageHuntInfoSignupsYouNotSignedUp("Messages.MessageHuntInfoSignupsYouNotSignedUp", "Hunt is currently in signups mode. You are not signed up. It will start in <Time>."),
     MessageHuntInfoRunningYouSignedUp("Messages.MessageHuntInfoRunningYouSignedUp", "Hunt is currently running. You are signed up. It will end in <Time>."),
